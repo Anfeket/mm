@@ -5,6 +5,7 @@ use types::Post;
 
 pub mod db;
 pub mod types;
+pub mod web;
 
 fn main() {
     let path = env::var("DB_PATH").unwrap_or(".\\mm.db".to_string());

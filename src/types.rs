@@ -1,81 +1,51 @@
-use chrono::Datelike;
 use core::fmt;
-use rand::Rng;
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, fs::write, str::FromStr};
 
 #[derive(Debug)]
 pub struct Post {
     pub id: PostId,
+    pub author: User,
     pub description: String,
     pub post_type: PostType,
-    pub tags: Vec<String>,
+    pub tags: Vec<PostTag>,
     pub rating: i32,
     pub post_date: i64,
     pub file: String,
+    pub is_deleted: bool,
+    pub file_size: u64,
+    pub parent_post: Option<PostId>,
+    pub children_posts: Vec<PostId>,
 }
 impl Post {
-    pub fn upvote(&mut self) {
-        self.rating += 1
-    }
-    pub fn downvote(&mut self) {
-        self.rating -= 1
-    }
-    pub fn id(&self) -> &str {
-        &self.id.0
-    }
-    pub fn add_tag(&mut self, tag: &String) -> Result<(), PostError> {
-        if self.tags.contains(tag) {
-            Err(PostError::TagAlreadyExists(tag.into()))
-        } else {
-            self.tags.push(tag.into());
-            Ok(())
-        }
-    }
-    pub fn remove_tag(&mut self, tag: &String) -> Result<(), PostError> {
-        if let Some(x) = self.tags.iter().position(|x| x == tag) {
-            self.tags.swap_remove(x);
-            Ok(())
-        } else {
-            Err(PostError::TagNotFound(tag.into()))
-        }
-    }
-
-    pub fn new(description: String, post_type: PostType, file: String) -> Self {
+    pub fn new(
+        id: PostId,
+        author: User,
+        description: String,
+        post_type: PostType,
+        post_date: i64,
+        file: String,
+        file_size: u64,
+        parent_post: Option<PostId>,
+    ) -> Self {
         Self {
-            id: PostId::new(),
+            id,
+            author,
             description,
             post_type,
             tags: Vec::new(),
             rating: 0,
-            post_date: chrono::Utc::now().timestamp(),
+            post_date,
             file,
+            is_deleted: false,
+            file_size,
+            parent_post,
+            children_posts: Vec::new(),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct PostId(pub String);
-impl PostId {
-    pub fn new() -> Self {
-        let date = Self::generate_date();
-        let salt = Self::generate_salt(5);
-        Self(date + &salt)
-    }
-
-    fn generate_date() -> String {
-        let current_date = chrono::Utc::now();
-        let year = current_date.year() % 100;
-        let day = current_date.ordinal();
-        format!("{}{}", year, day)
-    }
-
-    fn generate_salt(length: usize) -> String {
-        const SALT_ALPHABET: &[u8] = b"abcdefghijklmnopqrstuvwxyz0123456789";
-        (0..length)
-            .map(|_| SALT_ALPHABET[rand::thread_rng().gen_range(0..SALT_ALPHABET.len())] as char)
-            .collect()
-    }
-}
+pub struct PostId(pub u64);
 impl Display for PostId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
@@ -112,11 +82,36 @@ impl FromStr for PostType {
 
 #[derive(Debug)]
 pub enum PostError {
+    // Post Errors
     PostNotFound(PostId),
     DuplicatePostId(PostId),
+    InvalidPostType(String),
+    PostIsDeleted(PostId),
+
+    // Tag Errors
     TagAlreadyExists(String),
     TagNotFound(String),
-    InvalidPostType(String),
+
+    // User Errors
+    UserNotFound(u64),
+    DuplicateUserId(u64),
+    UsernameAlreadyTaken(String),
+    InvalidUsername(String),
+    InvalidPassword(String),
+    InvalidEmail(String),
+    Unauthorized(u64),
+
+    // Passkey Errors
+    PasskeyNotFound(u64),
+    DuplicatePasskey(u64),
+    InvalidPasskeyFormat(String),
+    PasskeyExpired(u64),
+    PasskeyMismatch { user_id: u64, passkey_id: u64 },
+
+    // Authentication Errors
+    AuthFailedIncorrectPassword(String),
+    AuthFailedIncorrectPasskey(u64),
+    UserNotAuthenticated(u64),
 
     DatabaseError(String),
 }
@@ -129,6 +124,81 @@ impl fmt::Display for PostError {
             PostError::TagNotFound(tag) => write!(f, "Tag not found: {}", tag),
             PostError::InvalidPostType(post_type) => write!(f, "InvalidPostType: {}", post_type),
             PostError::DatabaseError(err) => write!(f, "Database Error: {}", err),
+            PostError::PostIsDeleted(post_id) => write!(f, "Post is deleted: {}", post_id),
+            PostError::UserNotFound(user_id) => write!(f, "User not found {}", user_id),
+            PostError::DuplicateUserId(user_id) => write!(f, "Duplicate User Id: {}", user_id),
+            PostError::UsernameAlreadyTaken(username) => {
+                write!(f, "Username already taken: {}", username)
+            }
+            PostError::InvalidUsername(username) => write!(f, "Invalid Username: {}", username),
+            PostError::InvalidPassword(password) => write!(f, "Invalid Password: {}", password),
+            PostError::InvalidEmail(email) => write!(f, "Invalid Email: {}", email),
+            PostError::Unauthorized(user_id) => {
+                write!(f, "User unauthorized for this action: {}", user_id)
+            }
+            PostError::PasskeyNotFound(passkey_id) => {
+                write!(f, "Passkey not found: {}", passkey_id)
+            }
+            PostError::DuplicatePasskey(passkey_id) => {
+                write!(f, "Duplicate Passkey: {}", passkey_id)
+            }
+            PostError::InvalidPasskeyFormat(format) => {
+                write!(f, "Invalid Passkey format: {}", format)
+            }
+            PostError::PasskeyExpired(passkey_id) => write!(f, "Passkey expired: {}", passkey_id),
+            PostError::PasskeyMismatch {
+                user_id,
+                passkey_id,
+            } => write!(f, "Passkey mismatch: {} with user: {}", passkey_id, user_id),
+            PostError::AuthFailedIncorrectPassword(password) => {
+                write!(f, "Authentication failed, incorrect password: {}", password)
+            }
+            PostError::AuthFailedIncorrectPasskey(passkey_id) => write!(
+                f,
+                "Authentication failed, incorrect passkey: {}",
+                passkey_id
+            ),
+            PostError::UserNotAuthenticated(user_id) => {
+                write!(f, "User not authenticated: {}", user_id)
+            }
         }
     }
+}
+
+#[derive(Debug)]
+pub struct User {
+    id: u64,
+    username: String,
+    email: String,
+    password: Option<String>,
+    passkeys: Vec<Passkey>,
+    role: Role,
+    created_at: i64,
+    is_deleted: bool,
+}
+
+#[derive(Debug)]
+pub enum Role {
+    Admin,
+    Moderator,
+    User,
+    Guest,
+}
+
+#[derive(Debug)]
+pub struct Passkey {
+    id: u64,
+    user_id: u64,
+    credential_id: u64,
+    public_key: String,
+    counter: u64,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PostTag {
+    id: u64,
+    name: String,
+    category: Option<String>,
+    posts: u64,
+    created_at: i64,
 }
