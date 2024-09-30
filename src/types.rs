@@ -1,69 +1,38 @@
 use core::fmt;
-use std::{fmt::Display, fs::write, str::FromStr};
+use std::str::FromStr;
+
+use chrono::NaiveDateTime;
+use thiserror::Error;
 
 #[derive(Debug)]
 pub struct Post {
-    pub id: PostId,
-    pub author: User,
+    pub id: u32,
+    pub author_id: u32,
     pub description: String,
     pub post_type: PostType,
-    pub tags: Vec<PostTag>,
+    pub tag_ids: Vec<u32>,
     pub rating: i32,
-    pub post_date: i64,
-    pub file: String,
+    pub post_date: NaiveDateTime,
+    pub file_path: String,
     pub is_deleted: bool,
     pub file_size: u64,
-    pub parent_post: Option<PostId>,
-    pub children_posts: Vec<PostId>,
-}
-impl Post {
-    pub fn new(
-        id: PostId,
-        author: User,
-        description: String,
-        post_type: PostType,
-        post_date: i64,
-        file: String,
-        file_size: u64,
-        parent_post: Option<PostId>,
-    ) -> Self {
-        Self {
-            id,
-            author,
-            description,
-            post_type,
-            tags: Vec::new(),
-            rating: 0,
-            post_date,
-            file,
-            is_deleted: false,
-            file_size,
-            parent_post,
-            children_posts: Vec::new(),
-        }
-    }
+    pub parent_post: Option<u32>,
+    pub children_posts: Vec<u32>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct PostId(pub u64);
-impl Display for PostId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, sqlx::Type, Clone)]
+#[sqlx(type_name = "post_type")]
 pub enum PostType {
     Image,
     Video,
     Other,
 }
-impl PostType {
-    pub fn as_str(&self) -> &str {
+impl fmt::Display for PostType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            PostType::Image => "Image",
-            PostType::Video => "Video",
-            PostType::Other => "Other",
+            PostType::Image => write!(f, "Image"),
+            PostType::Video => write!(f, "Video"),
+            PostType::Other => write!(f, "Other"),
         }
     }
 }
@@ -80,125 +49,157 @@ impl FromStr for PostType {
     }
 }
 
-#[derive(Debug)]
-pub enum PostError {
+#[derive(Error, Debug)]
+pub enum Error {
     // Post Errors
-    PostNotFound(PostId),
-    DuplicatePostId(PostId),
+    #[error("Post not found: {0}")]
+    PostNotFound(u32),
+    #[error("Duplicate post id: {0}")]
+    DuplicatePostId(u32),
+    #[error("Invalid post type: {0}")]
     InvalidPostType(String),
-    PostIsDeleted(PostId),
+    #[error("Post deleted: {0}")]
+    PostIsDeleted(u32),
+    #[error("Tag already added to post: tag {0} in post {1}")]
+    TagAlreadyAddedToPost(u32, u32),
+    #[error("Tag not found in post: tag {0} in post {1}")]
+    TagNotFoundInPost(u32, u32),
 
     // Tag Errors
-    TagAlreadyExists(String),
-    TagNotFound(String),
+    #[error("Duplicate tag: {0}")]
+    DuplicateTagName(String),
+    #[error("Duplicate tag: {0}")]
+    DuplicateTagId(u32),
+    #[error("Tag not found: {0}")]
+    TagNotFoundId(u32),
+    #[error("Tag not found: {0}")]
+    TagNotFoundName(String),
+    #[error("Duplicate implication: {0} to {1}")]
+    DuplicateImplication(u32, u32),
+    #[error("Implication not found: {0} to {1}")]
+    ImplicationNotFound(u32, u32),
 
     // User Errors
-    UserNotFound(u64),
-    DuplicateUserId(u64),
-    UsernameAlreadyTaken(String),
+    #[error("User not found: {0}")]
+    UserNotFoundId(u32),
+    #[error("User not found: {0}")]
+    UserNotFoundName(String),
+    #[error("Duplicate user id: {0}")]
+    DuplicateUserId(u32),
+    #[error("Duplicate username: {0}")]
+    DuplicateUsername(String),
+    #[error("Duplicate email: {0}")]
+    DuplicateEmail(String),
+    #[error("Invalid username: {0}")]
     InvalidUsername(String),
+    #[error("Invalid password: {0}")]
     InvalidPassword(String),
+    #[error("Invalid email: {0}")]
     InvalidEmail(String),
-    Unauthorized(u64),
+    #[error("Unauthorized: {0}")]
+    Unauthorized(u32),
 
-    // Passkey Errors
-    PasskeyNotFound(u64),
-    DuplicatePasskey(u64),
-    InvalidPasskeyFormat(String),
-    PasskeyExpired(u64),
-    PasskeyMismatch { user_id: u64, passkey_id: u64 },
-
-    // Authentication Errors
+    // Auth Errors
+    #[error("Authentication failed, incorrect password: {0}")]
     AuthFailedIncorrectPassword(String),
-    AuthFailedIncorrectPasskey(u64),
-    UserNotAuthenticated(u64),
+    #[error("Authentication failed, incorrect passkey: {0}")]
+    AuthFailedIncorrectPasskey(u32),
+    #[error("User not authenticated: {0}")]
+    UserNotAuthenticated(u32),
 
-    DatabaseError(String),
-}
-impl fmt::Display for PostError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PostError::PostNotFound(id) => write!(f, "Post not found: {}", id),
-            PostError::DuplicatePostId(id) => write!(f, "Duplicate Post Id: {}", id),
-            PostError::TagAlreadyExists(tag) => write!(f, "Tag already exists: {}", tag),
-            PostError::TagNotFound(tag) => write!(f, "Tag not found: {}", tag),
-            PostError::InvalidPostType(post_type) => write!(f, "InvalidPostType: {}", post_type),
-            PostError::DatabaseError(err) => write!(f, "Database Error: {}", err),
-            PostError::PostIsDeleted(post_id) => write!(f, "Post is deleted: {}", post_id),
-            PostError::UserNotFound(user_id) => write!(f, "User not found {}", user_id),
-            PostError::DuplicateUserId(user_id) => write!(f, "Duplicate User Id: {}", user_id),
-            PostError::UsernameAlreadyTaken(username) => {
-                write!(f, "Username already taken: {}", username)
-            }
-            PostError::InvalidUsername(username) => write!(f, "Invalid Username: {}", username),
-            PostError::InvalidPassword(password) => write!(f, "Invalid Password: {}", password),
-            PostError::InvalidEmail(email) => write!(f, "Invalid Email: {}", email),
-            PostError::Unauthorized(user_id) => {
-                write!(f, "User unauthorized for this action: {}", user_id)
-            }
-            PostError::PasskeyNotFound(passkey_id) => {
-                write!(f, "Passkey not found: {}", passkey_id)
-            }
-            PostError::DuplicatePasskey(passkey_id) => {
-                write!(f, "Duplicate Passkey: {}", passkey_id)
-            }
-            PostError::InvalidPasskeyFormat(format) => {
-                write!(f, "Invalid Passkey format: {}", format)
-            }
-            PostError::PasskeyExpired(passkey_id) => write!(f, "Passkey expired: {}", passkey_id),
-            PostError::PasskeyMismatch {
-                user_id,
-                passkey_id,
-            } => write!(f, "Passkey mismatch: {} with user: {}", passkey_id, user_id),
-            PostError::AuthFailedIncorrectPassword(password) => {
-                write!(f, "Authentication failed, incorrect password: {}", password)
-            }
-            PostError::AuthFailedIncorrectPasskey(passkey_id) => write!(
-                f,
-                "Authentication failed, incorrect passkey: {}",
-                passkey_id
-            ),
-            PostError::UserNotAuthenticated(user_id) => {
-                write!(f, "User not authenticated: {}", user_id)
-            }
-        }
-    }
+    #[error("Database error: {0}")]
+    DatabaseError(#[from] sqlx::Error),
 }
 
 #[derive(Debug)]
 pub struct User {
-    id: u64,
-    username: String,
-    email: String,
-    password: Option<String>,
-    passkeys: Vec<Passkey>,
-    role: Role,
-    created_at: i64,
-    is_deleted: bool,
+    pub id: u32,
+    pub username: String,
+    pub email: String,
+    pub password: String,
+    pub user_role: UserRole,
+    pub created_at: chrono::NaiveDateTime,
+    pub is_deleted: bool,
 }
 
-#[derive(Debug)]
-pub enum Role {
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "user_role")]
+pub enum UserRole {
     Admin,
     Moderator,
     User,
     Guest,
 }
+impl fmt::Display for UserRole {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UserRole::Admin => write!(f, "Admin"),
+            UserRole::Moderator => write!(f, "Moderator"),
+            UserRole::User => write!(f, "User"),
+            UserRole::Guest => write!(f, "Guest"),
+        }
+    }
+}
+impl FromStr for UserRole {
+    type Err = String;
 
-#[derive(Debug)]
-pub struct Passkey {
-    id: u64,
-    user_id: u64,
-    credential_id: u64,
-    public_key: String,
-    counter: u64,
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "admin" => Ok(UserRole::Admin),
+            "moderator" => Ok(UserRole::Moderator),
+            "user" => Ok(UserRole::User),
+            "guest" => Ok(UserRole::Guest),
+            _ => Err(format!("Unknown user type: {}", s)),
+        }
+    }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct PostTag {
-    id: u64,
-    name: String,
-    category: Option<String>,
-    posts: u64,
-    created_at: i64,
+    pub id: u32,
+    pub name: String,
+    pub category: TagCategory,
+    pub posts: u32,
+    pub created_at: NaiveDateTime,
+    pub parent_tag_id: Option<u32>,
+    pub implies: Vec<u32>,
+}
+impl PartialEq for PostTag {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+#[derive(Debug, PartialEq, sqlx::Type, Clone)]
+#[sqlx(type_name = "tag_category")]
+pub enum TagCategory {
+    General,
+    Genre,
+    Copyright,
+    Artist,
+    Meta,
+}
+impl fmt::Display for TagCategory {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TagCategory::General => write!(f, "General"),
+            TagCategory::Genre => write!(f, "Genre"),
+            TagCategory::Copyright => write!(f, "Copyright"),
+            TagCategory::Artist => write!(f, "Artist"),
+            TagCategory::Meta => write!(f, "Meta"),
+        }
+    }
+}
+impl FromStr for TagCategory {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "general" => Ok(TagCategory::General),
+            "genre" => Ok(TagCategory::Genre),
+            "copyright" => Ok(TagCategory::Copyright),
+            "artist" => Ok(TagCategory::Artist),
+            "meta" => Ok(TagCategory::Meta),
+            _ => Err(format!("Unknown tag category: {}", s)),
+        }
+    }
 }

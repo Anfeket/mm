@@ -1,28 +1,33 @@
 use std::env;
 
 use db::Database;
-use types::Post;
+use dotenv::dotenv;
+use types::{PostType, UserRole};
 
 pub mod db;
 pub mod types;
 pub mod web;
 
-fn main() {
-    let path = env::var("DB_PATH").unwrap_or(".\\mm.db".to_string());
-    let conn = rusqlite::Connection::open(path).unwrap();
-    let mut db = db::rusqlite::RusqliteDatabase::new(conn).unwrap();
-    let post = Post::new(
-        "test".to_string(),
-        types::PostType::Other,
-        "cokc.mp4".to_string(),
-    );
-    db.add_post(&post).unwrap();
-    let posts = db.get_posts().unwrap();
-    println!(
-        "There are {} posts: {:?}",
-        posts.len(),
-        posts.iter().map(|id| &id.0).collect::<Vec<&String>>()
-    );
-    let get = db.get_post(&post.id).unwrap();
-    println!("{:?}", get);
+#[async_std::main]
+async fn main() {
+    dotenv().ok();
+    let url = env::var("DATABASE_URL").unwrap();
+    let db = Database::new(&url).await.unwrap();
+    let anfeket = match db.get_user_by_name("Anfeket").await {
+        Ok(user) => user,
+        Err(_) => {
+            db.create_user("Anfeket", "test", "test", Some(UserRole::Admin))
+                .await
+                .unwrap()
+        }
+    };
+    let post = db
+        .create_post(&anfeket.id, "test", &PostType::Image, "test", &0, None)
+        .await
+        .unwrap();
+    let tag = db
+        .create_tag("test", &types::TagCategory::Meta, None)
+        .await
+        .unwrap();
+    db.add_tag_to_post(&post.id, &tag.id).await.unwrap();
 }

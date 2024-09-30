@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO tag_implications (tag_id, implies_tag_id)\n            VALUES ($1, $2);\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1cae3765fb35582d172fe511ce83a846758185d217b75f395159557d9bd49423"
+}
