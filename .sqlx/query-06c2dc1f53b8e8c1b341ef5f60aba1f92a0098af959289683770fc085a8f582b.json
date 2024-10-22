@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM tag_implications\n            WHERE tag_id = $1\n            AND implies_tag_id = $2\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "06c2dc1f53b8e8c1b341ef5f60aba1f92a0098af959289683770fc085a8f582b"
+}

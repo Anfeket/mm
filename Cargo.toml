@@ -4,15 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = { version = "1.40.0", features = ["full"] }
+tokio = { version = "1.41.0", features = ["full"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 dotenv = "0.15.0"
 rand = "0.8.5"
 axum = { version = "0.7.7", features = ["multipart"] }
-sqlx = { git = "https://github.com/joeydewaal/sqlx", rev = "0e2ec965210d02d8239aeed761d556a93ed7b2b5", features = ["postgres", "chrono", "runtime-tokio-native-tls"] }
+sqlx = { version = "0.8.2", features = ["postgres", "chrono", "runtime-tokio-native-tls"] }
 thiserror = "1.0.64"
-serde = { version = "1.0.210", features = ["derive"] }
-serde_json = "1.0.128"
+serde = { version = "1.0.211", features = ["derive"] }
+serde_json = "1.0.132"
 
 [profile.dev.package.sqlx-macros]
 opt-level = 3

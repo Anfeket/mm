@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                t.name,\n                t.category AS \"category: TagCategory\",\n                t.created_at,\n                t.alias_tag_id,\n                COALESCE(array_agg(ti.implies_tag_id), '{}') AS implies_tag_ids,\n                COUNT(pt.post_id) AS post_count\n            FROM tags t\n            LEFT JOIN tag_implications ti ON ti.tag_id = t.id\n            LEFT JOIN post_tags pt ON pt.tag_id = t.id\n            WHERE t.id = $1\n            GROUP BY t.id, t.name, t.category, t.created_at, t.alias_tag_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "category: TagCategory",
+        "type_info": {
+          "Custom": {
+            "name": "tag_category",
+            "kind": {
+              "Enum": [
+                "General",
+                "Genre",
+                "Copyright",
+                "Artist",
+                "Meta"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 3,
+        "name": "alias_tag_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "implies_tag_ids",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 5,
+        "name": "post_count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      null,
+      null
+    ]
+  },
+  "hash": "77e00f3b2201e3308658f665fe27432738b1502b7202fa2a029ac16881700c4b"
+}

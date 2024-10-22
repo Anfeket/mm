@@ -16,6 +16,7 @@ pub struct Post {
     pub post_date: NaiveDateTime,
     pub is_deleted: bool,
     pub file_size: u64,
+    pub mime_type: String,
     pub parent_post: Option<u32>,
     pub children_posts: Vec<u32>,
     pub comments: Vec<u32>

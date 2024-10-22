@@ -1,7 +1,10 @@
 use crate::types::Post;
 use axum::{
     extract::{Multipart, Path},
-    http::StatusCode,
+    http::{
+        header::{CONTENT_DISPOSITION, CONTENT_TYPE},
+        HeaderMap, HeaderValue, StatusCode,
+    },
     response::IntoResponse,
     Extension, Json,
 };
@@ -12,7 +15,7 @@ use crate::{
     types::{PostType, User},
 };
 
-use super::save_media;
+use super::{get_media, save_media};
 
 #[derive(Serialize)]
 pub struct ErrorResponse {
@@ -24,6 +27,17 @@ impl From<&str> for ErrorResponse {
             message: value.to_string(),
         }
     }
+}
+fn internal_server_error() -> (StatusCode, Json<ErrorResponse>) {
+    err_res(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+}
+fn err_res(status_code: StatusCode, msg: &str) -> (StatusCode, Json<ErrorResponse>) {
+    (
+        status_code,
+        Json(ErrorResponse {
+            message: msg.into(),
+        }),
+    )
 }
 
 #[derive(Deserialize)]
@@ -44,22 +58,15 @@ pub async fn login(
         Err(err) => {
             let (status, msg) = match err {
                 crate::types::Error::UserNotFoundName(_) => {
-                    (StatusCode::NOT_FOUND, "User not found")
+                    err_res(StatusCode::NOT_FOUND, "User not found")
                 }
                 crate::types::Error::AuthFailedIncorrectPassword(_) => {
-                    (StatusCode::UNAUTHORIZED, "Incorrect password")
+                    err_res(StatusCode::UNAUTHORIZED, "Incorrect password")
                 }
-                crate::types::Error::DatabaseError(_) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
-                }
+                crate::types::Error::DatabaseError(_) => internal_server_error(),
                 _ => unreachable!(),
             };
-            Err((
-                status,
-                Json(ErrorResponse {
-                    message: msg.into(),
-                }),
-            ))
+            Err((status, msg))
         }
     }
 }
@@ -73,53 +80,51 @@ pub async fn create_post(
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
     let mut data: axum::body::Bytes = axum::body::Bytes::new();
-    let mut content_type = String::new();
     let mut post_type = None;
+    let mut mime_type = String::new();
     let mut author_id = None;
     let mut description = None;
     while let Ok(Some(field)) = multipart.next_field().await {
         if let Some(name) = field.name() {
             match name {
                 "media" => {
-                    content_type = field
+                    let content_type = field
                         .content_type()
-                        .ok_or_else(|| {
-                            (StatusCode::BAD_REQUEST, Json("Missing content type".into()))
-                        })?
+                        .ok_or_else(|| err_res(StatusCode::BAD_REQUEST, "Missing content type"))?
                         .to_string();
                     post_type = match content_type.as_str() {
                         "image/png" | "image/jpeg" => Some(PostType::Image),
                         "image/mp4" => Some(PostType::Video),
                         _ => Some(PostType::Other),
                     };
-                    content_type = content_type.clone();
+                    mime_type = content_type;
                     data = field.bytes().await.map_err(|e| {
-                        (
+                        err_res(
                             StatusCode::INTERNAL_SERVER_ERROR,
-                            Json(format!("Failed to read data: {:?}", e).as_str().into()),
+                            &format!("Failed to read data: {:?}", e),
                         )
                     })?;
                 }
                 "author_id" => {
                     let data = field.text().await.map_err(|e| {
-                        (
+                        err_res(
                             StatusCode::INTERNAL_SERVER_ERROR,
-                            Json(format!("Failed to read data: {:?}", e).as_str().into()),
+                            &format!("Failed to read data: {:?}", e),
                         )
                     })?;
                     let id = data.parse().map_err(|e| {
-                        (
+                        err_res(
                             StatusCode::BAD_REQUEST,
-                            Json(format!("Bad author id format: {}", e).as_str().into()),
+                            &format!("Bad author id format: {}", e),
                         )
                     })?;
                     author_id = Some(id)
                 }
                 "description" => {
                     let data = field.text().await.map_err(|e| {
-                        (
+                        err_res(
                             StatusCode::INTERNAL_SERVER_ERROR,
-                            Json(format!("Failed to read data: {:?}", e).as_str().into()),
+                            &format!("Failed to read data: {:?}", e),
                         )
                     })?;
                     description = Some(data)
@@ -130,11 +135,11 @@ pub async fn create_post(
     }
     let (author_id, description, post_type) = {
         let author_id =
-            author_id.ok_or_else(|| (StatusCode::BAD_REQUEST, Json("Missing author_id".into())))?;
-        let description = description
-            .ok_or_else(|| (StatusCode::BAD_REQUEST, Json("Missing description".into())))?;
+            author_id.ok_or_else(|| err_res(StatusCode::BAD_REQUEST, "Missing author_id"))?;
+        let description =
+            description.ok_or_else(|| err_res(StatusCode::BAD_REQUEST, "Missing description"))?;
         let post_type =
-            post_type.ok_or_else(|| (StatusCode::BAD_REQUEST, Json("Missing post_type".into())))?;
+            post_type.ok_or_else(|| err_res(StatusCode::BAD_REQUEST, "Missing post_type"))?;
         (author_id, description, post_type)
     };
     let post = match db
@@ -143,30 +148,27 @@ pub async fn create_post(
             &description,
             &post_type,
             &(data.len() as u64),
+            &mime_type,
             None,
         )
         .await
     {
         Ok(post) => post,
         Err(err) => {
-            let (status, error) = match err {
-                crate::types::Error::UserNotFoundId(_) => (StatusCode::NOT_FOUND, "User not found"),
-                crate::types::Error::DatabaseError(_) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+            let (status, msg) = match err {
+                crate::types::Error::UserNotFoundId(_) => {
+                    err_res(StatusCode::NOT_FOUND, "User not found")
                 }
+                crate::types::Error::DatabaseError(_) => internal_server_error(),
                 _ => unreachable!(),
             };
-            Err((status, Json(error.into())))?
+            Err((status, msg))?
         }
     };
-    save_media(post.id, &data, &content_type)
+    let extension = mime_type.split_once('/').ok_or_else(internal_server_error)?.1;
+    save_media(post.id, &data, extension)
         .await
-        .map_err(|_| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json("Failed to write media".into()),
-            )
-        })?;
+        .map_err(|_| err_res(StatusCode::INTERNAL_SERVER_ERROR, "Failed to write media"))?;
     Ok(Json(CreatePostResponse { post }))
 }
 
@@ -181,20 +183,43 @@ pub async fn get_post(
     match db.get_post_by_id(&id).await {
         Ok(post) => Ok((StatusCode::OK, Json(GetPostResponse { post }))),
         Err(err) => {
-            println!("{:?}", err);
             let (status, msg) = match err {
-                crate::types::Error::PostNotFound(_) => (StatusCode::NOT_FOUND, "Post not found"),
-                crate::types::Error::DatabaseError(_) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+                crate::types::Error::PostNotFound(_) => {
+                    err_res(StatusCode::NOT_FOUND, "Post not found")
                 }
+                crate::types::Error::DatabaseError(_) => internal_server_error(),
                 _ => unreachable!(),
             };
-            Err((
-                status,
-                Json(ErrorResponse {
-                    message: msg.into(),
-                }),
-            ))
+            Err((status, msg))
         }
     }
+}
+
+pub async fn get_post_media(
+    Extension(db): Extension<Database>,
+    Path(id): Path<u32>,
+) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+    let mime_type = db.get_post_mime_type(&id).await.map_err(|e| match e {
+        crate::types::Error::PostNotFound(_) => err_res(StatusCode::NOT_FOUND, "Post not found"),
+        crate::types::Error::DatabaseError(_) => internal_server_error(),
+        _ => unreachable!(),
+    })?;
+    let extension = mime_type
+        .split_once('/')
+        .ok_or_else(internal_server_error)?
+        .1;
+    let data = get_media(&id, extension)
+        .await
+        .map_err(|_| err_res(StatusCode::INTERNAL_SERVER_ERROR, "Failed to read file"))?
+        .ok_or_else(|| err_res(StatusCode::NOT_FOUND, "File not found"))?;
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        CONTENT_TYPE,
+        HeaderValue::from_str(&mime_type).map_err(|_| internal_server_error())?,
+    );
+    headers.append(
+        CONTENT_DISPOSITION,
+        HeaderValue::from_str("inline").map_err(|_| internal_server_error())?,
+    );
+    Ok((StatusCode::OK, headers, data))
 }

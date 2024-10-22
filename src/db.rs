@@ -164,18 +164,20 @@ impl Database {
         description: &str,
         post_type: &PostType,
         file_size: &u64,
+        mime_type: &str,
         parent_post_id: Option<&u32>,
     ) -> Result<Post, PostErr> {
         let post = sqlx::query!(
             "
-            INSERT INTO posts (author_id, description, post_type, file_size, parent_post_id)
-            VALUES ($1, $2, $3, $4, $5) RETURNING id, post_date
+            INSERT INTO posts (author_id, description, post_type, file_size, parent_post_id, mime_type)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, post_date
             ",
             *author_id as i64,
             description,
             post_type as &PostType,
             *file_size as i64,
-            parent_post_id.map(|id| *id as i32)
+            parent_post_id.map(|id| *id as i32),
+            mime_type
         )
         .fetch_one(&*self.pool)
         .await
@@ -197,6 +199,7 @@ impl Database {
             post_date: post.post_date,
             is_deleted: false,
             file_size: *file_size,
+            mime_type: mime_type.into(),
             parent_post: parent_post_id.copied(),
             children_posts: Vec::new(),
             comments: Vec::new(),
@@ -214,6 +217,7 @@ impl Database {
                 p.parent_post_id, 
                 p.post_date, 
                 p.is_deleted,
+                p.mime_type,
                 COALESCE(SUM(v.vote), 0) AS "rating?",
                 ARRAY_REMOVE(ARRAY_AGG(pt.tag_id), NULL) AS "tag_ids?",
                 ARRAY_REMOVE(ARRAY_AGG(cp.id), NULL) AS "children_post_ids?",
@@ -252,6 +256,7 @@ impl Database {
             post_date: post.post_date,
             is_deleted: post.is_deleted,
             file_size: post.file_size as u64,
+            mime_type: post.mime_type,
             parent_post: post.parent_post_id.map(|id| id as u32),
             children_posts: post
                 .children_post_ids
@@ -292,6 +297,7 @@ impl Database {
                 p.parent_post_id, 
                 p.post_date, 
                 p.is_deleted,
+                p.mime_type,
                 COALESCE(SUM(v.vote), 0) AS rating,
                 array_agg(pt.tag_id) AS tag_ids,
                 array_agg(cp.id) AS children_post_ids,
@@ -303,7 +309,7 @@ impl Database {
             LEFT JOIN comments c ON c.post_id = p.id
             WHERE p.id = ANY($1)
             GROUP BY 
-                p.id, p.author_id, p.description, p.post_type, p.file_size, p.parent_post_id, p.post_date, p.is_deleted;
+                p.id, p.author_id, p.description, p.post_type, p.file_size, p.parent_post_id, p.post_date, p.is_deleted, p.mime_type;
             "#,
             &ids
         )
@@ -327,6 +333,7 @@ impl Database {
                 post_date: post.post_date,
                 is_deleted: post.is_deleted,
                 file_size: post.file_size as u64,
+                mime_type: post.mime_type,
                 parent_post: post.parent_post_id.map(|id| id as u32),
                 children_posts: post
                     .children_post_ids
@@ -484,6 +491,25 @@ impl Database {
             is_deleted: false,
         };
         Ok(comment)
+    }
+    pub async fn get_post_mime_type(&self, post_id: &u32) -> Result<String, PostErr> {
+        let post = sqlx::query!(
+            r#"
+            SELECT mime_type
+            FROM posts
+            WHERE id = $1
+            "#,
+            *post_id as i32
+        )
+        .fetch_one(&*self.pool)
+        .await
+        .map_err(|e| {
+            if let sqlx::Error::RowNotFound = e {
+                return PostErr::PostNotFound(*post_id);
+            }
+            PostErr::DatabaseError(e)
+        })?;
+        Ok(post.mime_type)
     }
 
     // Tag Methods

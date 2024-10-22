@@ -1,0 +1,99 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT \n                p.id, \n                p.author_id, \n                p.description, \n                p.post_type AS \"post_type: PostType\", \n                p.file_size, \n                p.parent_post_id, \n                p.post_date, \n                p.is_deleted,\n                COALESCE(SUM(v.vote), 0) AS \"rating?\",\n                array_agg(pt.tag_id) AS \"tag_ids?\",\n                array_agg(cp.id) AS \"children_post_ids?\",\n                array_agg(c.id) AS \"comments?\"\n            FROM posts p\n            LEFT JOIN post_tags pt ON pt.post_id = p.id\n            LEFT JOIN posts cp ON cp.parent_post_id = p.id\n            LEFT JOIN votes v ON v.post_id = p.id\n            LEFT JOIN comments c ON c.post_id = p.id\n            WHERE p.id = $1\n            GROUP BY \n                p.id, p.author_id, p.description, p.post_type, p.file_size, p.parent_post_id, p.post_date, p.is_deleted;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "author_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "post_type: PostType",
+        "type_info": {
+          "Custom": {
+            "name": "post_type",
+            "kind": {
+              "Enum": [
+                "Image",
+                "Video",
+                "Other"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "file_size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "parent_post_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "post_date",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 7,
+        "name": "is_deleted",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 8,
+        "name": "rating?",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 9,
+        "name": "tag_ids?",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 10,
+        "name": "children_post_ids?",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 11,
+        "name": "comments?",
+        "type_info": "Int4Array"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "3d7f5c61b0e033b82490029b27e979f9dcdb9645f9e4bf77a95f3441cf91ff5e"
+}

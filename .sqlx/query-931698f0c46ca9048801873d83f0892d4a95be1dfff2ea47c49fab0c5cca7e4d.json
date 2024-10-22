@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT \n                p.id, \n                p.author_id, \n                p.description, \n                p.post_type AS \"post_type: PostType\", \n                p.file_path, \n                p.file_size, \n                p.parent_post_id, \n                p.post_date, \n                p.is_deleted,\n                COALESCE(SUM(v.vote), 0) AS rating,\n                array_agg(pt.tag_id) AS tag_ids,\n                array_agg(cp.id) AS children_post_ids\n            FROM posts p\n            LEFT JOIN post_tags pt ON pt.post_id = p.id\n            LEFT JOIN posts cp ON cp.parent_post_id = p.id\n            LEFT JOIN votes v ON v.post_id = p.id\n            WHERE p.id = $1\n            GROUP BY \n                p.id, p.author_id, p.description, p.post_type, p.file_path, p.file_size, p.parent_post_id, p.post_date, p.is_deleted;\n            ",
+  "query": "\n            SELECT \n                p.id, \n                p.author_id, \n                p.description, \n                p.post_type AS \"post_type: PostType\", \n                p.file_size, \n                p.parent_post_id, \n                p.post_date, \n                p.is_deleted,\n                COALESCE(SUM(v.vote), 0) AS rating,\n                array_agg(pt.tag_id) AS tag_ids,\n                array_agg(cp.id) AS children_post_ids,\n                array_agg(c.id) AS comments\n            FROM posts p\n            LEFT JOIN post_tags pt ON pt.post_id = p.id\n            LEFT JOIN posts cp ON cp.parent_post_id = p.id\n            LEFT JOIN votes v ON v.post_id = p.id\n            LEFT JOIN comments c ON c.post_id = p.id\n            WHERE p.id = ANY($1)\n            GROUP BY \n                p.id, p.author_id, p.description, p.post_type, p.file_size, p.parent_post_id, p.post_date, p.is_deleted;\n            ",
   "describe": {
     "columns": [
       {
@@ -36,52 +36,51 @@
       },
       {
         "ordinal": 4,
-        "name": "file_path",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 5,
         "name": "file_size",
         "type_info": "Int8"
       },
       {
-        "ordinal": 6,
+        "ordinal": 5,
         "name": "parent_post_id",
         "type_info": "Int4"
       },
       {
-        "ordinal": 7,
+        "ordinal": 6,
         "name": "post_date",
         "type_info": "Timestamp"
       },
       {
-        "ordinal": 8,
+        "ordinal": 7,
         "name": "is_deleted",
         "type_info": "Bool"
       },
       {
-        "ordinal": 9,
+        "ordinal": 8,
         "name": "rating",
         "type_info": "Int8"
       },
       {
-        "ordinal": 10,
+        "ordinal": 9,
         "name": "tag_ids",
         "type_info": "Int4Array"
       },
       {
-        "ordinal": 11,
+        "ordinal": 10,
         "name": "children_post_ids",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 11,
+        "name": "comments",
         "type_info": "Int4Array"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Int4Array"
       ]
     },
     "nullable": [
-      false,
       false,
       false,
       false,
@@ -92,8 +91,9 @@
       false,
       null,
       null,
+      null,
       null
     ]
   },
-  "hash": "aa4a87c7b8e6074cfa747068db16b9c61ef032a7b86be436309f5e796293ac59"
+  "hash": "931698f0c46ca9048801873d83f0892d4a95be1dfff2ea47c49fab0c5cca7e4d"
 }

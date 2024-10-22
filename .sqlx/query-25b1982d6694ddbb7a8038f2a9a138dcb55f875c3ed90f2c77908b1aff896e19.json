@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            INSERT INTO posts (author_id, description, post_type, file_path, file_size, parent_post_id)\n            VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, post_date\n            ",
+  "query": "\n            INSERT INTO tags (name, category, alias_tag_id)\n            VALUES ($1, $2, $3)\n            RETURNING id, created_at\n            ",
   "describe": {
     "columns": [
       {
@@ -10,28 +10,27 @@
       },
       {
         "ordinal": 1,
-        "name": "post_date",
+        "name": "created_at",
         "type_info": "Timestamp"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4",
         "Text",
         {
           "Custom": {
-            "name": "post_type",
+            "name": "tag_category",
             "kind": {
               "Enum": [
-                "Image",
-                "Video",
-                "Other"
+                "General",
+                "Genre",
+                "Copyright",
+                "Artist",
+                "Meta"
               ]
             }
           }
         },
-        "Text",
-        "Int8",
         "Int4"
       ]
     },
@@ -40,5 +39,5 @@
       false
     ]
   },
-  "hash": "845774bf5c1352ce2af8e0172b5ebe94d097da84ad91cd38def967d3cd65a3f4"
+  "hash": "25b1982d6694ddbb7a8038f2a9a138dcb55f875c3ed90f2c77908b1aff896e19"
 }
