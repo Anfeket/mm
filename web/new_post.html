@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+</head>
+<body>
+    <h1>Create a New Post</h1>
+    <form action="http://127.0.0.1:8000/post" method="POST" enctype="multipart/form-data">
+        <label for="author_id">Author ID:</label><br>
+        <input type="text" id="author_id" name="author_id" required><br><br>
+
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description" required></textarea><br><br>
+
+        <label for="media">Media (Image/Video):</label><br>
+        <input type="file" id="media" name="media" required><br><br>
+
+        <button type="submit">Submit Post</button>
+    </form>
+</body>
+</html>

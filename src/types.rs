@@ -2,25 +2,26 @@ use core::fmt;
 use std::str::FromStr;
 
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Post {
     pub id: u32,
     pub author_id: u32,
     pub description: String,
     pub post_type: PostType,
     pub tag_ids: Vec<u32>,
-    pub rating: i32,
+    pub rating: i64,
     pub post_date: NaiveDateTime,
-    pub file_path: String,
     pub is_deleted: bool,
     pub file_size: u64,
     pub parent_post: Option<u32>,
     pub children_posts: Vec<u32>,
+    pub comments: Vec<u32>
 }
 
-#[derive(Debug, PartialEq, sqlx::Type, Clone)]
+#[derive(Debug, PartialEq, sqlx::Type, Clone, Serialize)]
 #[sqlx(type_name = "post_type")]
 pub enum PostType {
     Image,
@@ -56,8 +57,6 @@ pub enum Error {
     PostNotFound(u32),
     #[error("Duplicate post id: {0}")]
     DuplicatePostId(u32),
-    #[error("Invalid post type: {0}")]
-    InvalidPostType(String),
     #[error("Post deleted: {0}")]
     PostIsDeleted(u32),
     #[error("Tag already added to post: tag {0} in post {1}")]
@@ -96,33 +95,29 @@ pub enum Error {
     InvalidPassword(String),
     #[error("Invalid email: {0}")]
     InvalidEmail(String),
-    #[error("Unauthorized: {0}")]
-    Unauthorized(u32),
 
     // Auth Errors
     #[error("Authentication failed, incorrect password: {0}")]
     AuthFailedIncorrectPassword(String),
     #[error("Authentication failed, incorrect passkey: {0}")]
     AuthFailedIncorrectPasskey(u32),
-    #[error("User not authenticated: {0}")]
-    UserNotAuthenticated(u32),
 
     #[error("Database error: {0}")]
     DatabaseError(#[from] sqlx::Error),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct User {
     pub id: u32,
     pub username: String,
     pub email: String,
-    pub password: String,
+    pub password_hash: String,
     pub user_role: UserRole,
     pub created_at: chrono::NaiveDateTime,
     pub is_deleted: bool,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, Clone, Copy, sqlx::Type, Serialize, Deserialize)]
 #[sqlx(type_name = "user_role")]
 pub enum UserRole {
     Admin,
@@ -161,7 +156,7 @@ pub struct PostTag {
     pub category: TagCategory,
     pub posts: u32,
     pub created_at: NaiveDateTime,
-    pub parent_tag_id: Option<u32>,
+    pub alias_tag_id: Option<u32>,
     pub implies: Vec<u32>,
 }
 impl PartialEq for PostTag {
@@ -202,4 +197,14 @@ impl FromStr for TagCategory {
             _ => Err(format!("Unknown tag category: {}", s)),
         }
     }
+}
+
+#[derive(Debug)]
+pub struct Comment {
+    pub id: u32,
+    pub user_id: u32,
+    pub post_id: u32,
+    pub content: String,
+    pub date: NaiveDateTime,
+    pub is_deleted: bool
 }
