@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../models/Post.php';
+//require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../views/layout/header.php';
 require_once __DIR__ . '/../views/layout/sidebar.php';
 
