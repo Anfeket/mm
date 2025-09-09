@@ -1,0 +1,241 @@
+/* =========================
+   Variables
+========================= */
+:root {
+	/* slate base */
+	--color-bg: #f1f5f9;
+	--color-bg-box: #ffffff;
+	--color-border: #cbd5e1;
+	--color-text: #1e293b;
+	--color-text-light: #475569;
+
+	/* accent */
+	--color-accent: #2563eb;
+	--color-accent-red: #dc2626;
+
+	/* spacing */
+	--space-s: 0.5rem;
+	--space-m: 1rem;
+	--space-l: 2rem;
+
+	/* sizes */
+	--radius: 6px;
+
+	/* font */
+	--font-main: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-bg: #0f172a;
+		--color-bg-box: #1e293b;
+		--color-border: #334155;
+		--color-text: #f1f5f9;
+		--color-text-light: #94a3b8;
+		--color-accent: #3b82f6;
+		--color-profile-bg: #1e293b;
+	}
+}
+
+/* =========================
+   Base
+========================= */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: var(--font-main);
+	font-size: 16px;
+	line-height: 1.5;
+	background: var(--color-bg);
+	color: var(--color-text);
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+/* =========================
+   Header
+========================= */
+#header {
+	background: var(--color-bg-box);
+	border-bottom: 1px solid var(--color-border);
+	padding: var(--space-m) var(--space-l);
+}
+
+#top {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+#site-name {
+	font-size: 1.5rem;
+	color: var(--color-accent);
+	margin-bottom: var(--space-s);
+}
+
+#header nav {
+	display: flex;
+	gap: var(--space-s);
+}
+
+#header nav a {
+	text-decoration: none;
+	color: var(--color-text-light);
+	font-weight: 500;
+}
+
+#header nav a:hover {
+	color: var(--color-accent);
+}
+
+#profile {
+	padding: 0.4rem 0.8rem;
+	border-radius: var(--radius);
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	font-weight: bold;
+	color: var(--color-text);
+}
+
+/* =========================
+   Layout
+========================= */
+#main {
+	display: flex;
+	flex: 1;
+	margin: 0 auto;
+	width: 100%;
+}
+
+@media screen and (max-width: 700px) {
+	#main {
+		flex-direction: column;
+	}
+}
+
+/* =========================
+   Sidebar
+========================= */
+#sidebar {
+	width: 240px;
+	background: var(--color-bg-box);
+	border-right: 1px solid var(--color-border);
+	padding: var(--space-m);
+}
+
+@media screen and (max-width: 700px) {
+	#sidebar {
+		order: 2;
+		flex: none;
+		width: 100%;
+	}
+}
+
+#sidebar h3 {
+	margin: var(--space-m) 0 var(--space-s);
+	font-size: 0.95rem;
+	color: var(--color-text-light);
+}
+
+#sidebar ul {
+	list-style: none;
+	margin-bottom: var(--space-m);
+}
+
+#sidebar li {
+	margin-bottom: 0.25rem;
+}
+
+#sidebar a {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+#sidebar a:hover {
+	color: var(--color-accent);
+}
+
+/* Post Information */
+#post-information {
+	margin-top: var(--space-l);
+	padding: var(--space-m);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-bg);
+}
+
+#post-information h3 {
+	margin-bottom: var(--space-s);
+	color: var(--color-text);
+}
+
+#post-information dl {
+	display: grid;
+	grid-template-columns: 90px 1fr;
+	gap: 0.3rem 0.5rem;
+	font-size: 0.9rem;
+}
+
+#post-information dt {
+	font-weight: bold;
+	color: var(--color-text-light);
+}
+
+#post-information dd {
+	margin: 0;
+}
+
+/* =========================
+   Main Content
+========================= */
+#mainContent {
+	flex: 1;
+	padding: var(--space-l);
+}
+
+@media screen and (max-width: 700px) {
+	#mainContent {
+		order: 1;
+	}
+}
+
+#post-image {
+	text-align: center;
+	margin-bottom: var(--space-l);
+}
+
+#post-image img {
+	max-width: 100%;
+	height: auto;
+	display: inline-block;
+	border-radius: var(--radius);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Scaled down notice */
+#post-image .scaled-notice {
+	margin-top: var(--space-s);
+	font-size: 0.85rem;
+	color: var(--color-text-light);
+}
+
+#post-description,
+#post-comments {
+	margin-top: var(--space-l);
+	padding: var(--space-m);
+	background: var(--color-bg-box);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+}
+
+#post-description h3,
+#post-comments h3 {
+	margin-bottom: var(--space-s);
+	color: var(--color-text);
+}
