@@ -1,29 +1,37 @@
 <?php
-// === bootstrap ===
-// require_once __DIR__ . '/../config/config.php'; // sets up $pdo
+require_once '../config/config.php';
 
-// get the requested path (without query string)
-$path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+// Parse request
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$segments = explode('/', trim($path, '/'));
 
-// simple routing
-if ($path === '' || $path === 'posts') {
-    // list of posts
-    require_once __DIR__ . '/../controllers/PostsController.php';
-    PostsController::index();
-}
-elseif (preg_match('#^post/(\d+)$#', $path, $m)) {
-    // show single post
-    require_once __DIR__ . '/../controllers/PostsController.php';
-    PostsController::show((int)$m[1]);
-}
-elseif ($path === 'tags') {
-    require_once __DIR__ . '/../controllers/TagsController.php';
-    TagsController::index();
-}
-else {
-    http_response_code(404);
-    $title = "404 – mm";
-    include __DIR__ . '/../views/layout/head.php';
-    echo "<main><h1>404 Not Found</h1></main>";
-    include __DIR__ . '/../views/layout/footer.php';
+// Simple routing
+switch ($segments[0]) {
+    case '':
+        require_once '../controllers/PostController.php';
+        $controller = new PostController();
+        $controller->index();
+        break;
+    case 'post':
+        require_once '../controllers/PostController.php';
+        $controller = new PostController();
+        $controller->show($segments[1]);
+        break;
+    case 'upload':
+        require_once '../controllers/UploadController.php';
+        $controller = new UploadController();
+        $controller->form();
+        break;
+    case 'api':
+        if ($segments[1] === 'upload') {
+            require_once '../controllers/UploadController.php';
+            $controller = new UploadController();
+            $controller->process();
+        }
+        break;
+	default:
+        require_once '../controllers/ErrorController.php';
+		$controller = new ErrorController();
+		$controller->notFound();
+		break;
 }

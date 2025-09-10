@@ -16,29 +16,29 @@
 				<h3>Information</h3>
 				<dl>
 					<dt>ID:</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['id'] ?></dd>
 					<dt>Uploader:</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['author_id'] ?></dd>
 					<dt>Size:</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['file_size_human'] ?></dd>
 					<dt>Posted:</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['created_at'] ?></dd>
 					<dt>Source:</dt>
 					<dd>xxxxxx</dd>
 					<dt>Score:</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['score'] ?></dd>
 					<dt>Favorites</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['favorites_count'] ?></dd>
 				</dl>
 			</section>
 		</aside>
 		<main id="mainContent">
 			<article>
 				<div id="post-image">
-					<img src="/uploads/gls.jpg" alt="Post Image">
+				<img src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
 				</div>
 				<div id="post-description">
-					<h3>Decription</h3>
+					<h3>Description</h3>
 				</div>
 				<div id="post-comments">
 					<h3>Comments</h3>
