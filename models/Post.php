@@ -3,7 +3,7 @@ class Post {
     public static function find($id) {
         global $pdo;
         $stmt = $pdo->prepare("
-            SELECT id, author_id, file_size, width, height, favorites_count, score,
+            SELECT id, author_id, post_type, file_size, width, height, favorites_count, score,
                    description, file_hash, file_ext, created_at
             FROM posts
             WHERE id = ?

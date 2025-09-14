@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/Tag.php';
+require_once __DIR__ . '/../models/User.php';
 
 class PostController {
     public static function recent() {
@@ -26,6 +27,7 @@ class PostController {
 		$tags = Tag::forPost($id);
 
 		$title = "Post #" . $post['id'] . " - mm";
+		$uploader = User::findById($post['author_id']);
 
 		include __DIR__ . '/../views/layout/head.php';
 		include __DIR__ . '/../views/layout/header.php';

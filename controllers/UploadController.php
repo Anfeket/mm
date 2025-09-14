@@ -59,7 +59,7 @@ class UploadController
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
-		$authorId = 1; // TODO: replace with logged-in user id
+		$authorId = current_user()['id'];
 		$postType = str_starts_with($mime, 'video/') ? 'video' : 'image';
 
 		$stmt->execute([

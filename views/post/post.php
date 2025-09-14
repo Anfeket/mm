@@ -35,7 +35,7 @@
 					<dt>ID:</dt>
 					<dd><?= $post['id'] ?></dd>
 					<dt>Uploader:</dt>
-					<dd><?= $post['author_id'] ?></dd>
+					<dd><?= $uploader['username'] ?></dd>
 					<dt>Size:</dt>
 					<dd><?= $post['file_size_human'] ?></dd>
 					<dt>Posted:</dt>
@@ -52,7 +52,11 @@
 		<main id="mainContent">
 			<article>
 				<div id="post-image">
-				<img src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
+					<?php if ($post['post_type'] === 'image'): ?>
+						<img src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
+					<?php elseif ($post['post_type'] === 'video'): ?>
+						<video src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
+					<?php endif ?>
 				</div>
 				<div id="post-description">
 					<h3>Description</h3>

@@ -10,7 +10,7 @@ $user = current_user();
 			<?php if ($user): ?>
 				<a href="/profile" class="profile-link">
 					<?php if ($user['avatar']): ?>
-						<img src="<?= htmlspecialchars($user['avatar']) ?>"
+						<img src="/<?= htmlspecialchars($user['avatar']) ?>"
 							alt="Avatar" width="24" height="24"
 							class="avatar">
 					<?php endif; ?>
