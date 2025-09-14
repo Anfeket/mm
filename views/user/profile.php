@@ -30,4 +30,34 @@
 
 		<button type="submit">Save Changes</button>
 	</form>
+
+	<hr style="margin: 2em 0;">
+
+	<section id="invites">
+		<h2>Invites</h2>
+
+		<form action="/profile/invite" method="post" style="margin-bottom: 1em;">
+			<button type="submit">Generate New Invite</button>
+		</form>
+
+		<?php if (!empty($invites)): ?>
+			<ul>
+				<?php foreach ($invites as $invite): ?>
+					<li>
+						<code><?= htmlspecialchars($invite['code']) ?></code>
+						<?php if ($invite['used_by']): ?>
+							– used by <?= htmlspecialchars($invite['used_by_username']) ?> at <?= htmlspecialchars($invite['used_at']) ?>
+						<?php else: ?>
+							– unused
+							<form action="/profile/invite/delete/<?= $invite['code'] ?>" method="post" style="display:inline;">
+								<button type="submit" class="invite-delete" onclick="return confirm('Delete this invite?')">✖</button>
+							</form>
+						<?php endif; ?>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		<?php else: ?>
+			<p>No invites generated yet.</p>
+		<?php endif; ?>
+	</section>
 </main>

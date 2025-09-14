@@ -13,11 +13,13 @@ switch ($segments[0]) {
 		$controller = new PostController();
 		$controller->recent();
 		break;
+
 	case 'post':
 		require_once '../controllers/PostController.php';
 		$controller = new PostController();
 		$controller->show($segments[1]);
 		break;
+
 	case 'upload':
 		require_once __DIR__ . '/../controllers/UploadController.php';
 		$controller = new UploadController();
@@ -27,15 +29,32 @@ switch ($segments[0]) {
 			$controller->form();
 		}
 		break;
+
 	case 'profile':
 		require_once '../controllers/ProfileController.php';
 		$controller = new ProfileController();
+
+		// /profile/invite
+		if (isset($segments[1]) && $segments[1] === 'invite') {
+			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				if (isset($segments[2]) && $segments[2] === 'delete' && isset($segments[3])) {
+					$controller::deleteInvite((int)$segments[3]);
+				} else {
+					$controller::createInvite();
+				}
+			} else {
+				http_response_code(405);
+			}
+			break;
+		}
+		// /profile
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$controller::update();
 		} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
 			$controller::show();
 		}
 		break;
+
 	case 'login':
 		require_once '../controllers/AuthController.php';
 		$controller = new AuthController();
@@ -45,6 +64,7 @@ switch ($segments[0]) {
 			$controller::showLogin();
 		}
 		break;
+
 	case 'register':
 		require_once '../controllers/AuthController.php';
 		$controller = new AuthController();
@@ -54,11 +74,13 @@ switch ($segments[0]) {
 			$controller::showRegister();
 		}
 		break;
+
 	case 'logout':
 		require_once '../controllers/AuthController.php';
 		$controller = new AuthController();
 		$controller::logout();
 		break;
+
 	default:
 		require_once '../controllers/ErrorController.php';
 		$controller = new ErrorController();

@@ -56,4 +56,24 @@ class User
 		$stmt = $pdo->prepare($sql);
 		return $stmt->execute($params);
 	}
+
+	public static function createInvite($userId)
+	{
+		global $pdo;
+		require_login(); // make sure caller is logged in
+
+		// Generate a random 16-char code
+		$inviteCode = bin2hex(random_bytes(16));
+
+		$stmt = $pdo->prepare("
+        INSERT INTO invites (code, created_by) 
+        VALUES (:code, :created_by)
+    ");
+		$stmt->execute([
+			':code' => $inviteCode,
+			':created_by' => $userId
+		]);
+
+		return $inviteCode; // return the code so you can show/copy it
+	}
 }
