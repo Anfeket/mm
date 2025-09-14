@@ -139,6 +139,6 @@ class ProfileController
         imagedestroy($source);
         imagedestroy($thumb);
         
-        return "/uploads/avatars/" . $filename;
+        return 'uploads/avatars/' . $filename;
     }
 }
