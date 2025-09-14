@@ -5,7 +5,7 @@ class Invite
 	{
 		global $pdo;
 
-		$code = bin2hex(random_bytes(8)); // 16-char random hex
+		$code = bin2hex(random_bytes(16)); // 16-char random hex
 
 		$stmt = $pdo->prepare("
             INSERT INTO invites (code, created_by)
