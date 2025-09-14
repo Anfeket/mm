@@ -1,32 +1,36 @@
-
 <?php
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/Invite.php';
 
-class AuthController {
-    public static function showLogin() {
-        $title = "Login - mm";
-        include __DIR__ . '/../views/layout/head.php';
-        include __DIR__ . '/../views/layout/header.php';
-        include __DIR__ . '/../views/auth/login.php';
-        include __DIR__ . '/../views/layout/footer.php';
-    }
+class AuthController
+{
+	public static function showLogin()
+	{
+		$title = "Login - mm";
+		include __DIR__ . '/../views/layout/head.php';
+		include __DIR__ . '/../views/layout/header.php';
+		include __DIR__ . '/../views/auth/login.php';
+		include __DIR__ . '/../views/layout/footer.php';
+	}
 
-    public static function login() {
-        session_start();
-        $user = User::findByUsername($_POST['username']);
+	public static function login()
+	{
+		session_start();
+		$user = User::findByUsername($_POST['username']);
 
-        if ($user && password_verify($_POST['password'], $user['password_hash'])) {
-            session_regenerate_id(true); // prevent fixation
-            $_SESSION['user_id'] = $user['id'];
-            header("Location: /");
-            exit;
-        } else {
-            $error = "Invalid credentials";
-            self::showLogin();
-        }
-    }
+		if ($user && password_verify($_POST['password'], $user['password_hash'])) {
+			session_regenerate_id(true); // prevent fixation
+			$_SESSION['user_id'] = $user['id'];
+			header("Location: /");
+			exit;
+		} else {
+			$error = "Invalid credentials";
+			self::showLogin();
+		}
+	}
 
-	public static function showRegister() {
+	public static function showRegister()
+	{
 		$invite = $_GET['invite'] ?? '';
 		$title = "Register - mm";
 
@@ -36,7 +40,8 @@ class AuthController {
 		include __DIR__ . '/../views/layout/footer.php';
 	}
 
-	public static function register() {
+	public static function register()
+	{
 		global $pdo;
 
 		$invite = $_POST['invite'] ?? '';
@@ -58,17 +63,17 @@ class AuthController {
 		$userId = User::create($_POST['username'], $_POST['email'], $hash);
 
 		// Mark invite as used
-		$stmt = $pdo->prepare("UPDATE invites SET used_by = ?, used_at = NOW() WHERE code = ?");
-		$stmt->execute([$userId, $invite]);
+		Invite::useCode($invite, $userId);
 
 		header("Location: /login");
 		exit;
 	}
 
-    public static function logout() {
-        session_start();
-        session_destroy();
-        header("Location: /");
-        exit;
-    }
+	public static function logout()
+	{
+		session_start();
+		session_destroy();
+		header("Location: /");
+		exit;
+	}
 }
