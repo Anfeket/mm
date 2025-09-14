@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '../models/Invite.php';
+
 class User
 {
 	public static function findByUsername($username)
