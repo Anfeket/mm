@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/../models/Post.php';
+require_once __DIR__ . '/../models/Tag.php';
 
 class PostController {
-    public static function index() {
+    public static function recent() {
         $posts = Post::recent(20);
         $title = "Posts - mm";
 
@@ -12,18 +13,23 @@ class PostController {
         include __DIR__ . '/../views/layout/footer.php';
     }
 
-    public static function show($id) {
-        $post = Post::find($id);
-        if (!$post) {
-            http_response_code(404);
-            echo "Post not found";
-            return;
-        }
-        $title = "Post #" . $post['id'] . " - mm";
+	public static function show($id) {
+		$post = Post::find($id);
+		if (!$post) {
+			require_once '../controllers/ErrorController.php';
+			$controller = new ErrorController();
+			$controller->notFound();
+			return;
+		}
 
-        include __DIR__ . '/../views/layout/head.php';
-        include __DIR__ . '/../views/layout/header.php';
-        include __DIR__ . '/../views/post/post.php';
-        include __DIR__ . '/../views/layout/footer.php';
-    }
+		// fetch tags
+		$tags = Tag::forPost($id);
+
+		$title = "Post #" . $post['id'] . " - mm";
+
+		include __DIR__ . '/../views/layout/head.php';
+		include __DIR__ . '/../views/layout/header.php';
+		include __DIR__ . '/../views/post/post.php';
+		include __DIR__ . '/../views/layout/footer.php';
+	}
 }

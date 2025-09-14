@@ -7,6 +7,11 @@
                     <img src="<?= htmlspecialchars($post['file_path']) ?>"
                          alt="Post #<?= $post['id'] ?>">
                 </a>
+				<div class="vote-box">
+					<a href="/post/<?= $post['id'] ?>/vote/up" class="vote vote-up">▲</a>
+					<span class="score"><?= (int)$post['score'] ?></span>
+					<a href="/post/<?= $post['id'] ?>/vote/down" class="vote vote-down">▼</a>
+				</div>
             </div>
         <?php endforeach; ?>
     </div>

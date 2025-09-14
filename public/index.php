@@ -7,30 +7,60 @@ $segments = explode('/', trim($path, '/'));
 
 // Simple routing
 switch ($segments[0]) {
-    case '':
-        require_once '../controllers/PostController.php';
-        $controller = new PostController();
-        $controller->index();
-        break;
-    case 'post':
-        require_once '../controllers/PostController.php';
-        $controller = new PostController();
-        $controller->show($segments[1]);
-        break;
-    case 'upload':
-        require_once '../controllers/UploadController.php';
-        $controller = new UploadController();
-        $controller->form();
-        break;
-    case 'api':
-        if ($segments[1] === 'upload') {
-            require_once '../controllers/UploadController.php';
-            $controller = new UploadController();
-            $controller->process();
-        }
-        break;
+	case '':
+	case 'posts':
+		require_once '../controllers/PostController.php';
+		$controller = new PostController();
+		$controller->recent();
+		break;
+	case 'post':
+		require_once '../controllers/PostController.php';
+		$controller = new PostController();
+		$controller->show($segments[1]);
+		break;
+	case 'upload':
+		require_once __DIR__ . '/../controllers/UploadController.php';
+		$controller = new UploadController();
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$controller->store();
+		} else {
+			$controller->form();
+		}
+		break;
+	case 'profile':
+		require_once '../controllers/ProfileController.php';
+		$controller = new ProfileController();
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$controller::update();
+		} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+			$controller::show();
+		}
+		break;
+	case 'login':
+		require_once '../controllers/AuthController.php';
+		$controller = new AuthController();
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$controller::login();
+		} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+			$controller::showLogin();
+		}
+		break;
+	case 'register':
+		require_once '../controllers/AuthController.php';
+		$controller = new AuthController();
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$controller::register();
+		} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+			$controller::showRegister();
+		}
+		break;
+	case 'logout':
+		require_once '../controllers/AuthController.php';
+		$controller = new AuthController();
+		$controller::logout();
+		break;
 	default:
-        require_once '../controllers/ErrorController.php';
+		require_once '../controllers/ErrorController.php';
 		$controller = new ErrorController();
 		$controller->notFound();
 		break;

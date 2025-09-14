@@ -2,15 +2,32 @@
 		<aside id="sidebar">
 			<section id="tag-list">
 				<h3>Artist</h3>
-				<ul id="artist-tag-list"></ul>
+				<ul id="artist-tag-list">
+					<?php foreach ($tags['artist'] as $tag): ?>
+						<li><a href="/tag/<?= urlencode($tag) ?>" class="tag tag-artist"><?= htmlspecialchars($tag) ?></a></li>
+					<?php endforeach; ?>
+				</ul>
+
 				<h3>Copyright</h3>
-				<ul id="copyright-tag-list"></ul>
-				<h3>Genre</h3>
-				<ul id="genre-tag-list"></ul>
+				<ul id="copyright-tag-list">
+					<?php foreach ($tags['copyright'] as $tag): ?>
+						<li><a href="/tag/<?= urlencode($tag) ?>" class="tag tag-copyright"><?= htmlspecialchars($tag) ?></a></li>
+					<?php endforeach; ?>
+				</ul>
+
 				<h3>General</h3>
-				<ul id="general-tag-list"></ul>
+				<ul id="general-tag-list">
+					<?php foreach ($tags['general'] as $tag): ?>
+						<li><a href="/tag/<?= urlencode($tag) ?>" class="tag tag-general"><?= htmlspecialchars($tag) ?></a></li>
+					<?php endforeach; ?>
+				</ul>
+
 				<h3>Meta</h3>
-				<ul id="meta-tag-list"></ul>
+				<ul id="meta-tag-list">
+					<?php foreach ($tags['meta'] as $tag): ?>
+						<li><a href="/tag/<?= urlencode($tag) ?>" class="tag tag-meta"><?= htmlspecialchars($tag) ?></a></li>
+					<?php endforeach; ?>
+				</ul>
 			</section>
 			<section id="post-information">
 				<h3>Information</h3>

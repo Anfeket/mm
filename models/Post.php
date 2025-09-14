@@ -22,7 +22,7 @@ class Post {
     public static function recent($limit = 20) {
         global $pdo;
         $stmt = $pdo->prepare("
-            SELECT id, width, height, favorites_count, votes_count,
+            SELECT id, width, height, score,
                    file_hash, file_ext
             FROM posts
             ORDER BY created_at DESC

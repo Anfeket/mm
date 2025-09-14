@@ -46,7 +46,7 @@ CREATE TABLE tags (
 	name VARCHAR(100) NOT NULL UNIQUE,
 	alias_tag_id BIGINT UNSIGNED NULL,
 	post_count INT UNSIGNED DEFAULT 0,
-	category ENUM('artist','copyright','genre','general','meta') NOT NULL,
+	category ENUM('artist','copyright','general','meta') NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT fk_tag_alias FOREIGN KEY (alias_tag_id) REFERENCES tags(id) ON DELETE SET NULL,
 	INDEX idx_tags_name (name)
@@ -123,4 +123,15 @@ CREATE TABLE notifications (
 	is_read BOOLEAN NOT NULL,
 	CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 	INDEX idx_notifications_user_id (user_id)
+);
+
+-- Invites
+CREATE TABLE invites (
+    code CHAR(32) PRIMARY KEY,
+    created_by BIGINT UNSIGNED,
+    used_by BIGINT UNSIGNED DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    used_at TIMESTAMP NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE SET NULL
 );
