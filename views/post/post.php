@@ -35,13 +35,13 @@
 					<dt>ID:</dt>
 					<dd><?= $post['id'] ?></dd>
 					<dt>Uploader:</dt>
-					<dd><?= $uploader['username'] ?></dd>
+					<dd><?= htmlspecialchars($uploader['username']) ?></dd>
 					<dt>Size:</dt>
 					<dd><?= $post['file_size_human'] ?></dd>
 					<dt>Posted:</dt>
 					<dd><?= $post['created_at'] ?></dd>
 					<dt>Source:</dt>
-					<dd>xxxxxx</dd>
+					<dd><?= $post['source'] ? htmlspecialchars($post['source']) : 'N/A' ?></dd>
 					<dt>Score:</dt>
 					<dd><?= $post['score'] ?></dd>
 					<dt>Favorites</dt>

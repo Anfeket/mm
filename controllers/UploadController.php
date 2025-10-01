@@ -78,6 +78,45 @@ class UploadController
 
 		$postId = $pdo->lastInsertId();
 
+		if (!empty($_POST['tags'])) {
+			$tagsInput = trim($_POST['tags']);
+			$tags = preg_split('/\s+/', $tagsInput);
+
+			foreach ($tags as $tagName) {
+				$tagName = strtolower(trim($tagName));
+				if ($tagName === '') continue;
+
+				// 1. Check if tag exists (or alias)
+				$stmt = $pdo->prepare("SELECT id, alias_tag_id FROM tags WHERE name = ?");
+				$stmt->execute([$tagName]);
+				$tag = $stmt->fetch(PDO::FETCH_ASSOC);
+
+				if ($tag) {
+					// Resolve alias if present
+					$tagId = $tag['alias_tag_id'] ?: $tag['id'];
+				} else {
+					// 2. Create tag if it doesn’t exist
+					$stmt = $pdo->prepare("
+                INSERT INTO tags (name, category, post_count) 
+                VALUES (?, 'general', 0)
+            ");
+					$stmt->execute([$tagName]);
+					$tagId = $pdo->lastInsertId();
+				}
+
+				// 3. Insert into post_tags
+				$stmt = $pdo->prepare("
+            INSERT IGNORE INTO post_tags (post_id, tag_id, added_by)
+            VALUES (?, ?, ?)
+        ");
+				$stmt->execute([$postId, $tagId, $authorId]);
+
+				// 4. Increment tag usage count
+				$stmt = $pdo->prepare("UPDATE tags SET post_count = post_count + 1 WHERE id = ?");
+				$stmt->execute([$tagId]);
+			}
+		}
+
 		header("Location: /post/$postId");
 		exit;
 	}

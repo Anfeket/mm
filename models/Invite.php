@@ -19,17 +19,17 @@ class Invite
 		return $code;
 	}
 
-	public static function delete($inviteId, $userId)
+	public static function delete($inviteCode, $userId)
 	{
 		global $pdo;
 
 		// Only delete if the current user owns it and it's unused
 		$stmt = $pdo->prepare("
-        DELETE FROM invites 
-        WHERE id = :id AND created_by = :uid AND used_by IS NULL
-    ");
+			DELETE FROM invites 
+			WHERE code = :code AND created_by = :uid AND used_by IS NULL
+		");
 		$stmt->execute([
-			':id' => $inviteId,
+			':code' => $inviteCode,
 			':uid' => $userId
 		]);
 	}
