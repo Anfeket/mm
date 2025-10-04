@@ -55,7 +55,7 @@
 					<?php if ($post['post_type'] === 'image'): ?>
 						<img src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
 					<?php elseif ($post['post_type'] === 'video'): ?>
-						<video src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
+						<video src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>" controls>
 					<?php endif ?>
 				</div>
 				<div id="post-description">
