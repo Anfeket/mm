@@ -7,6 +7,14 @@
 		</label>
 		<div id="preview"></div>
 		<label>
+			Artist:
+			<input type="text" name="artist">
+		</label>
+		<label>
+			Copyrights:
+			<input type="text" name="copyrights">
+		</label>
+		<label>
 			Tags (separate with spaces):
 			<input type="text" name="tags">
 		</label>

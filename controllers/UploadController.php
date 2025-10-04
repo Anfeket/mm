@@ -78,9 +78,18 @@ class UploadController
 
 		$postId = $pdo->lastInsertId();
 
-		if (!empty($_POST['tags'])) {
-			$tagsInput = trim($_POST['tags']);
-			$tags = preg_split('/\s+/', $tagsInput);
+		// --- TAG HANDLING ---
+		$tagCategories = [
+			'artist' => $_POST['artist'] ?? '',
+			'copyright' => $_POST['copyrights'] ?? '',
+			'general' => $_POST['tags'] ?? ''
+		];
+
+		foreach ($tagCategories as $category => $input) {
+			$input = trim($input);
+			if ($input === '') continue;
+
+			$tags = preg_split('/\s+/', $input);
 
 			foreach ($tags as $tagName) {
 				$tagName = strtolower(trim($tagName));
@@ -95,20 +104,20 @@ class UploadController
 					// Resolve alias if present
 					$tagId = $tag['alias_tag_id'] ?: $tag['id'];
 				} else {
-					// 2. Create tag if it doesn’t exist
+					// 2. Create tag if it doesn’t exist, using its category
 					$stmt = $pdo->prepare("
-                INSERT INTO tags (name, category, post_count) 
-                VALUES (?, 'general', 0)
-            ");
-					$stmt->execute([$tagName]);
+						INSERT INTO tags (name, category, post_count)
+						VALUES (?, ?, 0)
+					");
+					$stmt->execute([$tagName, $category]);
 					$tagId = $pdo->lastInsertId();
 				}
 
 				// 3. Insert into post_tags
 				$stmt = $pdo->prepare("
-            INSERT IGNORE INTO post_tags (post_id, tag_id, added_by)
-            VALUES (?, ?, ?)
-        ");
+					INSERT IGNORE INTO post_tags (post_id, tag_id, added_by)
+					VALUES (?, ?, ?)
+				");
 				$stmt->execute([$postId, $tagId, $authorId]);
 
 				// 4. Increment tag usage count

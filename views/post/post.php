@@ -60,6 +60,7 @@
 				</div>
 				<div id="post-description">
 					<h3>Description</h3>
+					<?= $post['description'] ?>
 				</div>
 				<div id="post-comments">
 					<h3>Comments</h3>
