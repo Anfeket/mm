@@ -19,114 +19,237 @@ class UploadController
 		require_login();
 		global $pdo;
 
-		if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+		$file = $_FILES['file'] ?? null;
+		if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
 			die("Upload failed");
 		}
 
-		$file = $_FILES['file'];
-		$hash = md5_file($file['tmp_name']);
-		$ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-		$mime = mime_content_type($file['tmp_name']);
-		$size = filesize($file['tmp_name']);
+		$authorId = current_user()['id'];
+
+		// 1) analyze + move file
+		$meta = self::analyzeFile($file['tmp_name']);
+		$paths = self::storeFile($file, $meta['hash']); // returns ['final','ext']
+
+		// 2) DB: save post + tags in a transaction
+		try {
+			$pdo->beginTransaction();
+
+			$postId = self::savePost($pdo, $authorId, $file, $meta, $paths);
+
+			// handle tags (reads $_POST['artist'], 'copyrights', 'tags')
+			self::handleTags($pdo, $postId, $authorId);
+
+			$pdo->commit();
+		} catch (Throwable $e) {
+			if ($pdo->inTransaction()) $pdo->rollBack();
+			// optional: remove file if DB failed
+			if (file_exists($paths['final'])) @unlink($paths['final']);
+			throw $e; // or die("DB error");
+		}
+
+		// 3) generate thumbnail after DB commit (so upload isn't held by DB)
+		self::generateThumbnail($paths['final'], $meta['mime'], $meta['hash']);
+
+		header("Location: /post/$postId");
+		exit;
+	}
+
+	/* -------------------- helpers -------------------- */
+
+	private static function analyzeFile($tmpPath)
+	{
+		$hash = md5_file($tmpPath);
+		$mime = mime_content_type($tmpPath);
+		$size = filesize($tmpPath);
 
 		[$width, $height] = [null, null];
 		$duration = null;
 
-		// Try to detect image size
 		if (str_starts_with($mime, 'image/')) {
-			[$width, $height] = getimagesize($file['tmp_name']);
+			[$width, $height] = getimagesize($tmpPath);
+		} elseif (str_starts_with($mime, 'video/')) {
+			// optional: use ffprobe to get duration
+			// $out = shell_exec("ffprobe -v error -show_entries format=duration -of csv=p=0 " . escapeshellarg($tmpPath));
+			// $duration = $out ? (float) $out : null;
 		}
 
-		// TODO: for videos, use ffmpeg to get $duration
+		return compact('hash', 'mime', 'size', 'width', 'height', 'duration');
+	}
 
-		// build final storage path
+	private static function storeFile($file, $hash)
+	{
+		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 		$dir1 = substr($hash, 0, 2);
 		$dir2 = substr($hash, 2, 2);
 		$uploadDir = __DIR__ . "/../public/uploads/$dir1/$dir2/";
-		if (!is_dir($uploadDir)) {
-			mkdir($uploadDir, 0775, true);
-		}
-		$finalPath = $uploadDir . $hash . "." . $ext;
+		if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
 
+		$finalPath = $uploadDir . $hash . "." . $ext;
 		if (!move_uploaded_file($file['tmp_name'], $finalPath)) {
 			die("Failed to move uploaded file");
 		}
 
-		// save to DB
-		$stmt = $pdo->prepare("
-            INSERT INTO posts (author_id, post_type, mime_type, file_hash, file_ext,
-                               original_file_name, file_size, width, height, duration, description)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
+		return ['final' => $finalPath, 'ext' => $ext];
+	}
 
-		$authorId = current_user()['id'];
-		$postType = str_starts_with($mime, 'video/') ? 'video' : 'image';
+	private static function savePost($pdo, $authorId, $file, $meta, $paths)
+	{
+		$postType = str_starts_with($meta['mime'], 'video/') ? 'video' : 'image';
+
+		$stmt = $pdo->prepare("
+        INSERT INTO posts (author_id, post_type, mime_type, file_hash, file_ext,
+                           original_file_name, file_size, width, height, duration, description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
 
 		$stmt->execute([
 			$authorId,
 			$postType,
-			$mime,
-			$hash,
-			$ext,
+			$meta['mime'],
+			$meta['hash'],
+			$paths['ext'],
 			$file['name'],
-			$size,
-			$width,
-			$height,
-			$duration,
+			$meta['size'],
+			$meta['width'],
+			$meta['height'],
+			$meta['duration'],
 			$_POST['description'] ?? null
 		]);
 
-		$postId = $pdo->lastInsertId();
+		return $pdo->lastInsertId();
+	}
 
-		// --- TAG HANDLING ---
+	private static function handleTags($pdo, $postId, $authorId)
+	{
+		// categories and corresponding input names
 		$tagCategories = [
-			'artist' => $_POST['artist'] ?? '',
+			'artist'   => $_POST['artist'] ?? '',
 			'copyright' => $_POST['copyrights'] ?? '',
-			'general' => $_POST['tags'] ?? ''
+			'general'  => $_POST['tags'] ?? ''
 		];
 
+		// 1) parse & normalize all requested tags, grouped by category
+		$tagsByCategory = [];
+		$allNames = []; // unique list
 		foreach ($tagCategories as $category => $input) {
-			$input = trim($input);
+			$input = trim((string)$input);
 			if ($input === '') continue;
 
-			$tags = preg_split('/\s+/', $input);
-
-			foreach ($tags as $tagName) {
-				$tagName = strtolower(trim($tagName));
-				if ($tagName === '') continue;
-
-				// 1. Check if tag exists (or alias)
-				$stmt = $pdo->prepare("SELECT id, alias_tag_id FROM tags WHERE name = ?");
-				$stmt->execute([$tagName]);
-				$tag = $stmt->fetch(PDO::FETCH_ASSOC);
-
-				if ($tag) {
-					// Resolve alias if present
-					$tagId = $tag['alias_tag_id'] ?: $tag['id'];
-				} else {
-					// 2. Create tag if it doesn’t exist, using its category
-					$stmt = $pdo->prepare("
-						INSERT INTO tags (name, category, post_count)
-						VALUES (?, ?, 0)
-					");
-					$stmt->execute([$tagName, $category]);
-					$tagId = $pdo->lastInsertId();
-				}
-
-				// 3. Insert into post_tags
-				$stmt = $pdo->prepare("
-					INSERT IGNORE INTO post_tags (post_id, tag_id, added_by)
-					VALUES (?, ?, ?)
-				");
-				$stmt->execute([$postId, $tagId, $authorId]);
-
-				// 4. Increment tag usage count
-				$stmt = $pdo->prepare("UPDATE tags SET post_count = post_count + 1 WHERE id = ?");
-				$stmt->execute([$tagId]);
+			$parts = preg_split('/\s+/', $input, -1, PREG_SPLIT_NO_EMPTY);
+			$normalized = [];
+			foreach ($parts as $raw) {
+				$name = self::normalizeTagName($raw);
+				if ($name === '') continue;
+				$normalized[] = $name;
+				$allNames[$name] = true;
 			}
+			if (!empty($normalized)) $tagsByCategory[$category] = $normalized;
 		}
 
-		header("Location: /post/$postId");
-		exit;
+		if (empty($allNames)) return; // nothing to do
+
+		$allNames = array_keys($allNames);
+
+		// 2) fetch existing tags in one query
+		$placeholders = implode(',', array_fill(0, count($allNames), '?'));
+		$stmt = $pdo->prepare("SELECT id, name, alias_tag_id FROM tags WHERE name IN ($placeholders)");
+		$stmt->execute($allNames);
+		$existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		$nameToId = [];
+		foreach ($existing as $row) {
+			// use alias target if set
+			$canonicalId = $row['alias_tag_id'] ? intval($row['alias_tag_id']) : intval($row['id']);
+			$nameToId[$row['name']] = $canonicalId;
+		}
+
+		// 3) create missing tags
+		$insertStmt = $pdo->prepare("INSERT INTO tags (name, category, post_count) VALUES (?, ?, 0)");
+		foreach ($allNames as $name) {
+			if (isset($nameToId[$name])) continue; // exists already
+
+			// find which category to give this new tag (pick first category that requested it)
+			$giveCategory = 'general';
+			foreach ($tagsByCategory as $cat => $names) {
+				if (in_array($name, $names, true)) {
+					$giveCategory = $cat;
+					break;
+				}
+			}
+
+			$insertStmt->execute([$name, $giveCategory]);
+			$nameToId[$name] = $pdo->lastInsertId();
+		}
+
+		// 4) insert post_tags and bump post_count
+		$linkStmt = $pdo->prepare("
+        INSERT IGNORE INTO post_tags (post_id, tag_id, added_by)
+        VALUES (?, ?, ?)
+    ");
+		$countStmt = $pdo->prepare("UPDATE tags SET post_count = post_count + 1 WHERE id = ?");
+
+		// Avoid duplicate tag insertion per post: build a set
+		$seenTagIds = [];
+
+		foreach ($tagsByCategory as $category => $names) {
+			foreach ($names as $name) {
+				$tagId = $nameToId[$name] ?? null;
+				if (!$tagId) continue;
+				if (isset($seenTagIds[$tagId])) continue;
+				$seenTagIds[$tagId] = true;
+
+				$linkStmt->execute([$postId, $tagId, $authorId]);
+				$countStmt->execute([$tagId]);
+			}
+		}
+	}
+
+	private static function normalizeTagName($raw)
+	{
+		// Basic normalization: trim, lowercase, collapse whitespace to underscore
+		$n = trim($raw);
+		$n = mb_strtolower($n, 'UTF-8');
+		$n = preg_replace('/\s+/', '_', $n);    // turn spaces into underscores
+		$n = preg_replace('/[^a-z0-9_\-]/u', '', $n); // allow a-z,0-9,_,- (tune as needed)
+		return $n;
+	}
+
+	private static function generateThumbnail($finalPath, $mime, $hash)
+	{
+		$dir1 = substr($hash, 0, 2);
+		$dir2 = substr($hash, 2, 2);
+		$thumbDir = __DIR__ . "/../public/thumbs/$dir1/$dir2/";
+		if (!is_dir($thumbDir)) mkdir($thumbDir, 0775, true);
+
+		$thumbPath = $thumbDir . $hash . ".webp";
+
+		if (file_exists($thumbPath)) return; // already exists
+
+		if (str_starts_with($mime, 'image/')) {
+			$src = imagecreatefromstring(file_get_contents($finalPath));
+			if (!$src) return;
+			$w = imagesx($src);
+			$h = imagesy($src);
+			$max = 300;
+			if ($w >= $h) {
+				$newW = $max;
+				$newH = intval($h * ($max / $w));
+			} else {
+				$newH = $max;
+				$newW = intval($w * ($max / $h));
+			}
+			$thumb = imagecreatetruecolor($newW, $newH);
+			imagecopyresampled($thumb, $src, 0, 0, 0, 0, $newW, $newH, $w, $h);
+			imagewebp($thumb, $thumbPath, 80);
+			imagedestroy($src);
+			imagedestroy($thumb);
+		} elseif (str_starts_with($mime, 'video/')) {
+			$cmd = sprintf(
+				'ffmpeg -y -ss 00:00:01 -i %s -vframes 1 -vf "scale=\'min(300,iw)\':-1" %s 2>&1',
+				escapeshellarg($finalPath),
+				escapeshellarg($thumbPath)
+			);
+			shell_exec($cmd);
+		}
 	}
 }

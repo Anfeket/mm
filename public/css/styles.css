@@ -9,6 +9,8 @@
 	--color-text: #1e293b;
 	--color-text-light: #475569;
 
+	--color-video-border: #c7b922;
+
 	/* accent */
 	--color-accent: #2563eb;
 	--color-accent-red: #dc2626;
@@ -258,6 +260,10 @@ body {
 	width: 100%;
 	height: auto;
 	display: block;
+}
+
+.post-video {
+	outline: 1px solid var(--color-video-border)
 }
 
 .post-meta {

@@ -25,8 +25,7 @@ class Post
 	{
 		global $pdo;
 		$stmt = $pdo->prepare("
-            SELECT id, width, height, score,
-                   file_hash, file_ext
+            SELECT id, width, height, score, file_hash, file_ext, post_type
             FROM posts
             ORDER BY created_at DESC
             LIMIT ?
@@ -37,6 +36,7 @@ class Post
 
 		foreach ($posts as &$post) {
 			$post['file_path'] = self::filePath($post);
+			$post['thumb_path'] = self::thumbPath($post);
 		}
 
 		return $posts;
@@ -52,6 +52,17 @@ class Post
 		$dir2 = substr($hash, 2, 2);
 
 		return "/uploads/$dir1/$dir2/" . $hash . "." . $ext;
+	}
+
+	private static function thumbPath($post)
+	{
+		$hash = $post['file_hash']; // e.g. "a1b2c3d4e5..."
+
+		// break into subfolders: a1/b2/
+		$dir1 = substr($hash, 0, 2);
+		$dir2 = substr($hash, 2, 2);
+
+		return "/thumbs/$dir1/$dir2/" . $hash . ".webp";
 	}
 
 	private static function formatSize($bytes)
