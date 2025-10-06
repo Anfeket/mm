@@ -77,4 +77,43 @@ class Post
 			return round($bytes / 1073741824, 1) . ' GB';
 		}
 	}
+
+	public static function generateThumbnail($finalPath, $mime, $hash)
+	{
+		$dir1 = substr($hash, 0, 2);
+		$dir2 = substr($hash, 2, 2);
+		$thumbDir = __DIR__ . "/../public/thumbs/$dir1/$dir2/";
+		if (!is_dir($thumbDir)) mkdir($thumbDir, 0775, true);
+
+		$thumbPath = $thumbDir . $hash . ".webp";
+
+		if (file_exists($thumbPath)) return; // already exists
+
+		if (str_starts_with($mime, 'image/')) {
+			$src = imagecreatefromstring(file_get_contents($finalPath));
+			if (!$src) return;
+			$w = imagesx($src);
+			$h = imagesy($src);
+			$max = 300;
+			if ($w >= $h) {
+				$newW = $max;
+				$newH = intval($h * ($max / $w));
+			} else {
+				$newH = $max;
+				$newW = intval($w * ($max / $h));
+			}
+			$thumb = imagecreatetruecolor($newW, $newH);
+			imagecopyresampled($thumb, $src, 0, 0, 0, 0, $newW, $newH, $w, $h);
+			imagewebp($thumb, $thumbPath, 80);
+			imagedestroy($src);
+			imagedestroy($thumb);
+		} elseif (str_starts_with($mime, 'video/')) {
+			$cmd = sprintf(
+				'ffmpeg -y -ss 00:00:01 -i %s -vframes 1 -vf "scale=\'min(300,iw)\':-1" %s 2>&1',
+				escapeshellarg($finalPath),
+				escapeshellarg($thumbPath)
+			);
+			shell_exec($cmd);
+		}
+	}
 }
