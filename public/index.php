@@ -20,6 +20,14 @@ switch ($segments[0]) {
 		$controller->show($segments[1]);
 		break;
 
+	case 'tags':
+		require_once '../controllers/TagController.php';
+		$controller = new TagController();
+		if (isset($_GET['search'])) {
+			$controller->search();
+		}
+		break;
+
 	case 'upload':
 		require_once __DIR__ . '/../controllers/UploadController.php';
 		$controller = new UploadController();
