@@ -21,6 +21,35 @@ class Post
 		return $post ?: null;
 	}
 
+	public static function exists($id)
+	{
+		global $pdo;
+		$stmt = $pdo->prepare("
+            SELECT id
+            FROM posts
+            WHERE id = ?
+        ");
+		$stmt->execute([$id]);
+
+		return (bool) $stmt->fetchColumn();
+	}
+
+	public static function getNextId($id)
+	{
+		global $pdo;
+		$stmt = $pdo->prepare("SELECT id FROM posts WHERE id > ? ORDER BY id ASC LIMIT 1");
+		$stmt->execute([$id]);
+		return $stmt->fetchColumn();
+	}
+
+	public static function getPrevId($id)
+	{
+		global $pdo;
+		$stmt = $pdo->prepare("SELECT id FROM posts WHERE id < ? ORDER BY id DESC LIMIT 1");
+		$stmt->execute([$id]);
+		return $stmt->fetchColumn();
+	}
+
 	public static function recent($limit = 20)
 	{
 		global $pdo;

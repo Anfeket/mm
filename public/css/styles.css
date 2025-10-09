@@ -193,11 +193,32 @@ body {
 	flex: 1;
 	padding: var(--space-l);
 }
+#mainContent article {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 
 @media screen and (max-width: 800px) {
 	#mainContent {
 		order: 1;
 	}
+}
+
+#post-pagination {
+	display: flex;
+	align-items: center;
+}
+
+#post-pagination a {
+	text-decoration: none;
+	color: var(--color-text-light);
+	font-weight: 500;
+	padding: 0.2rem var(--space-m);
+}
+
+#pos-pagination a:hover {
+	color: var(--color-accent);
 }
 
 #post-image {
@@ -227,6 +248,7 @@ body {
 	background: var(--color-bg-box);
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius);
+	width: 100%;
 }
 
 #post-description h3,
