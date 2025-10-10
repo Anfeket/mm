@@ -124,8 +124,8 @@ class UploadController
 		// categories and corresponding input names
 		$tagCategories = [
 			'artist'   => $_POST['artist'] ?? '',
-			'copyright' => $_POST['copyrights'] ?? '',
-			'general'  => $_POST['tags'] ?? ''
+			'copyright' => $_POST['copyright'] ?? '',
+			'general'  => $_POST['general'] ?? ''
 		];
 
 		// 1) parse & normalize all requested tags, grouped by category

@@ -73,7 +73,6 @@
 
 			input.addEventListener("keydown", (e) => {
 				const items = suggestionBox.querySelectorAll("div");
-				console.log(selectedIndex)
 				if (!items.length) return;
 
 				switch (e.key) {

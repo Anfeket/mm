@@ -5,7 +5,6 @@ class TagController
 {
 	public function search()
 	{
-		error_log(print_r($_GET, true));
 		$query = $_GET['search'] ?? '';
 		$category = $_GET['category'] ?? null;
 
