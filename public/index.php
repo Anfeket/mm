@@ -95,3 +95,5 @@ switch ($segments[0]) {
 		$controller->notFound();
 		break;
 }
+
+if (getenv('APP_DEBUG')) send_timings_header();

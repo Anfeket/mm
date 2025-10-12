@@ -1,0 +1,58 @@
+<?php
+$__TIMINGS = [];
+function timer($label = null, $start = null) {
+	global  $__TIMINGS;
+	$now = hrtime(true);
+
+	if ($start == null) return $now;
+
+	$elapsed = ($now - $start) / 1e6;
+	$__TIMINGS[$label ?? 'Timer'] = round($elapsed, 3);
+	return $elapsed;
+}
+function send_timings_header() {
+	global $__TIMINGS;
+	if (empty($__TIMINGS)) return;
+
+	$pairs = [];
+	foreach ($__TIMINGS as $label => $time) {
+		$pairs[] = "$label=$time ms";
+	}
+	header('X-Debug-Timings: ' . implode(', ', $pairs));
+}
+
+# ENV fields
+if (!defined('DB_LOADED')) {
+    $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (str_starts_with(trim($line), '#')) continue;
+        [$name, $value] = array_map('trim', explode('=', $line, 2));
+        putenv("$name=$value");
+    }
+    define('DB_LOADED', true);
+}
+
+# DB
+$dsn = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4',
+    getenv('DB_HOST'),
+    getenv('DB_NAME')
+);
+$pdo = new PDO(
+	$dsn,
+	getenv('DB_USER'),
+	getenv('DB_PASS'),
+	[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+);
+
+# __DIR__ JE V TOMTO PRIPADE /config !!!!!!!
+# PICOVINA
+define('UPLOAD_BASE_DIR', __DIR__ . '/../public/uploads/');
+
+// Load current git hash (from build.txt)
+$buildFile = __DIR__ . '/../public/build.txt';
+if (file_exists($buildFile)) {
+	define('BUILD_HASH', trim(file_get_contents($buildFile)));
+} else {
+	define('BUILD_HASH', 'dev'); // fallback for local
+}
+define('REPO_URL', 'https://github.com/anfeket/mm/');
