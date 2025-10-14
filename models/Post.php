@@ -16,6 +16,7 @@ class Post
 		if ($post) {
 			$post['file_path'] = self::filePath($post);
 			$post['file_size_human'] = self::formatSize($post['file_size']);
+			$post['thumb_path'] = self::thumbPath($post);
 		}
 
 		return $post ?: null;
