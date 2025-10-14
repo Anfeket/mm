@@ -61,6 +61,10 @@ body {
 	min-height: 100vh;
 }
 
+main {
+	flex: 1;
+}
+
 /* =========================
    Header
 ========================= */
@@ -645,4 +649,31 @@ body {
 .autocomplete-list div.active {
 	background: var(--color-accent);
 	color: white;
+}
+
+/* Footer */
+#footer {
+	padding: var(--space-m);
+	background-color: var(--color-bg-box);
+	border-top: 1px solid var(--color-border);
+	text-align: center;
+	font-size: 0.9rem;
+	color: var(--color-text-light);
+}
+
+#footer a {
+	color: var(--color-accent);
+	text-decoration: none;
+	font-family: var(--font-tag);
+}
+
+#footer a:hover {
+	text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+	#footer {
+		background-color: var(--color-bg-box);
+		border-color: var(--color-border);
+	}
 }
