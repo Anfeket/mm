@@ -7,8 +7,8 @@ class ProfileController
 {
 	public static function show()
 	{
-		require_login();
-		$user = current_user();
+		Auth::require_login();
+		$user = Auth::current_user();
 
 		$title = "Profile - mm";
 		$invites = Invite::getByUser($user['id']);
@@ -20,8 +20,8 @@ class ProfileController
 
 	public static function update()
 	{
-		require_login();
-		$user = current_user();
+		Auth::require_login();
+		$user = Auth::current_user();
 
 		$username = $_POST['username'] ?? null;
 		$email    = $_POST['email'] ?? null;
@@ -152,7 +152,7 @@ class ProfileController
 
 	public static function createInvite()
 	{
-		require_login();
+		Auth::require_login();
 
 		Invite::create($_SESSION['user_id']);
 
@@ -162,7 +162,7 @@ class ProfileController
 
 	public static function deleteInvite($inviteId)
 	{
-		require_login();
+		Auth::require_login();
 
 		Invite::delete($inviteId, $_SESSION['user_id']);
 

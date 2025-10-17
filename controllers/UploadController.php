@@ -6,7 +6,7 @@ class UploadController
 {
 	public static function form()
 	{
-		require_login();
+		Auth::require_login();
 		$title = "Upload - mm";
 		include __DIR__ . '/../views/layout/head.php';
 		include __DIR__ . '/../views/layout/header.php';
@@ -16,7 +16,7 @@ class UploadController
 
 	public static function store()
 	{
-		require_login();
+		Auth::require_login();
 		global $pdo;
 
 		$file = $_FILES['file'] ?? null;
@@ -24,7 +24,7 @@ class UploadController
 			die("Upload failed");
 		}
 
-		$authorId = current_user()['id'];
+		$authorId = Auth::current_user()['id'];
 
 		// 1) analyze + move file
 		$meta = self::analyzeFile($file['tmp_name']);
