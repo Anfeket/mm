@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../models/Auth.php';
-$user = current_user();
+$user = Auth::current_user();
 ?>
 <header id="header">
 	<div id="top">
