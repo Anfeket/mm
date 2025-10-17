@@ -20,8 +20,14 @@ class Auth
 		}
 	}
 
-	public static function log_ip($ip, $user_id) {
+	public static function log_ip($user_id)
+	{
 		global $pdo;
-		$stmt = $pdo->prepare("UPDATE ");
+		$ip = $_SERVER['REMOTE_ADDR'] ?? null;
+		$stmt = $pdo->prepare("
+			UPDATE users
+			SET last_login = NOW(), last_login_ip = ?
+			WHERE id = ?");
+		$stmt->execute([$ip, $user_id]);
 	}
 }

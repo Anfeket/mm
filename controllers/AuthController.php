@@ -21,6 +21,7 @@ class AuthController
 		if ($user && password_verify($_POST['password'], $user['password_hash'])) {
 			session_regenerate_id(true); // prevent fixation
 			$_SESSION['user_id'] = $user['id'];
+			Auth::log_ip($user['id']);
 			header("Location: /");
 			exit;
 		} else {
