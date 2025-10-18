@@ -16,3 +16,22 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     Order allow,deny
     Deny from all
 </FilesMatch>
+
+<IfModule mod_deflate.c>
+# Compress HTML
+AddOutputFilterByType DEFLATE text/html
+# Compress Text Files
+AddOutputFilterByType DEFLATE text/plain
+# Compress CSS
+AddOutputFilterByType DEFLATE text/css
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 day"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType video/mp4 "access plus 30 days"
+    ExpiresByType video/webp "access plus 30 days"
+</IfModule>
