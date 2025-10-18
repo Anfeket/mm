@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Invite.php';
+require_once __DIR__ . '/../models/Auth.php';
 
 class AuthController
 {
