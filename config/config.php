@@ -55,8 +55,11 @@ define('UPLOAD_BASE_DIR', __DIR__ . '/../public/uploads/');
 // Load current git hash (from build.txt)
 $buildFile = __DIR__ . '/../public/build.txt';
 if (file_exists($buildFile)) {
-	define('BUILD_HASH', trim(file_get_contents($buildFile)));
+	[$commit, $date] = file(__DIR__ . '/../public/build.txt', FILE_IGNORE_NEW_LINES);
+	define('BUILD_HASH', $commit);
+	define('BUILD_DATE', $date);
 } else {
-	define('BUILD_HASH', 'dev'); // fallback for local
+	define('BUILD_HASH', null);
+	define('BUILD_DATE', null);
 }
 define('REPO_URL', 'https://github.com/anfeket/mm/');
