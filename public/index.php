@@ -96,4 +96,6 @@ switch ($segments[0]) {
 		break;
 }
 
-if (getenv('APP_DEBUG')) send_timings_header();
+if (getenv('APP_DEBUG') !== false) {
+	send_timings_header();
+}
