@@ -1,5 +1,6 @@
 <?php
 require_once '../config/config.php';
+ob_start();
 
 // Parse request
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -99,3 +100,4 @@ switch ($segments[0]) {
 if (getenv('APP_DEBUG') !== false) {
 	send_timings_header();
 }
+ob_end_flush();

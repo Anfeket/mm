@@ -54,6 +54,8 @@ class Post
 	public static function recent(int $limit = 20, int $offset = 0)
 	{
 		global $pdo;
+		
+		$t = timer("post_fetching");
 		$stmt = $pdo->prepare("
             SELECT id, width, height, score, file_hash, file_ext, post_type
             FROM posts
@@ -64,6 +66,7 @@ class Post
 		$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$stmt->execute();
 		$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		timer("post_fetching", $t);
 
 		foreach ($posts as &$post) {
 			$post['file_path'] = self::filePath($post);
