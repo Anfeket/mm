@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/css/styles.css">
+	<link rel="stylesheet" href="/css/styles.css?v=<?= BUILD_HASH ?? 'dev' ?>">
 	<title><?= $title ?? 'mm' ?></title>
 	<?php if (isset($post)): ?>
 		<meta property="og:site_name" content="mm">
