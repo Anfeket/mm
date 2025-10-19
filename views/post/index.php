@@ -15,4 +15,26 @@
 			</div>
 		<?php endforeach; ?>
 	</div>
+	<?php if ($totalPages > 1): ?>
+		<nav id="index-pagination">
+			<?php if ($page > 1): ?>
+				<a href="?page=<?= $page - 1 ?>" class="prev">&lt; Prev</a>
+			<?php endif; ?>
+
+			<span>Page <?= $page ?> / <?= $totalPages ?></span>
+
+			<?php if ($page < $totalPages): ?>
+				<a href="?page=<?= $page + 1 ?>" class="next">Next &gt;</a>
+			<?php endif; ?>
+		</nav>
+	<?php endif; ?>
 </main>
+<script>
+	document.addEventListener('keydown', e => {
+		const prev = document.querySelector('a.prev');
+		const next = document.querySelector('a.next');
+
+		if (['ArrowLeft', 'h'].includes(e.key) && prev) window.location = prev.href;
+		if (['ArrowRight', 'l'].includes(e.key) && next) window.location = next.href;
+	});
+</script>

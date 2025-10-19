@@ -51,16 +51,17 @@ class Post
 		return $stmt->fetchColumn();
 	}
 
-	public static function recent($limit = 20)
+	public static function recent(int $limit = 20, int $offset = 0)
 	{
 		global $pdo;
 		$stmt = $pdo->prepare("
             SELECT id, width, height, score, file_hash, file_ext, post_type
             FROM posts
             ORDER BY created_at DESC
-            LIMIT ?
+            LIMIT :limit OFFSET :offset
         ");
-		$stmt->bindValue(1, (int)$limit, PDO::PARAM_INT);
+		$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$stmt->execute();
 		$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -145,5 +146,11 @@ class Post
 			);
 			shell_exec($cmd);
 		}
+	}
+
+	public static function count()
+	{
+		global $pdo;
+		return (int)$pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn();
 	}
 }

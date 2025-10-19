@@ -5,7 +5,14 @@ require_once __DIR__ . '/../models/User.php';
 
 class PostController {
     public static function recent() {
-        $posts = Post::recent(20);
+		$page = max(1, (int)($_GET['page'] ?? 1));
+		$limit = 20;
+		$offset = ($page - 1) * $limit;
+		
+        $posts = Post::recent($limit, $offset);
+		$total = Post::count();
+		$totalPages = ceil($total / $limit);
+
         $title = "Posts - mm";
 
         include __DIR__ . '/../views/layout/head.php';

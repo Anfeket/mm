@@ -222,7 +222,7 @@ main {
 	padding: 0.2rem var(--space-m);
 }
 
-#pos-pagination a:hover {
+#post-pagination a:hover {
 	color: var(--color-accent);
 }
 
@@ -265,6 +265,9 @@ main {
 /* Index Page */
 #post-index {
 	padding: var(--space-l);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 #post-index h2 {
@@ -276,6 +279,7 @@ main {
 	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 	gap: var(--space-m);
 	align-items: end;
+	width: 100%;
 }
 
 .post-thumb {
@@ -300,6 +304,22 @@ main {
 	display: flex;
 	justify-content: space-between;
 	color: var(--color-text-light);
+}
+
+#index-pagination {
+	display: flex;
+	align-items: center;
+}
+
+#index-pagination a {
+	text-decoration: none;
+	color: var(--color-text-light);
+	font-weight: 500;
+	padding: 0.2rem var(--space-m);
+}
+
+#index-pagination a:hover {
+	color: var(--color-accent);
 }
 
 /* 404 page */
