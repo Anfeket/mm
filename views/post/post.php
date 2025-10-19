@@ -56,16 +56,16 @@
 					<img src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
 				<?php elseif ($post['post_type'] === 'video'): ?>
 					<video src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>" controls>
-					<?php endif ?>
+					<?php endif; ?>
 			</div>
 			<nav id="post-pagination">
 				<?php if (Post::getPrevId($post['id'])): ?>
 					<a href="<?= Post::getPrevId($post['id']) ?>" class="prev">&lt;</a>
-				<?php endif ?>
+				<?php endif; ?>
 				<?= $post['id'] ?></li>
 				<?php if (Post::getNextId($post['id'])): ?>
 					<a href="<?= Post::getNextId($post['id']) ?>" class="next">&gt;</a>
-				<?php endif ?>
+				<?php endif; ?>
 			</nav>
 			<div id="post-description">
 				<h3>Description</h3>

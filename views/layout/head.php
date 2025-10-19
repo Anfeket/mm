@@ -17,7 +17,7 @@
 			<meta property="og:video" content="https://mm.svidnik.org<?= htmlspecialchars($post['file_path']) ?>">
 			<meta property="og:video:secure_url" content="https://mm.svidnik.org<?= htmlspecialchars($post['file_path']) ?>">
 			<meta property="og:image" content="https://mm.svidnik.org<?= htmlspecialchars($post['thumb_path']) ?>">
-		<?php endif ?>
+		<?php endif; ?>
 		<meta property="og:description" content="<?= $post['description'] ?>">
 
 		<meta property="twitter:url" content="https://mm.svidnik.org/post/<?= $post['id'] ?>">
@@ -30,8 +30,8 @@
 			<meta property="twitter:card" content="player">
 			<meta property="twitter:player:stream" content="https://mm.svidnik.org<?= htmlspecialchars($post['thumb_path']) ?>">
 			<meta property="twitter:image" content="0">
-		<?php endif ?>
-	<?php endif ?>
+		<?php endif; ?>
+	<?php endif; ?>
 </head>
 
 <body>
