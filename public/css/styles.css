@@ -265,9 +265,6 @@ main {
 /* Index Page */
 #post-index {
 	padding: var(--space-l);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 }
 
 #post-index h2 {
@@ -309,6 +306,8 @@ main {
 #index-pagination {
 	display: flex;
 	align-items: center;
+	justify-content: center;
+	margin-top: var(--space-l);
 }
 
 #index-pagination a {
