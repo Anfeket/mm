@@ -53,9 +53,16 @@
 		<article>
 			<div id="post-image">
 				<?php if ($post['post_type'] === 'image'): ?>
-					<img src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>">
+					<img src="<?= htmlspecialchars($post['file_path']) ?>"
+						alt="Post #<?= $post['id'] ?>"
+						<?= $post['width'] ? 'width="' . $post['width'] . '"' : '' ?>
+						<?= $post['height'] ? 'height="' . (int)$post['height'] . '"' : '' ?>>
 				<?php elseif ($post['post_type'] === 'video'): ?>
-					<video src="<?= htmlspecialchars($post['file_path']) ?>" alt="Post #<?= $post['id'] ?>" controls>
+					<video src="<?= htmlspecialchars($post['file_path']) ?>"
+						alt="Post #<?= $post['id'] ?>"
+						controls
+						<?= $post['width'] ? 'width="' . $post['width'] . '"' : '' ?>
+						<?= $post['height'] ? 'height="' . (int)$post['height'] . '"' : '' ?>>
 					<?php endif; ?>
 			</div>
 			<nav id="post-pagination">
