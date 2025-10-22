@@ -89,6 +89,7 @@ main {
 #header nav {
 	display: flex;
 	align-items: center;
+	overflow-x: auto;
 }
 
 #header nav a {
