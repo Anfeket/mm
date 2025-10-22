@@ -232,11 +232,11 @@ main {
 	margin-bottom: var(--space-l);
 }
 
-#post-image img {
+#post-image img, video {
 	max-width: 100%;
+	max-height: 80vh;
 	height: auto;
 	display: inline-block;
-	border-radius: var(--radius);
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
