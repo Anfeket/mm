@@ -63,3 +63,7 @@ if (file_exists($buildFile)) {
 	define('BUILD_DATE', null);
 }
 define('REPO_URL', 'https://github.com/anfeket/mm/');
+
+$scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'];
+define('BASE_URL', "$scheme://$host");

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/Auth.php';
+require_once __DIR__ . '/../models/Discord.php';
 
 class UploadController
 {
@@ -49,6 +50,10 @@ class UploadController
 
 		// 3) generate thumbnail after DB commit (so upload isn't held by DB)
 		Post::generateThumbnail($paths['final'], $meta['mime'], $meta['hash']);
+
+		// Send webhoook
+		$post = Post::find($postId);
+		Discord::postUpload($post);
 
 		header("Location: /post/$postId");
 		exit;
