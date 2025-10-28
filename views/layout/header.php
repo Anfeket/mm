@@ -41,7 +41,7 @@ $user = Auth::current_user();
 		<?php if ($user): ?>
 			<a href="/upload">Upload Post</a>
 			<?php if ($user['role'] === 'admin'): ?>
-				<a href="/admin-panel">Admin</a>
+				<a href="/admin">Admin</a>
 			<?php endif; ?>
 		<?php endif; ?>
 	</nav>

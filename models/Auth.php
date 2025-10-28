@@ -30,4 +30,13 @@ class Auth
 			WHERE id = ?");
 		$stmt->execute([$ip, $user_id]);
 	}
+
+	public static function is_admin($user_id)
+	{
+		global $pdo;
+		$stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
+		$stmt->execute([$user_id]);
+		$role = $stmt->fetchColumn();
+		return $role === 'admin';
+	}
 }

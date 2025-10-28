@@ -90,6 +90,12 @@ switch ($segments[0]) {
 		$controller::logout();
 		break;
 
+	case 'admin':
+		require_once '../controllers/AdminController.php';
+		$controller = new AdminController();
+		$controller::handle();
+		break;
+
 	default:
 		require_once '../controllers/ErrorController.php';
 		$controller = new ErrorController();
