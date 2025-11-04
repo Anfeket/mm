@@ -19,6 +19,9 @@ class AdminController
 			case 'send-webhook':
 				self::sendWebhook($_POST['post_id'] ?? null);
 				break;
+			case 'generate-thumbnail':
+				self::regenerateThumbnail($_POST['post_id'] ?? null);
+				break;
 		}
 
 		include __DIR__ . '/../views/layout/head.php';
@@ -39,6 +42,22 @@ class AdminController
 			echo "Webhook sent successfully.";
 		} catch (Throwable $e) {
 			echo "Error sending webhook: " . htmlspecialchars($e->getMessage());
+		}
+	}
+
+	private static function regenerateThumbnail($postId)
+	{
+		if (!$postId) return;
+
+		$post = Post::find($postId);
+
+		if (!$post) return;
+		try {
+			$path = __DIR__ . '/../public' . $post['file_path'];
+			Post::generateThumbnail($path, $post['mime_type'], $post['file_hash'], true);
+			echo "Thumbnail generated successfully.";
+		} catch (throwable $e) {
+			echo "Error generating thumbnail: " . htmlspecialchars($e->getMessage());
 		}
 	}
 }

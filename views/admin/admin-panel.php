@@ -11,6 +11,15 @@
 				<button type="submit">Send</button>
 			</form>
 		</li>
+		<li>
+			<h3>Regnerate thumbnail</h3>
+			<form action="/admin?c=generate-thumbnail" method="POST">
+				<label>Post id:
+					<input type="text" name="post_id" required>
+				</label>
+				<button type="submit">Send</button>
+			</form>
+		</li>
 	</ul>
 	<h2>Stats</h2>
 	<ul>

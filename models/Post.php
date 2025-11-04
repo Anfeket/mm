@@ -6,7 +6,7 @@ class Post
 		global $pdo;
 		$stmt = $pdo->prepare("
             SELECT id, author_id, post_type, file_size, width, height, favorites_count, score,
-                   description, source, file_hash, file_ext, created_at
+                   description, source, file_hash, file_ext, created_at, mime_type
             FROM posts
             WHERE id = ?
         ");
@@ -54,7 +54,7 @@ class Post
 	public static function recent(int $limit = 20, int $offset = 0)
 	{
 		global $pdo;
-		
+
 		$t = timer("post_fetching");
 		$stmt = $pdo->prepare("
             SELECT id, width, height, score, file_hash, file_ext, post_type
@@ -112,7 +112,7 @@ class Post
 		}
 	}
 
-	public static function generateThumbnail($finalPath, $mime, $hash)
+	public static function generateThumbnail($finalPath, $mime, $hash, $regenerate = false)
 	{
 		$dir1 = substr($hash, 0, 2);
 		$dir2 = substr($hash, 2, 2);
@@ -121,11 +121,13 @@ class Post
 
 		$thumbPath = $thumbDir . $hash . ".webp";
 
-		if (file_exists($thumbPath)) return; // already exists
+		if (file_exists($thumbPath) && $regenerate === false) return; // already exists
 
 		if (str_starts_with($mime, 'image/')) {
 			$src = imagecreatefromstring(file_get_contents($finalPath));
-			if (!$src) return;
+			if (!$src) {
+				throw new Exception('Source file not found');
+			}
 			$w = imagesx($src);
 			$h = imagesy($src);
 			$max = 300;
@@ -143,11 +145,16 @@ class Post
 			imagedestroy($thumb);
 		} elseif (str_starts_with($mime, 'video/')) {
 			$cmd = sprintf(
-				'ffmpeg -y -ss 00:00:01 -i %s -vframes 1 -vf "scale=\'min(300,iw)\':-1" %s 2>&1',
+				'ffmpeg -hide_banner -y -ss 00:00:01 -i %s -vframes 1 -vf "scale=\'min(300,iw)\':-1" %s 2>&1',
 				escapeshellarg($finalPath),
 				escapeshellarg($thumbPath)
 			);
-			shell_exec($cmd);
+			$returnCode = 0;
+			$output = [];
+			exec($cmd, $output, $returnCode);
+			if ($returnCode !== 0) {
+				throw new Exception(implode('\n', $output));
+			}
 		}
 	}
 
