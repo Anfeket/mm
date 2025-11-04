@@ -3,7 +3,7 @@
 	<form action="/upload" method="post" enctype="multipart/form-data" autocomplete="off">
 		<label>
 			File:
-			<input type="file" name="file" id="fileInput" required>
+			<input type="file" name="file" id="fileInput" required accept="image/*,video/*">
 		</label>
 		<div id="preview"></div>
 		<label>
