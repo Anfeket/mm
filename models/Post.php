@@ -138,7 +138,7 @@ class Post
 			}
 			$thumb = imagecreatetruecolor($newW, $newH);
 			imagecopyresampled($thumb, $src, 0, 0, 0, 0, $newW, $newH, $w, $h);
-			imagewebp($thumb, $thumbPath, 80);
+			imagewebp($thumb, $thumbPath, 75);
 			imagedestroy($src);
 			imagedestroy($thumb);
 		} elseif (str_starts_with($mime, 'video/')) {
