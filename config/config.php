@@ -1,6 +1,7 @@
 <?php
 $__TIMINGS = [];
-function timer($label = null, $start = null) {
+function timer($label = null, $start = null)
+{
 	global  $__TIMINGS;
 	$now = hrtime(true);
 
@@ -10,7 +11,8 @@ function timer($label = null, $start = null) {
 	$__TIMINGS[$label ?? 'Timer'] = round($elapsed, 3);
 	return $elapsed;
 }
-function send_timings_header() {
+function send_timings_header()
+{
 	global $__TIMINGS;
 	if (empty($__TIMINGS)) return;
 
@@ -24,21 +26,22 @@ function send_timings_header() {
 # ENV fields
 $t = timer('env_parsing');
 if (!defined('DB_LOADED')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (str_starts_with(trim($line), '#')) continue;
-        [$name, $value] = array_map('trim', explode('=', $line, 2));
-        putenv("$name=$value");
-    }
-    define('DB_LOADED', true);
+	$lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	foreach ($lines as $line) {
+		if (str_starts_with(trim($line), '#')) continue;
+		[$name, $value] = array_map('trim', explode('=', $line, 2));
+		putenv("$name=$value");
+	}
+	define('DB_LOADED', true);
 }
 timer('env_parsing', $t);
 
 # DB
 $t = timer('db_connection');
-$dsn = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4',
-    getenv('DB_HOST'),
-    getenv('DB_NAME')
+$dsn = sprintf(
+	'mysql:host=%s;dbname=%s;charset=utf8mb4',
+	getenv('DB_HOST'),
+	getenv('DB_NAME')
 );
 $pdo = new PDO(
 	$dsn,

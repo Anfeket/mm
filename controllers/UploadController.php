@@ -215,7 +215,7 @@ class UploadController
 		$n = trim($raw);
 		$n = mb_strtolower($n, 'UTF-8');
 		$n = preg_replace('/\s+/', '_', $n);    // turn spaces into underscores
-		$n = preg_replace('/[^a-z0-9_\-]/u', '', $n); // allow a-z,0-9,_,- (tune as needed)
+		$n = preg_replace('/[^a-z0-9_\-\(\)]/u', '', $n); // allow a-z, 0-9, _, -, (, )
 		return $n;
 	}
 }

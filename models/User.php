@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/Invite.php';
+require_once __DIR__ . '/../models/Auth.php';
 
 class User
 {
@@ -61,7 +62,7 @@ class User
 
 	public static function createInvite($userId)
 	{
-		require_login(); // make sure caller is logged in
+		Auth::require_login(); // make sure caller is logged in
 
 		$inviteCode = Invite::create($userId);
 
