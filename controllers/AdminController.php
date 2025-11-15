@@ -2,11 +2,12 @@
 require_once __DIR__ . '/../models/Auth.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/Discord.php';
+require_once __DIR__ . '/../controllers/ErrorController.php';
 
 $user = Auth::current_user();
 if (!$user || !Auth::is_admin($user['id'])) {
-	http_response_code(403);
-	die("Forbidden");
+	ErrorController::forbidden();
+	exit;
 }
 
 class AdminController
