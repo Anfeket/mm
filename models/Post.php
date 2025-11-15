@@ -163,4 +163,11 @@ class Post
 		global $pdo;
 		return (int)$pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn();
 	}
+
+	public static function delete($id)
+	{
+		global $pdo;
+		$stmt = $pdo->prepare("DELETE FROM posts WHERE id = ?");
+		$stmt->execute([$id]);
+	}
 }

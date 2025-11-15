@@ -22,7 +22,7 @@
 			Description:
 			<textarea name="description"></textarea>
 		</label>
-		<button type="submit">Upload</button>
+		<button class="button" type="submit">Upload</button>
 	</form>
 </main>
 <script>

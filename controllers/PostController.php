@@ -3,25 +3,28 @@ require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/Tag.php';
 require_once __DIR__ . '/../models/User.php';
 
-class PostController {
-    public static function recent() {
+class PostController
+{
+	public static function recent()
+	{
 		$page = max(1, (int)($_GET['page'] ?? 1));
 		$limit = 20;
 		$offset = ($page - 1) * $limit;
-		
-        $posts = Post::recent($limit, $offset);
+
+		$posts = Post::recent($limit, $offset);
 		$total = Post::count();
 		$totalPages = ceil($total / $limit);
 
-        $title = "Posts - mm";
+		$title = "Posts - mm";
 
-        include __DIR__ . '/../views/layout/head.php';
-        include __DIR__ . '/../views/layout/header.php';
-        include __DIR__ . '/../views/post/index.php';
-        include __DIR__ . '/../views/layout/footer.php';
-    }
+		include __DIR__ . '/../views/layout/head.php';
+		include __DIR__ . '/../views/layout/header.php';
+		include __DIR__ . '/../views/post/index.php';
+		include __DIR__ . '/../views/layout/footer.php';
+	}
 
-	public static function show($id) {
+	public static function show($id)
+	{
 		$post = Post::find($id);
 		if (!$post) {
 			require_once '../controllers/ErrorController.php';
@@ -40,5 +43,29 @@ class PostController {
 		include __DIR__ . '/../views/layout/header.php';
 		include __DIR__ . '/../views/post/post.php';
 		include __DIR__ . '/../views/layout/footer.php';
+	}
+
+	public static function delete($id)
+	{
+		Auth::require_login();
+		if (!User::has_permission($_SESSION['user_id'], 'delete_post')) {
+			require_once '../controllers/ErrorController.php';
+			$controller = new ErrorController();
+			$controller->forbidden();
+			return;
+		}
+
+		$post = Post::find($id);
+		if (!$post) {
+			require_once '../controllers/ErrorController.php';
+			$controller = new ErrorController();
+			$controller->notFound();
+			return;
+		}
+
+		Post::delete($id);
+
+		header("Location: /posts");
+		exit;
 	}
 }

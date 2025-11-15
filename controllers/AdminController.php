@@ -1,12 +1,14 @@
 <?php
 require_once __DIR__ . '/../models/Auth.php';
+require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/Discord.php';
 require_once __DIR__ . '/../controllers/ErrorController.php';
 
 $user = Auth::current_user();
-if (!$user || !Auth::is_admin($user['id'])) {
-	ErrorController::forbidden();
+if (!$user || !User::has_permission($user['id'], 'access_admin_panel')) {
+	$controller = new ErrorController();
+	$controller->forbidden();
 	exit;
 }
 

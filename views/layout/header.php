@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../models/Auth.php';
+require_once __DIR__ . '/../../models/User.php';
 $user = Auth::current_user();
 ?>
 <header id="header">
@@ -40,7 +41,7 @@ $user = Auth::current_user();
 		<a href="#">Forum</a>
 		<?php if ($user): ?>
 			<a href="/upload">Upload Post</a>
-			<?php if ($user['role'] === 'admin'): ?>
+			<?php if (User::has_permission($user['id'], "access-admin-panel")): ?>
 				<a href="/admin">Admin</a>
 			<?php endif; ?>
 		<?php endif; ?>

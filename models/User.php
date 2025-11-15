@@ -68,4 +68,22 @@ class User
 
 		return $inviteCode; // return the code so you can show/copy it
 	}
+
+	public static function has_permission($userId, $permission)
+	{
+		global $pdo;
+		$stmt = $pdo->prepare("
+			SELECT 1
+			FROM user_roles ur
+			JOIN role_permissions rp ON ur.role_id = rp.role_id
+			JOIN permissions p ON rp.permission_id = p.id
+			WHERE ur.user_id = :userId AND p.name = :permissionName
+			LIMIT 1
+		");
+		$stmt->execute([
+			':userId' => $userId,
+			':permissionName' => $permission
+		]);
+		return $stmt->fetchColumn() !== false;
+	}
 }

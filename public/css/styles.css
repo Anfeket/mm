@@ -232,7 +232,8 @@ main {
 	margin-bottom: var(--space-l);
 }
 
-#post-image img, video {
+#post-image img,
+video {
 	max-width: 100%;
 	max-height: 80vh;
 	height: auto;
@@ -263,6 +264,13 @@ main {
 #post-comments h3 {
 	margin-bottom: var(--space-s);
 	color: var(--color-text);
+}
+
+#post-actions {
+	display: flex;
+	align-self: flex-end;
+	justify-content: stretch;
+	gap: var(--space-m);
 }
 
 /* Index Page */
@@ -560,25 +568,20 @@ main {
 
 .login-link {
 	background-color: #e2e8f0;
-	/* slate-200 */
 	color: #1e293b;
-	/* slate-800 */
 }
 
 .login-link:hover {
 	background-color: #cbd5e1;
-	/* slate-300 */
 }
 
 .register-link {
 	background-color: #2563eb;
-	/* blue-600 */
 	color: #fff;
 }
 
 .register-link:hover {
 	background-color: #1d4ed8;
-	/* blue-700 */
 }
 
 /* Upload form */
@@ -627,18 +630,8 @@ main {
 }
 
 #upload-form button {
-	background: var(--color-accent);
-	color: white;
-	border: none;
-	border-radius: var(--radius);
-	padding: 0.5rem 1.2rem;
 	font-weight: 600;
-	cursor: pointer;
 	align-self: center;
-}
-
-#upload-form button:hover {
-	background-color: color-mix(in srgb, var(--color-accent) 85%, black);
 }
 
 /* Autocompletion */
@@ -699,4 +692,32 @@ main {
 		background-color: var(--color-bg-box);
 		border-color: var(--color-border);
 	}
+}
+
+.button {
+	display: inline-block;
+	padding: 0.5rem 1rem;
+	background-color: var(--color-accent);
+	color: #fff;
+	text-decoration: none;
+	border: none;
+	border-radius: var(--radius);
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: 500;
+	line-height: inherit;
+	transition: background-color 0.2s;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 85%, black);
+}
+
+.button-danger {
+	background-color: var(--color-accent-red);
+}
+
+.button-danger:hover {
+	background-color: color-mix(in srgb, var(--color-accent-red) 85%, black);
 }

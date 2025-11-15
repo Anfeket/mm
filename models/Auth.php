@@ -31,12 +31,8 @@ class Auth
 		$stmt->execute([$ip, $user_id]);
 	}
 
-	public static function is_admin($user_id)
+	public static function is_logged_in()
 	{
-		global $pdo;
-		$stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
-		$stmt->execute([$user_id]);
-		$role = $stmt->fetchColumn();
-		return $role === 'admin';
+		return isset($_SESSION['user_id']);
 	}
 }
