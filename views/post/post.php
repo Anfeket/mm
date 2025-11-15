@@ -76,7 +76,7 @@
 			<div id="post-actions">
 				<a href="<?= $post['file_path'] ?>" download class="button">Download</a>
 				<?php if (Auth::is_logged_in() && User::has_permission($_SESSION['user_id'], 'delete_post')): ?>
-					<form action="/admin/delete-post" method="POST"
+					<form action="/admin?c=delete-post" method="POST"
 						onsubmit="return confirm('Are you sure you want to delete this post?');" style="display:inline;">
 						<input type="hidden" name="post_id" value="<?= $post['id'] ?>">
 						<button type="submit" class="button button-danger">Delete Post</button>

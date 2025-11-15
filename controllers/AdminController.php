@@ -4,6 +4,7 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/Discord.php';
 require_once __DIR__ . '/../controllers/ErrorController.php';
+require_once __DIR__ . '/../controllers/PostController.php';
 
 $user = Auth::current_user();
 if (!$user || !User::has_permission($user['id'], 'access_admin_panel')) {
@@ -24,6 +25,9 @@ class AdminController
 				break;
 			case 'generate-thumbnail':
 				self::regenerateThumbnail($_POST['post_id'] ?? null);
+				break;
+			case 'delete-post':
+				self::deletePost($_POST['post_id'] ?? null);
 				break;
 		}
 
@@ -61,6 +65,21 @@ class AdminController
 			echo "Thumbnail generated successfully.";
 		} catch (throwable $e) {
 			echo "Error generating thumbnail: " . htmlspecialchars($e->getMessage());
+		}
+	}
+
+	private static function deletePost($postId)
+	{
+		if (!$postId) return;
+
+		$post = Post::find($postId);
+
+		if (!$post) return;
+		try {
+			PostController::delete($postId);
+			echo "Post deleted successfully.";
+		} catch (throwable $e) {
+			echo "Error deleting post: " . htmlspecialchars($e->getMessage());
 		}
 	}
 }
