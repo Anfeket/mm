@@ -1,0 +1,366 @@
+/* =========================
+   Post Page
+========================= */
+#post-pagination {
+	display: flex;
+	align-items: center;
+}
+
+#post-pagination a {
+	text-decoration: none;
+	color: var(--color-text-light);
+	font-weight: 500;
+	padding: 0.2rem var(--space-m);
+}
+
+#post-pagination a:hover {
+	color: var(--color-accent);
+}
+
+#post-image {
+	text-align: center;
+	margin-bottom: var(--space-l);
+}
+
+#post-image img,
+video {
+	max-width: 100%;
+	max-height: 80vh;
+	height: auto;
+	width: auto;
+	object-fit: contain;
+	display: inline-block;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Scaled down notice */
+#post-image .scaled-notice {
+	margin-top: var(--space-s);
+	font-size: 0.85rem;
+	color: var(--color-text-light);
+}
+
+#post-description,
+#post-comments {
+	margin-top: var(--space-l);
+	padding: var(--space-m);
+	background: var(--color-bg-box);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	width: 100%;
+}
+
+#post-description h3,
+#post-comments h3 {
+	margin-bottom: var(--space-s);
+	color: var(--color-text);
+}
+
+#post-actions {
+	display: flex;
+	align-self: flex-end;
+	justify-content: stretch;
+	gap: var(--space-m);
+}
+
+/* Post Information */
+#post-information {
+	margin-top: var(--space-l);
+	padding: var(--space-m);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-bg);
+}
+
+#post-information h3 {
+	margin-bottom: var(--space-s);
+	color: var(--color-text);
+}
+
+#post-information dl {
+	display: grid;
+	grid-template-columns: 90px 1fr;
+	gap: 0.3rem 0.5rem;
+	font-size: 0.9rem;
+}
+
+#post-information dt {
+	font-weight: bold;
+	color: var(--color-text-light);
+}
+
+#post-information dd {
+	margin: 0;
+}
+
+/* =========================
+   Index Page
+========================= */
+#post-index {
+	padding: var(--space-l);
+}
+
+#post-index h2 {
+	margin-bottom: var(--space-m);
+}
+
+.post-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: var(--space-m);
+	align-items: end;
+	width: 100%;
+}
+
+.post-thumb {
+	overflow: hidden;
+	text-align: center;
+	align-content: end;
+}
+
+.post-thumb img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.post-video {
+	outline: 1px solid var(--color-video-border)
+}
+
+.post-meta {
+	font-size: 0.8rem;
+	padding: var(--space-s);
+	display: flex;
+	justify-content: space-between;
+	color: var(--color-text-light);
+}
+
+#index-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: var(--space-l);
+}
+
+#index-pagination a {
+	text-decoration: none;
+	color: var(--color-text-light);
+	font-weight: 500;
+	padding: 0.2rem var(--space-m);
+}
+
+#index-pagination a:hover {
+	color: var(--color-accent);
+}
+
+/* =========================
+   Error Pages (404, 403)
+========================= */
+.error-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	flex: 1;
+	padding: 3rem 1rem;
+}
+
+.error-code {
+	font-size: 8rem;
+	font-weight: 800;
+	line-height: 1;
+	color: var(--color-accent);
+	margin-bottom: 1rem;
+}
+
+.error-message {
+	font-size: 1.5rem;
+	color: var(--color-text);
+	margin-bottom: 2rem;
+	max-width: 500px;
+}
+
+.error-actions {
+	display: flex;
+	gap: 1rem;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.error-actions a {
+	display: inline-block;
+	padding: 0.75rem 1.5rem;
+	background: var(--color-accent);
+	color: white;
+	text-decoration: none;
+	border-radius: var(--radius);
+	font-weight: 500;
+	transition: background 0.2s;
+}
+
+.error-actions a:hover {
+	background: #1e40af;
+}
+
+.error-actions a.secondary {
+	background: var(--color-bg-box);
+	color: var(--color-text);
+	border: 1px solid var(--color-border);
+}
+
+.error-actions a.secondary:hover {
+	background: var(--color-bg);
+}
+
+@media (max-width: 600px) {
+	.error-code {
+		font-size: 5rem;
+	}
+
+	.error-message {
+		font-size: 1.25rem;
+	}
+
+	.error-actions {
+		flex-direction: column;
+	}
+
+	.error-actions a {
+		width: 100%;
+		text-align: center;
+	}
+}
+
+/* =========================
+   Profile page
+========================= */
+#profile {
+	max-width: 500px;
+	margin: var(--space-l) auto;
+	padding: var(--space-m);
+	background-color: var(--color-bg-box);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	font-family: var(--font-main);
+}
+
+#profile h2 {
+	margin-bottom: var(--space-m);
+	font-size: 1.3rem;
+	color: var(--color-text);
+}
+
+/* Form layout */
+#profile form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-m);
+}
+
+#profile label {
+	display: flex;
+	flex-direction: column;
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: var(--color-text-light);
+}
+
+/* Inputs */
+#profile input[type="text"],
+#profile input[type="email"],
+#profile input[type="password"],
+#profile input[type="file"] {
+	margin-top: var(--space-s);
+	padding: var(--space-s);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	font-size: 0.9rem;
+	color: var(--color-text);
+	background-color: var(--color-bg-box);
+}
+
+#profile input:focus {
+	outline: none;
+	border-color: var(--color-accent);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+/* Avatar preview */
+#profile img {
+	margin-top: var(--space-s);
+	border-radius: var(--radius);
+	border: 1px solid var(--color-border);
+}
+
+/* Button */
+#profile button {
+	align-self: flex-start;
+	padding: var(--space-s) var(--space-m);
+	background-color: var(--color-accent);
+	color: #fff;
+	border: none;
+	border-radius: var(--radius);
+	font-size: 0.9rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+#profile button:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 85%, black);
+}
+
+/* =========================
+   Upload Form
+========================= */
+#upload-form {
+	padding: var(--space-m);
+	margin: var(--space-l) auto;
+	background: var(--color-bg-box);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	max-width: 800px;
+}
+
+#upload-form h2 {
+	margin-bottom: var(--space-m);
+}
+
+#upload-form form {
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	gap: var(--space-s);
+}
+
+#upload-form label {
+	display: flex;
+	flex-direction: column;
+}
+
+#upload-form textarea,
+#upload-form input {
+	font-family: var(--font-tag);
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	padding: var(--space-s);
+	color: var(--color-text);
+}
+
+#description {
+	width: 100%;
+}
+
+#description textarea {
+	font-family: var(--font-main);
+	min-height: 90px;
+}
+
+#upload-form button {
+	font-weight: 600;
+	align-self: center;
+}

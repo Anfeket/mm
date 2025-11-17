@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/css/base.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/components.css">
+	<link rel="stylesheet" href="/css/pages.css">
+	<title>CSS Test - mm</title>
+</head>
+<body>
+	<header id="header">
+		<div id="top">
+			<div id="site-name">mm</div>
+			<nav>
+				<a href="/">Posts</a>
+				<a href="/upload">Upload</a>
+			</nav>
+		</div>
+	</header>
+
+	<div id="main">
+		<aside id="sidebar">
+			<h3>Tags</h3>
+			<ul>
+				<li><a href="#" class="tag tag-artist">Artist Tag</a></li>
+				<li><a href="#" class="tag tag-copyright">Copyright Tag</a></li>
+				<li><a href="#" class="tag tag-general">General Tag</a></li>
+				<li><a href="#" class="tag tag-meta">Meta Tag</a></li>
+			</ul>
+		</aside>
+
+		<main id="mainContent">
+			<article>
+				<h1>CSS Refactoring Test Page</h1>
+				<p>This page tests the refactored CSS structure.</p>
+				
+				<div style="margin-top: 2rem;">
+					<h2>Buttons</h2>
+					<div style="display: flex; gap: 1rem; margin-top: 1rem;">
+						<button class="button">Primary Button</button>
+						<button class="button button-danger">Danger Button</button>
+					</div>
+				</div>
+
+				<div style="margin-top: 2rem;">
+					<h2>Tags</h2>
+					<div style="display: flex; gap: 1rem; margin-top: 1rem;">
+						<a href="#" class="tag tag-artist">Artist</a>
+						<a href="#" class="tag tag-copyright">Copyright</a>
+						<a href="#" class="tag tag-general">General</a>
+						<a href="#" class="tag tag-meta">Meta</a>
+					</div>
+				</div>
+			</article>
+		</main>
+	</div>
+
+	<footer id="footer">
+		<p>CSS Refactoring Test - All styles loaded successfully!</p>
+	</footer>
+</body>
+</html>
