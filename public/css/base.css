@@ -1,0 +1,66 @@
+/* =========================
+   Variables
+========================= */
+:root {
+	/* slate base */
+	--color-bg: #f1f5f9;
+	--color-bg-box: #ffffff;
+	--color-border: #cbd5e1;
+	--color-text: #1e293b;
+	--color-text-light: #475569;
+
+	--color-video-border: #c7b922;
+
+	/* accent */
+	--color-accent: #2563eb;
+	--color-accent-red: #dc2626;
+
+	/* spacing */
+	--space-s: 0.5rem;
+	--space-m: 1rem;
+	--space-l: 2rem;
+
+	/* sizes */
+	--radius: 6px;
+
+	/* font */
+	--font-main: "Inter", "Segoe UI", sans-serif;
+	--font-tag: "Verdana", sans-serif;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-bg: #0f172a;
+		--color-bg-box: #1e293b;
+		--color-border: #334155;
+		--color-text: #f1f5f9;
+		--color-text-light: #94a3b8;
+		--color-accent: #3b82f6;
+		--color-profile-bg: #1e293b;
+	}
+}
+
+/* =========================
+   Base
+========================= */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: var(--font-main);
+	font-size: 16px;
+	line-height: 1.5;
+	background: var(--color-bg);
+	color: var(--color-text);
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+main {
+	flex: 1;
+}

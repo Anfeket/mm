@@ -1,0 +1,165 @@
+/* =========================
+   Buttons
+========================= */
+.button {
+	display: inline-block;
+	padding: 0.5rem 1rem;
+	background-color: var(--color-accent);
+	color: #fff;
+	text-decoration: none;
+	border: none;
+	border-radius: var(--radius);
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: 500;
+	line-height: inherit;
+	transition: background-color 0.2s;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 85%, black);
+}
+
+.button-danger {
+	background-color: var(--color-accent-red);
+}
+
+.button-danger:hover {
+	background-color: color-mix(in srgb, var(--color-accent-red) 85%, black);
+}
+
+/* =========================
+   Tags
+========================= */
+.tag {
+	display: inline-block;
+	font-family: var(--font-tag);
+	font-size: 0.8rem;
+	text-decoration: none;
+}
+
+/* Category-specific colors */
+.tag-artist {
+	color: #f87171;
+}
+
+.tag-copyright {
+	color: #34d399;
+}
+
+.tag-general {
+	color: #60a5fa;
+}
+
+.tag-meta {
+	color: #c084fc;
+}
+
+.tag:hover {
+	opacity: 0.85;
+}
+
+/* =========================
+   Profile/Account Components
+========================= */
+#account-box {
+	display: flex;
+	align-items: center;
+	gap: var(--space-s);
+}
+
+.profile-link {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	text-decoration: none;
+	color: inherit;
+	font-weight: bold;
+}
+
+.avatar {
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	object-fit: cover;
+}
+
+.logout-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #dc2626;
+	text-decoration: none;
+	padding: 0 0.2em;
+}
+
+.logout-link:hover {
+	opacity: 0.8;
+}
+
+.logout-link .chevron {
+	display: block;
+}
+
+.auth-link {
+	padding: 0.3em 0.6em;
+	border-radius: 6px;
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 0.9rem;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.login-link {
+	background-color: #e2e8f0;
+	color: #1e293b;
+}
+
+.login-link:hover {
+	background-color: #cbd5e1;
+}
+
+.register-link {
+	background-color: #2563eb;
+	color: #fff;
+}
+
+.register-link:hover {
+	background-color: #1d4ed8;
+}
+
+/* =========================
+   Autocompletion
+========================= */
+.autocomplete-list {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	width: 100%;
+	background: var(--color-bg-box);
+	z-index: 100;
+	overflow-y: auto;
+}
+
+.autocomplete-list div {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: var(--space-s) var(--space-m);
+	cursor: pointer;
+	width: 100%;
+	border: 1px solid var(--color-border);
+	gap: var(--space-s);
+}
+
+.autocomplete-list div:hover {
+	background: var(--color-accent);
+	color: white;
+}
+
+.autocomplete-list div.active {
+	background: var(--color-accent);
+	color: white;
+}
