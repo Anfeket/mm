@@ -10,9 +10,19 @@
 <body>
     <x-header />
 
-    <main id="main">
-        {{ $slot }}
-    </main>
+    <div id="container" @class(['with-sidebar' => isset($sidebar)])>
+
+        @if (isset($sidebar))
+            <aside id="sidebar">
+                {{ $sidebar }}
+            </aside>
+        @endif
+
+        <main id="main">
+            {{ $slot }}
+        </main>
+
+    </div>
 
     <x-footer />
 </body>

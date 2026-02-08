@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class User extends Model
+class User extends Authenticatable
 {
     use HasFactory;
     use Notifiable;
@@ -53,5 +52,15 @@ class User extends Model
     public function avatar()
     {
         return $this->avatar_path;
+    }
+
+    public function invites()
+    {
+        return $this->hasMany(Invite::class, 'created_by');
+    }
+
+    public function usedInvite()
+    {
+        return $this->hasOne(Invite::class, 'used_by');
     }
 }

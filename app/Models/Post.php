@@ -19,12 +19,9 @@ class Post extends Model
         'original_filename',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'processing_status' => PostProcessingStatus::class,
-        ];
-    }
+    protected $casts = [
+        'processing_status' => PostProcessingStatus::class,
+    ];
 
     public function author()
     {
@@ -33,7 +30,9 @@ class Post extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'post_tag');
+        return $this->belongsToMany(Tag::class, 'post_tags')
+            ->withPivot('added_by_user_id')
+            ->withTimestamps();
     }
 
     public function comments()
@@ -49,5 +48,15 @@ class Post extends Model
     public function favorites()
     {
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+
+    public function isImage()
+    {
+        return str_starts_with($this->mime_type, 'image/');
+    }
+
+    public function isVideo()
+    {
+        return str_starts_with($this->mime_type, 'video/');
     }
 }

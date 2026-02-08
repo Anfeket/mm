@@ -1,0 +1,109 @@
+<x-layout>
+    <x-slot:title>Upload</x-slot:title>
+
+    <div class="container-sm">
+
+        <h2>Upload a post</h2>
+
+        @if ($errors->any())
+            <div class="alert alert-error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
+            @csrf
+
+            <div id="dropzone" class="dropzone">
+                <input type="file" name="file" id="file-input" accept="image/*,video/*" required>
+                <div id="dropzone-prompt" class="dropzone-prompt">
+                    <p>Drop file here or <span class="browse-link">browse</span></p>
+                </div>
+                <div id="preview" class="dropzone-preview" hidden></div>
+            </div>
+
+            <label class="form-label">
+                Artist:
+                <input type="text" name="artist" class="form-input" value="{{ old('artist') }}" placeholder="artist_name">
+            </label>
+
+            <label class="form-label">
+                Copyrights:
+                <input type="text" name="copyright" class="form-input" value="{{ old('copyright') }}" placeholder="series_name">
+            </label>
+
+            <label class="form-label">
+                Tags:
+                <input type="text" name="tags" class="form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3">
+            </label>
+
+            <label class="form-label">
+                Source:
+                <input type="text" name="source_url" class="form-input" value="{{ old('source_url') }}" placeholder="https://...">
+            </label>
+
+            <label class="form-label">
+                Description:
+                <textarea name="description" class="form-input" rows="3">{{ old('description') }}</textarea>
+            </label>
+
+            <button type="submit" class="button button-primary">Upload</button>
+        </form>
+    </div>
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const input = document.getElementById('file-input');
+        const prompt = document.getElementById('dropzone-prompt');
+        const preview = document.getElementById('preview');
+
+        dropzone.addEventListener('click', () => input.click());
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                input.files = e.dataTransfer.files;
+                showPreview(input.files[0]);
+            }
+        });
+
+        input.addEventListener('change', () => {
+            if (input.files[0]) showPreview(input.files[0]);
+        });
+
+        function showPreview(file) {
+            preview.innerHTML = '';
+            prompt.hidden = true;
+            preview.hidden = false;
+
+            const url = URL.createObjectURL(file);
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = url;
+                preview.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                preview.appendChild(video);
+            }
+
+            const info = document.createElement('p');
+            info.className = 'dropzone-hint';
+            info.textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MB`;
+            preview.appendChild(info);
+        }
+    </script>
+
+</x-layout>

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('mime_type', 100);
             $table->string('file_hash', 64);
             $table->string('file_path');
+            $table->string('thumb_path')->nullable();
             $table->string('original_filename')->nullable();
             $table->unsignedBigInteger('file_size');
 
