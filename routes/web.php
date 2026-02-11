@@ -30,6 +30,9 @@ Route::middleware('guest')->group(function () {
 Route::get('/tags', function () {
     return view('tags.index');
 })->name('tags');
+Route::get('/tag/{tag}', function ($tag) {
+    return view('tags.show', ['tag' => $tag]);
+})->name('tags.show');
 Route::get('/artists', function () {
     return view('artists.index');
 })->name('artists');

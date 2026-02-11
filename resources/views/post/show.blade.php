@@ -1,35 +1,22 @@
+@use(App\TagCategory)
 <x-layout>
     <x-slot:title>Post #{{ $post->id }}</x-slot:title>
+
+    <x-slot:sidebar>
+        <x-post.tags :tags="$post->tags" />
+    </x-slot:sidebar>
 
     <article>
         <div id="post-actions">
         </div>
+        <x-post.media :post="$post" />
         <div id="post-content">
-            <div class="post-media">
-            @if ($post->isImage())
-                <img
-                    src="{{ asset('uploads/' . $post->file_path) }}"
-                    alt="Post #{{ $post->id }}"
-                    @if ($post->width) width="{{ $post->width }}" @endif
-                    @if ($post->height) height="{{ $post->height }}" @endif
-                \>
-            @elseif ($post->video)
-                <video
-                    controls
-                    @if ($post->width) width="{{ $post->width }}" @endif
-                    @if ($post->height) height="{{ $post->height }}" @endif
-                >
-                    <source src="{{ asset('uploads/' . $post->file_path) }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            @endif
-            </div>
             <div class="post-description">
-                <h3>Description</h3>
+                <h3 class="tag-category">Description</h3>
                 <p>{{ $post->description }}</p>
             </div>
             <div class="post-comments">
-                <h3>Comments</h3>
+                <h3 class="tag-category">Comments</h3>
                 @forelse($post->comments as $comment)
                     <div class="comment">
                         <p><strong>{{ $comment->author->username }}:</strong> {{ $comment->content }}</p>
