@@ -6,182 +6,19 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--space-l);
     margin-bottom: var(--space-xl);
+    align-items: end;
 }
 
 .post-card {
-    position: relative;
-    background: var(--color-bg-box);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
-}
-
-.post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-}
-
-.post-card img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 .post-card.post-video {
     border: 2px solid var(--color-video-border);
-}
-
-/* =========================
-   Post Show/Detail
-========================= */
-.post-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-l);
-}
-
-.post-nav a,
-.post-nav span {
-    padding: var(--space-s) var(--space-m);
-    border-radius: var(--radius);
-    font-weight: 500;
-    color: var(--color-text-light);
-    transition: all var(--transition-fast);
-}
-
-.post-nav a:hover {
-    color: var(--color-accent);
-    background: var(--color-bg-box);
-}
-
-.post-nav .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.post-image-container {
-    text-align: center;
-    margin-bottom: var(--space-xl);
-    background: var(--color-bg-box);
-    border-radius: var(--radius-lg);
-    padding: var(--space-l);
-}
-
-.post-image-container img,
-.post-image-container video {
-    max-width: 100%;
-    max-height: 80vh;
-    margin: 0 auto;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-}
-
-.post-info-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: var(--space-xl);
-}
-
-.post-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-l);
-}
-
-.post-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-l);
-}
-
-.post-details dl {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: var(--space-s) var(--space-m);
-    font-size: 0.875rem;
-}
-
-.post-details dt {
-    font-weight: 600;
-    color: var(--color-text-light);
-}
-
-.post-details dd {
-    color: var(--color-text);
-}
-
-.tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-s);
-}
-
-/* =========================
-   Auth Pages
-========================= */
-.auth-container {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: var(--space-xl);
-}
-
-.auth-card {
-    background: var(--color-bg-box);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    box-shadow: var(--shadow-lg);
-}
-
-.auth-footer {
-    margin-top: var(--space-l);
-    text-align: center;
-    font-size: 0.875rem;
-    color: var(--color-text-light);
-}
-
-/* =========================
-   Error Pages
-========================= */
-.error-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    text-align: center;
-    padding: var(--space-xl);
-}
-
-.error-code {
-    font-size: 6rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    line-height: 1;
-    margin-bottom: var(--space-m);
-}
-
-.error-message {
-    font-size: 1.25rem;
-    color: var(--color-text-light);
-    margin-bottom: var(--space-xl);
-}
-
-/* =========================
-   Responsive
-========================= */
-@media (max-width: 1024px) {
-    .post-info-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .post-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: var(--space-m);
-    }
 }

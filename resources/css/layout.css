@@ -1,192 +1,74 @@
-/* =========================
-   Header
-========================= */
+/* ===================
+    Header
+=================== */
+
 #header {
     background: var(--color-bg-box);
     border-bottom: 1px solid var(--color-border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
 }
 
 #top {
-    margin: 0 auto;
-    padding: var(--space-m) var(--space-l);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-m);
+    margin: var(--space-s) var(--space-m);
 }
 
 #site-name {
     font-size: 1.75rem;
     font-weight: 700;
-    margin: 0;
+    margin: 0 var(--space-m);
 }
 
-#site-name a {
-    color: var(--color-accent);
-    text-decoration: none;
-}
-
-#site-name a:hover {
-    opacity: 0.85;
-}
-
-/* Navigation */
-#header nav {
-    margin: 0 auto;
-    padding: 0 var(--space-l) var(--space-m);
+#user-menu,
+#auth-links {
     display: flex;
-    gap: var(--space-xs);
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-#header nav::-webkit-scrollbar {
-    display: none;
-}
-
-#header nav a {
-    color: var(--color-text-light);
-    font-weight: 500;
-    padding: var(--space-s) var(--space-m);
-    border-radius: var(--radius);
-    white-space: nowrap;
-    transition: all var(--transition-fast);
-}
-
-#header nav a:hover {
-    color: var(--color-accent);
-    background: var(--color-bg);
-}
-
-/* Account Box */
-#account-box {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    padding: var(--space-s) var(--space-m);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-}
-
-#user-menu {
-    display: flex;
-    align-items: center;
     gap: var(--space-m);
 }
 
-.profile-link {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    color: var(--color-text);
-    font-weight: 600;
+#auth-links a {
+    border: 1px solid var(--color-border);
+    padding: var(--space-s) var(--space-m);
+    border-radius: var(--radius);
 }
-
-.profile-link:hover {
+#auth-links a:hover {
+    background: var(--color-bg);
     color: var(--color-accent);
 }
 
-.avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--color-border);
-}
-
-.logout-btn {
-    background: none;
-    border: none;
-    color: var(--color-accent-red);
-    font-size: 0.875rem;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    padding: var(--space-xs) var(--space-s);
-    border-radius: var(--radius);
-    transition: background var(--transition-fast);
-}
-
-.logout-btn:hover {
-    background: rgba(220, 38, 38, 0.1);
-}
-
-/* Auth Links */
-.auth-links {
+#main-nav {
     display: flex;
-    gap: var(--space-s);
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 var(--space-m);
+}
+#main-nav::-webkit-scrollbar {
+    display: none;
 }
 
-.auth-link {
-    padding: var(--space-s) var(--space-m);
-    border-radius: var(--radius);
+#main-nav a {
+    color: var(--color-text-light);
     font-weight: 500;
-    font-size: 0.875rem;
-    transition: all var(--transition-fast);
+    padding: var(--space-s) var(--space-m);
+    white-space: nowrap;
+}
+#main-nav a:hover {
+    color: var(--color-accent);
+    background: var(--color-bg);
 }
 
-.auth-link.login {
-    background: transparent;
-    color: var(--color-text);
-}
-
-.auth-link.login:hover {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.auth-link.register {
-    background: var(--color-accent);
-    color: white;
-}
-
-.auth-link.register:hover {
-    background: var(--color-accent-hover);
-}
-
-/* =========================
-   Footer
-========================= */
+/* ===================
+    Footer
+=================== */
 #footer {
-    padding: var(--space-l);
     background: var(--color-bg-box);
     border-top: 1px solid var(--color-border);
     text-align: center;
-    font-size: 0.875rem;
-    color: var(--color-text-light);
+    padding: var(--space-m);
     margin-top: auto;
 }
 
-#footer a {
-    color: var(--color-accent);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-}
-
-#footer a:hover {
-    text-decoration: underline;
-}
-
-/* =========================
-   Responsive
-========================= */
-@media (max-width: 768px) {
-    #top {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    #header nav {
-        padding-top: 0;
-    }
-
-    .container-sm,
-    .container-md,
-    .container-lg,
-    .container-xl {
-        padding: var(--space-l) var(--space-m);
-    }
+#footer p {
+    color: var(--color-text-light);
+    font-size: 0.875rem;
 }
