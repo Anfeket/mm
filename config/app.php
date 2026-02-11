@@ -13,7 +13,8 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'mm'),
+    'name' => env('APP_NAME', 'The Memetic Manifest'),
+    'short_name' => env('APP_NAME_SHORT', 'mm'),
 
     /*
     |--------------------------------------------------------------------------

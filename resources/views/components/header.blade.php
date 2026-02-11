@@ -1,18 +1,10 @@
 <header id="header">
-    <div id="top">
-        <h1><a href="{{ url('/') }}">mm</a></h1>
 
-        <nav>
-            <a href="{{ route('posts.index') }}">Posts</a>
-            <a href="{{ route('tags') }}">Tags</a>
-            <a href="{{ route('artists') }}">Artists</a>
-            <a href="{{ route('pools') }}">Pools</a>
-            <a href="{{ route('wiki') }}">Wiki</a>
-            <a href="{{ route('forum') }}">Forum</a>
-            @auth
-                <a href="{{ route('posts.create') }}">Upload</a>
-            @endauth
-        </nav>
+    <div id="top">
+
+        <h1 id="site-name"><a href="{{ url('/') }}">{{ config('app.name') }}</a></h1>
+
+        <x-theme />
 
         @auth
             <div id="user-menu">
@@ -35,4 +27,17 @@
             </div>
         @endauth
     </div>
+
+    <nav id="main-nav">
+        <a href="{{ route('posts.index') }}">Posts</a>
+        <a href="{{ route('tags') }}">Tags</a>
+        <a href="{{ route('artists') }}">Artists</a>
+        <a href="{{ route('pools') }}">Pools</a>
+        <a href="{{ route('wiki') }}">Wiki</a>
+        <a href="{{ route('forum') }}">Forum</a>
+        @auth
+            <a href="{{ route('posts.create') }}">Upload</a>
+        @endauth
+    </nav>
+
 </header>
