@@ -1,0 +1,66 @@
+/* =========================
+    Post sidebar
+========================= */
+.post-details-section {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    padding: var(--space-m);
+    margin-bottom: var(--space-l);
+}
+
+#post-details-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-s) var(--space-l);
+}
+
+#post-details-list dt {
+    font-weight: 700;
+    color: var(--color-text-light);
+}
+
+/* =========================
+    Tag list
+========================= */
+.tag-category {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+}
+
+.tag-list {
+    list-style: none;
+    margin-bottom: var(--space-m);
+}
+
+/* =========================
+    Tags
+========================= */
+.tag {
+    font-family: var(--font-tag);
+    font-size: 0.9rem;
+}
+
+.tag-artist {
+    color: var(--color-tag-artist);
+}
+
+.tag-copyright {
+    color: var(--color-tag-copyright);
+}
+
+.tag-general {
+    color: var(--color-tag-general);
+}
+
+.tag-meta {
+    color: var(--color-tag-meta);
+}
+
+/* =========================
+    Post Media
+========================= */
+.post-media {
+    width: auto;
+    max-height: 80vh;
+}

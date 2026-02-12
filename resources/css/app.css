@@ -1,9 +1,4 @@
 @import './base.css';
 @import './layout.css';
 @import './pages.css';
-
-/*
-@import './base.old.css';
-@import './layout.old.css';
-@import './pages.old.css';
- */
+@import './components.css';

@@ -1,6 +1,8 @@
 @props(['tags'])
 @use(App\TagCategory)
-<section id="tag-list" class="post-details">
+
+<section id="tag-list" class="post-details-section">
+
     @if ($tags->where('category', TagCategory::Artist)->isNotEmpty())
         <h3 class="tag-category">Artists</h3>
         <ul class="tag-list">
@@ -9,6 +11,7 @@
             @endforeach
         </ul>
     @endif
+
     @if ($tags->where('category', TagCategory::Copyright)->isNotEmpty())
         <h3 class="tag-category">Copyrights</h3>
         <ul class="tag-list">
@@ -17,6 +20,7 @@
             @endforeach
         </ul>
     @endif
+
     @if ($tags->where('category', TagCategory::General)->isNotEmpty())
         <h3 class="tag-category">General</h3>
         <ul class="tag-list">
@@ -25,6 +29,7 @@
             @endforeach
         </ul>
     @endif
+
     @if ($tags->where('category', TagCategory::Meta)->isNotEmpty())
         <h3 class="tag-category">Meta</h3>
         <ul class="tag-list">
@@ -33,4 +38,9 @@
             @endforeach
         </ul>
     @endif
+
+    @if ($tags->isEmpty())
+        <p>No tags found.</p>
+    @endif
+
 </section>

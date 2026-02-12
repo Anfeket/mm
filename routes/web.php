@@ -45,3 +45,6 @@ Route::get('/wiki', function () {
 Route::get('/forum', function () {
     return view('forum.index');
 })->name('forum');
+Route::get('/user/{user}', function ($user) {
+    return view('users.show', ['user' => $user]);
+})->name('users.show');

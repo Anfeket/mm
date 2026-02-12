@@ -31,6 +31,7 @@
     padding: var(--space-s) var(--space-m);
     border-radius: var(--radius);
 }
+
 #auth-links a:hover {
     background: var(--color-bg);
     color: var(--color-accent);
@@ -42,6 +43,7 @@
     scrollbar-width: none;
     margin: 0 var(--space-m);
 }
+
 #main-nav::-webkit-scrollbar {
     display: none;
 }
@@ -52,9 +54,36 @@
     padding: var(--space-s) var(--space-m);
     white-space: nowrap;
 }
+
 #main-nav a:hover {
     color: var(--color-accent);
     background: var(--color-bg);
+}
+
+/* ===================
+    Container
+=================== */
+#container {
+    flex: 1;
+}
+
+.with-sidebar {
+    display: flex;
+}
+
+#main {
+    flex: 1;
+    padding: var(--space-m);
+}
+
+/* ===================
+    Sidebar
+=================== */
+#sidebar {
+    min-width: 200px;
+    background: var(--color-bg-box);
+    padding: var(--space-m);
+    border-right: 1px solid var(--color-border);
 }
 
 /* ===================
