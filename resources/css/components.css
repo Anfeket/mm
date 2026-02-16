@@ -64,3 +64,47 @@
     width: auto;
     max-height: 80vh;
 }
+
+/* =========================
+    Buttons
+========================= */
+.btn {
+    display: inline-block;
+    padding: var(--space-s) var(--space-m);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+.btn:hover {
+    background: var(--color-bg-hover);
+}
+.btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* =========================
+    Pagination
+========================= */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-l);
+    gap: var(--space-m);
+}
+
+
+/* =========================
+    Post pagination
+========================= */
+.post-pagination {
+    display: flex;
+    width: 80%;
+    justify-content: space-between;
+    margin-top: var(--space-m);
+    align-items: center;
+    gap: var(--space-m);
+}

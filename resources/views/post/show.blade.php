@@ -27,5 +27,20 @@
                 @endforelse
             </section>
         </div>
+
+        <nav class="post-pagination">
+            @if($nextPost)
+                <a href="{{ route('posts.show', $nextPost) }}" class="btn btn-secondary">&laquo; Next</a>
+            @else
+                <span class="btn btn-secondary disabled">&laquo; Next</span>
+            @endif
+
+            @if($previousPost)
+                <a href="{{ route('posts.show', $previousPost) }}" class="btn btn-secondary">Previous &raquo;</a>
+            @else
+                <span class="btn btn-secondary disabled">Previous &raquo;</span>
+            @endif
+        </nav>
+
     </article>
 </x-layout>

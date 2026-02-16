@@ -40,7 +40,18 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $post = $post->load('author', 'tags', 'comments');
-        return view('post.show', compact('post'));
+
+        // Find previous and next posts by ID
+        $previousPost = Post::where('is_listed', true)
+            ->where('id', '<', $post->id)
+            ->orderBy('id', 'desc')
+            ->first();
+        $nextPost = Post::where('is_listed', true)
+            ->where('id', '>', $post->id)
+            ->orderBy('id', 'asc')
+            ->first();
+
+        return view('post.show', compact('post', 'previousPost', 'nextPost'));
     }
 
     /**
