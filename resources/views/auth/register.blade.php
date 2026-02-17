@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Register</x-slot:title>
 
-    <div class="container-sm">
+    <div class="auth-container">
         <h2>Register</h2>
 
         @if ($errors->any())
@@ -34,7 +34,7 @@
                 <input type="password" name="password" class="form-input" required>
             </label>
 
-            <button type="submit" class="button button-primary">Register</button>
+            <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
 </x-layout>

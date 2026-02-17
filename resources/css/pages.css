@@ -47,3 +47,53 @@
     background: var(--color-bg-box);
     padding: var(--space-m);
 }
+
+/* =========================
+    Login form
+========================= */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    background: var(--color-bg-box);
+    border-radius: var(--radius);
+    padding: var(--space-l);
+    margin: var(--space-xl) auto;
+}
+
+.auth-container h2 {
+    margin-bottom: var(--space-l);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    width: 100%;
+}
+
+.form-label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+}
+
+.form-label-inline {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-s);
+}
+
+.form-input {
+    padding: var(--space-s);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}

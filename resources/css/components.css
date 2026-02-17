@@ -77,6 +77,7 @@
     color: var(--color-accent);
     text-decoration: none;
     font-weight: 500;
+    cursor: pointer;
 }
 .btn:hover {
     background: var(--color-bg-hover);
@@ -108,3 +109,4 @@
     align-items: center;
     gap: var(--space-m);
 }
+

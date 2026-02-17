@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Login</x-slot:title>
 
-    <div class="container-sm">
+    <div class="auth-container">
         <h2>Login</h2>
 
         @if ($errors->any())
@@ -27,11 +27,7 @@
                 <input type="password" name="password" class="form-input" required>
             </label>
 
-            <label class="form-label">
-                <input type="checkbox" name="remember"> Remember Me
-            </label>
-
-            <button type="submit" class="button button-primary">Login</button>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
 </x-layout>
