@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\PostProcessingStatus;
+use App\Jobs\ProcessPostMedia;
+use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -29,9 +32,45 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, FileStorageService $storage)
     {
-        //
+        $request->validate([
+            'file' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm', 'max:102400'], // 100MB max
+            'source_url' => ['nullable', 'url', 'max:2048'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'tags' => ['nullable', 'string'],
+            'artist' => ['nullable', 'string'],
+            'copyright' => ['nullable', 'string'],
+        ]);
+
+        $file = $request->file('file');
+        $fileInfo = $storage->store($file);
+
+        $width = $height = null;
+        if (str_starts_with($file->getMimeType(), 'image/')) {
+            [$width, $height] = getimagesize($file->getRealPath());
+        }
+
+        $post = Post::create([
+            'author_id'         => $request->user()->id,
+            'file_path'         => $fileInfo['file_path'],
+            'file_hash'         => $fileInfo['file_hash'],
+            'file_size'         => $file->getSize(),
+            'mime_type'         => $file->getMimeType(),
+            'original_filename' => $file->getClientOriginalName(),
+            'width'             => $width,
+            'height'            => $height,
+            'description'       => $request->input('description'),
+            'source_url'        => $request->input('source_url'),
+            'is_listed'         => false, // New posts are unlisted by default
+            'processing_status' => PostProcessingStatus::Processing,
+        ]);
+
+        // Handle tags
+
+        ProcessPostMedia::dispatch($post);
+
+        return redirect()->route('posts.show', $post)->with('success', 'Post uploaded successfully! It will be listed once processing is complete.');
     }
 
     /**

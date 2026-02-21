@@ -14,9 +14,19 @@ class Post extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'author_id',
+        'file_path',
+        'file_hash',
+        'file_size',
+        'mime_type',
+        'original_filename',
+        'width',
+        'height',
+        'duration_ms',
         'description',
         'source_url',
-        'original_filename',
+        'is_listed',
+        'processing_status',
     ];
 
     protected $casts = [

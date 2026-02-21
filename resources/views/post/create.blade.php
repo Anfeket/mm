@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Upload</x-slot:title>
 
-    <div class="container-sm">
+    <div class="upload-container">
 
         <h2>Upload a post</h2>
 
@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
+        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off" class="upload-form">
             @csrf
 
             <div id="dropzone" class="dropzone">
@@ -51,7 +51,7 @@
                 <textarea name="description" class="form-input" rows="3">{{ old('description') }}</textarea>
             </label>
 
-            <button type="submit" class="button button-primary">Upload</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
     </div>
 
