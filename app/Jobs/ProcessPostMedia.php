@@ -96,8 +96,8 @@ class ProcessPostMedia implements ShouldQueue
     {
         $result = $ffmpeg->exec(sprintf(
             '-ss %d -i %s -frames:v 1 -vf "scale=%d:%d:force_original_aspect_ratio=decrease" %s',
-            escapeshellarg($src),
             config('media.thumb.video_frame_time'),
+            escapeshellarg($src),
             config('media.thumb.width'),
             config('media.thumb.height'),
             escapeshellarg($dest)

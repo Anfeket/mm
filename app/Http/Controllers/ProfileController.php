@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invite;
+use App\Models\User;
+
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -74,5 +77,44 @@ class ProfileController extends Controller
         $user->save();
 
         return redirect()->route('profile.show')->with('status', 'Profile updated successfully.');
+    }
+
+    private function processAvatar(UploadedFile $file, User $user): string
+    {
+        $source = imagecreatefromstring(file_get_contents($file->getRealPath()));
+
+        if (!$source) {
+            throw new \RuntimeException("Could not read avatar image");
+        }
+
+        $origW      = imagesx($source);
+        $origH      = imagesy($source);
+        $thumbSize  = config('media.avatar.size', 128);
+        $scale      = max($thumbSize / $origW, $thumbSize / $origH);
+        $thumbW     = (int)($origW * $scale);
+        $thumbH     = (int)($origH * $scale);
+
+        $offsetX = (int)(($thumbW - $thumbSize) / 2);
+        $offsetY = (int)(($thumbH - $thumbSize) / 2);
+
+        $scaled = imagecreatetruecolor($thumbW, $thumbH);
+        imagealphablending($scaled, false);
+        imagesavealpha($scaled, true);
+        imagecopyresampled($scaled, $source, 0, 0, 0, 0, $thumbW, $thumbH, $origW, $origH);
+
+        $thumb = imagecreatetruecolor($thumbSize, $thumbSize);
+        imagealphablending($thumb, false);
+        imagesavealpha($thumb, true);
+        imagecopy($thumb, $scaled, 0, 0, $offsetX, $offsetY, $thumbW, $thumbH);
+
+        $dir = storage_path('app/uploads/avatars/');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $path = "avatars/{$user->id}.webp";
+        imagewebp($thumb, storage_path('app/uploads/' . $path), config('media.avatar.quality', 80));
+
+        return $path;
     }
 }

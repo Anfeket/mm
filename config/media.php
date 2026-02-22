@@ -17,17 +17,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | ffmpeg URL
+    | ffmpeg Configuration
     |--------------------------------------------------------------------------
     |
-    | This option specifies the URL from which to download ffmpeg for video
-    | processing. You can set this to a custom URL if you have a specific build
-    | of ffmpeg you want to use, or leave it as the default to use the standard
-    | builds from btbN builds.
+    | These options configure the ffmpeg binary used for video processing.
     |
-     */
+    | "default_args" are prepended to every ffmpeg and ffprobe command.
+    |
+    | "url" is the download URL for the static ffmpeg build, used by the
+    | ffmpeg:install artisan command. Defaults to the latest Linux x86-64
+    | GPL build from BtbN/FFmpeg-Builds. Override via FFMPEG_URL in .env
+    | if you need a different architecture or license variant.
+    |
+    */
 
-    'ffmpeg_url' => env('FFMPEG_URL', 'https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl.tar.xz'),
+    'ffmpeg' => [
+        'default_args' => [
+            '-hide_banner',
+            '-loglevel error',
+        ],
+        'url' => env('FFMPEG_URL', 'https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl.tar.xz'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -46,5 +56,21 @@ return [
         'height' => 300,
         'quality' => 80, // For image thumbnails (1-100)
         'video_frame_time' => 1, // Time in seconds to capture video thumbnail
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Avatar Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This section defines the settings for user avatar images. You can specify
+    | the size (in pixels) for the avatar images, as well as the quality level
+    | for the generated avatar thumbnails (1-100).
+    |
+     */
+
+    'avatar' => [
+        'size' => 128,
+        'quality' => 80,
     ],
 ];

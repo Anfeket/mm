@@ -4,6 +4,13 @@ namespace App\Services;
 
 class FfmpegService
 {
+    public function __construct()
+    {
+        $this->default_args = implode(' ', config('media.ffmpeg.default_args', []));
+    }
+
+    protected string $default_args;
+
     public function binaryPath(): string
     {
         $ext = PHP_OS_FAMILY === 'Windows' ? '.exe' : '';
@@ -47,7 +54,7 @@ class FfmpegService
         }
 
         $archive = $binDir . '/ffmpeg.tar.xz';
-        file_put_contents($archive, fopen(config('media.ffmpeg_url'), 'r'));
+        file_put_contents($archive, fopen(config('media.ffmpeg.url'), 'r'));
 
         exec("tar -xf {$archive} -C {$binDir} --strip-components=2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'", $output, $returnCode);
 
@@ -66,7 +73,7 @@ class FfmpegService
             throw new \RuntimeException('ffmpeg not installed');
         }
 
-        $cmd = escapeshellarg($this->binaryPath()) . ' ' . $args . ' 2>&1';
+        $cmd = escapeshellarg($this->binaryPath()) . ' ' . $this->default_args . ' ' . $args . ' 2>&1';
         exec($cmd, $output, $returnCode);
 
         return [
@@ -81,7 +88,7 @@ class FfmpegService
             throw new \RuntimeException('ffmpeg not installed');
         }
 
-        $cmd = escapeshellarg($this->probeBinaryPath()) . ' ' . $args . ' 2>&1';
+        $cmd = escapeshellarg($this->probeBinaryPath()) . ' ' . $this->default_args . ' ' . $args . ' 2>&1';
         exec($cmd, $output, $returnCode);
 
         return [
