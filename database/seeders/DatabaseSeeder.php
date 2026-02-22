@@ -39,9 +39,19 @@ class DatabaseSeeder extends Seeder
         if (!is_dir($postDir)) mkdir($postDir, 0775, true);
         if (!is_dir($thumbDir)) mkdir($thumbDir, 0775, true);
 
-        $posts = Post::factory()->count(20)->create([
-            'author_id' => $user->id,
-        ]);
+        $bar = $this->command?->getOutput()->createProgressBar(20);
+        $bar?->setFormat('%message% [%bar%] %current%/%max%');
+        $bar?->setMessage('Creating posts...');
+        $bar?->start();
+
+        $posts = collect(range(1, 20))->map(function () use ($user, $bar) {
+            $post = Post::factory()->createOne(['author_id' => $user->id]);
+            $bar?->advance();
+            return $post;
+        });
+
+        $bar?->finish();
+        $this->command?->getOutput()->newLine();
 
         foreach ($posts as $post) {
             $post->tags()->attach($tags->random(rand(2, 8))->pluck('id'), ['added_by_user_id' => $user->id]);
