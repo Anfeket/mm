@@ -12,13 +12,22 @@ class FfmpegInstall extends Command
 
     public function handle(FfmpegService $ffmpeg): int
     {
+        $bar = $this->output->createProgressBar();
+        $bar->setFormat('%message% [%bar%] %percent%%');
+        $bar->setMessage('Downloading ffmpeg...');
+        $bar->start();
+
         try {
-            $ffmpeg->install($this->option('force'));
+            $ffmpeg->install($this->option('force'), $bar);
         } catch (\RuntimeException $e) {
+            $bar->finish();
+            $this->newLine();
             $this->error($e->getMessage());
             return self::FAILURE;
         }
 
+        $bar->finish();
+        $this->newLine();
         $this->info('Installed ffmpeg ' . $ffmpeg->version());
         return self::SUCCESS;
     }

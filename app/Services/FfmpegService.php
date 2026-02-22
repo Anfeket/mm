@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
+use Symfony\Component\Console\Helper\ProgressBar;
+
 class FfmpegService
 {
     public function __construct()
@@ -40,7 +43,7 @@ class FfmpegService
         return $output[0] ?? null;
     }
 
-    public function install(bool $force = false): void
+    public function install(bool $force = false, ?ProgressBar $progress = null): void
     {
         $binDir = storage_path('bin');
         $binPath = $this->binaryPath();
@@ -53,11 +56,23 @@ class FfmpegService
             mkdir($binDir, 0755, true);
         }
 
-        $archive = $binDir . '/ffmpeg.tar.xz';
-        file_put_contents($archive, fopen(config('media.ffmpeg.url'), 'r'));
+        $progress?->setMessage('Downloading ffmpeg...');
 
+        $archive = $binDir . '/ffmpeg.tar.xz';
+        Http::withOptions([
+            'progress' => function ($total, $downloaded) use ($progress) {
+                if ($total > 0 && $progress) {
+                    $progress->setMaxSteps($total);
+                    $progress->setProgress($downloaded);
+                }
+            },
+            'sink' => $archive,
+        ])->get(config('media.ffmpeg.url'));
+
+        $progress->setMessage('Extracting ffmpeg...');
         exec("tar -xf {$archive} -C {$binDir} --strip-components=2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'", $output, $returnCode);
 
+        $progress->setMessage('Cleaning up...');
         unlink($archive);
 
         if ($returnCode !== 0 || !file_exists($binPath)) {
@@ -65,6 +80,7 @@ class FfmpegService
         }
 
         chmod($binPath, 0755);
+        $progress->setMessage('ffmpeg installed successfully');
     }
 
     public function exec(string $args): array
