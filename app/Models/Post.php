@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 use App\PostProcessingStatus;
 
+/**
+ * @property PostProcessingStatus $processing_status
+ */
 class Post extends Model
 {
     use HasFactory;
@@ -29,9 +33,12 @@ class Post extends Model
         'processing_status',
     ];
 
-    protected $casts = [
-        'processing_status' => PostProcessingStatus::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'processing_status' => PostProcessingStatus::class,
+        ];
+    }
 
     public function author()
     {
@@ -68,5 +75,19 @@ class Post extends Model
     public function isVideo()
     {
         return str_starts_with($this->mime_type, 'video/');
+    }
+
+    public function upvotes(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->votes()->where('value', 1)->count(),
+        )->shouldCache();
+    }
+
+    public function downvotes(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->votes()->where('value', -1)->count(),
+        )->shouldCache();
     }
 }

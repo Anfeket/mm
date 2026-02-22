@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\VoteController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -9,6 +10,8 @@ Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show')
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+    Route::post('/posts/{post}/vote', [VoteController::class, 'vote'])->name('posts.vote');
 
     Route::get('/upload', [PostController::class, 'create'])->name('posts.create');
     Route::post('/upload', [PostController::class, 'store'])->name('posts.store');

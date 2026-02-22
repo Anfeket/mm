@@ -7,6 +7,7 @@ use App\PostProcessingStatus;
 use App\Jobs\ProcessPostMedia;
 use App\Services\FileStorageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -46,6 +47,13 @@ class PostController extends Controller
         $file = $request->file('file');
         $fileInfo = $storage->store($file);
 
+        $existing = Post::where('file_hash', $fileInfo['file_hash'])->first();
+        if ($existing) {
+            return back()
+                ->withErrors(['file' => "Duplicate of post #{$existing->id}"])
+                ->withInput();
+        }
+
         $width = $height = null;
         if (str_starts_with($file->getMimeType(), 'image/')) {
             [$width, $height] = getimagesize($file->getRealPath());
@@ -80,6 +88,12 @@ class PostController extends Controller
     {
         $post = $post->load('author', 'tags', 'comments');
 
+        $upvotes   = $post->votes()->where('value', 1)->count();
+        $downvotes = $post->votes()->where('value', -1)->count();
+        $userVote  = Auth::check()
+            ? $post->votes()->where('user_id', Auth::id())->value('value')
+            : null;
+
         // Find previous and next posts by ID
         $previousPost = Post::where('is_listed', true)
             ->where('id', '<', $post->id)
@@ -90,7 +104,14 @@ class PostController extends Controller
             ->orderBy('id', 'asc')
             ->first();
 
-        return view('post.show', compact('post', 'previousPost', 'nextPost'));
+        return view('post.show', compact(
+            'post',
+            'previousPost',
+            'nextPost',
+            'upvotes',
+            'downvotes',
+            'userVote'
+        ));
     }
 
     /**

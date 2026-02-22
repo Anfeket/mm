@@ -23,13 +23,21 @@
     /* Tag Colors */
     --color-tag-artist: #f87171;
     --color-tag-copyright: #34d399;
+    --color-tag-origin: #a78bfa;
+    --color-tag-format: #fb923c;
+    --color-tag-template: #e879f9;
     --color-tag-general: #60a5fa;
+    --color-tag-usage: #2dd4bf;
     --color-tag-meta: #fbbf24;
 
     /* Status Colors */
     --color-success: #22c55e;
     --color-warning: #fbbf24;
     --color-error: #ef4444;
+
+    /* Vote Colors */
+    --color-vote-up: var(--color-success);
+    --color-vote-down: var(--color-error);
 
     /* Spacing */
     --space-xs: 0.25rem;

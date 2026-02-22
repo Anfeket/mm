@@ -21,6 +21,64 @@
 }
 
 /* =========================
+    Post score and voting
+========================= */
+
+.post-score {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+}
+
+.score-value {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    cursor: default;
+}
+
+.score-breakdown {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-width var(--transition-base), opacity var(--transition-base);
+    white-space: nowrap;
+}
+
+.score-value:hover .score-breakdown {
+    max-width: 100px;
+    opacity: 1;
+}
+
+.vote-form {
+    display: flex;
+    gap: var(--space-s);
+}
+
+.vote-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-light);
+    padding: 0;
+    line-height: 1;
+}
+
+.vote-btn:hover {
+    color: var(--color-accent);
+}
+
+.vote-up.vote-active {
+    color: var(--color-vote-up);
+}
+.vote-down.vote-active {
+    color: var(--color-vote-down);
+}
+
+/* =========================
     Tag list
 ========================= */
 .tag-category {
@@ -49,8 +107,24 @@
     color: var(--color-tag-copyright);
 }
 
+.tag-origin {
+    color: var(--color-tag-origin);
+}
+
+.tag-format {
+    color: var(--color-tag-format);
+}
+
+.tag-template {
+    color: var(--color-tag-template);
+}
+
 .tag-general {
     color: var(--color-tag-general);
+}
+
+.tag-usage {
+    color: var(--color-tag-usage);
 }
 
 .tag-meta {
@@ -79,9 +153,11 @@
     font-weight: 500;
     cursor: pointer;
 }
+
 .btn:hover {
     background: var(--color-bg-hover);
 }
+
 .btn.disabled {
     opacity: 0.5;
     pointer-events: none;
@@ -109,4 +185,3 @@
     align-items: center;
     gap: var(--space-m);
 }
-

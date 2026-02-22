@@ -4,7 +4,7 @@
 
     <x-slot:sidebar>
         <x-post.tags :tags="$post->tags" />
-        <x-post.details :post="$post" />
+        <x-post.details :post="$post" :user-vote="$userVote" />
     </x-slot:sidebar>
 
     <article>

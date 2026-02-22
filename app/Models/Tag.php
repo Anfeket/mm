@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\TagCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,6 +14,13 @@ class Tag extends Model
         'name',
         'description'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'category' => TagCategory::class,
+        ];
+    }
 
     public function posts()
     {
