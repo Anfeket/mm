@@ -10,7 +10,7 @@
             <div id="user-menu">
                 <a href="{{ route('profile.show') }}">
                 @if (Auth::user()->avatar_path)
-                    <img src="{{ Auth::user()->avatar_path }}" alt="Avatar" width="24" height="24" class="avatar">
+                    <img src="{{ asset('uploads/' . Auth::user()->avatar_path) }}" alt="Avatar" width="24" height="24" class="avatar">
                 @endif
                 {{ Auth::user()->username }}
                 </a>
