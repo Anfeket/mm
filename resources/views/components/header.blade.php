@@ -16,7 +16,7 @@
                 </a>
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit">Logout</button>
+                    <button type="submit" class="btn">Logout</button>
                 </form>
 
             </div>
