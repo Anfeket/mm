@@ -23,7 +23,7 @@
                 <div id="dropzone-prompt" class="dropzone-prompt">
                     <p>Drop file here or <span class="browse-link">browse</span></p>
                 </div>
-                <div id="preview" class="dropzone-preview" hidden></div>
+                <div id="preview" class="dropzone-preview hidden"></div>
             </div>
 
             <label class="form-label">
@@ -83,8 +83,8 @@
 
         function showPreview(file) {
             preview.innerHTML = '';
-            prompt.hidden = true;
-            preview.hidden = false;
+            prompt.classList.add('hidden');
+            preview.classList.remove('hidden');
 
             const url = URL.createObjectURL(file);
 
