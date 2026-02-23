@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Profile</x-slot:title>
 
-    <div class="container-sm">
+    <div class="profile-container">
         @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
@@ -48,11 +48,11 @@
                 @if ($user->avatar_path)
                     <div class="current-avatar">
                         <p>Current Avatar:</p>
-                        <img src="{{ $user->avatar_path }}" alt="Avatar" width="100" height="100">
+                        <img src="{{ asset('uploads/' . $user->avatar_path) }}" alt="Avatar" width="100" height="100">
                     </div>
                 @endif
 
-                <button type="submit" class="button button-primary">Update Profile</button>
+                <button type="submit" class="btn btn-primary">Update Profile</button>
             </form>
         </section>
 
@@ -62,7 +62,7 @@
             <form action="{{ route('profile.invites.create') }}" method="POST">
                 @csrf
 
-                <button type="submit" class="button">Create new invite</button>
+                <button type="submit" class="btn">Create new invite</button>
             </form>
 
             @if ($user->invites->isNotEmpty())
@@ -76,11 +76,11 @@
                                 <span class="invite-used-date">{{ $invite->used_at->diffForHumans() }}</span>
                             @else
                                 <span class="invite-unused">Unused</span>
-                                <button type="button" class="button button-secondary" onclick="copyInviteLink('{{ $invite->code }}', this)">Copy Link</button>
+                                <button type="button" class="btn btn-secondary" onclick="copyInviteLink('{{ $invite->code }}', this)">Copy Link</button>
                                 <form action="{{ route('profile.invites.delete', $invite) }}" method="POST" class="invite-delete-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="button button-danger" onclick="return confirm('Are you sure you want to delete this invite?')">Delete</button>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this invite?')">Delete</button>
                                 </form>
                             @endif
                         </li>
