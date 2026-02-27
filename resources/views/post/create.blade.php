@@ -26,30 +26,30 @@
                 <div id="preview" class="dropzone-preview hidden"></div>
             </div>
 
-            <label class="form-label">
-                Artist:
+            <div class="form-field">
+                <label class="form-label" for="artist">Artist:</label>
                 <input type="text" name="artist" class="form-input" value="{{ old('artist') }}" placeholder="artist_name">
-            </label>
+            </div>
 
-            <label class="form-label">
-                Copyrights:
+            <div class="form-field">
+                <label class="form-label" for="copyright">Copyrights:</label>
                 <input type="text" name="copyright" class="form-input" value="{{ old('copyright') }}" placeholder="series_name">
-            </label>
+            </div>
 
-            <label class="form-label">
-                Tags:
+            <div class="form-field">
+                <label class="form-label" for="tags">Tags:</label>
                 <input type="text" name="tags" class="form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3">
-            </label>
+            </div>
 
-            <label class="form-label">
-                Source:
+            <div class="form-field">
+                <label class="form-label" for="source_url">Source:</label>
                 <input type="text" name="source_url" class="form-input" value="{{ old('source_url') }}" placeholder="https://...">
-            </label>
+            </div>
 
-            <label class="form-label">
-                Description:
+            <div class="form-field">
+                <label class="form-label" for="description">Description:</label>
                 <textarea name="description" class="form-input" rows="3">{{ old('description') }}</textarea>
-            </label>
+            </div>
 
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
@@ -101,7 +101,8 @@
 
             const info = document.createElement('p');
             info.className = 'dropzone-hint';
-            info.textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MB`;
+            const mb = file.size / 1024 / 1024;
+            info.textContent = `${file.name} · ${mb >= 1 ? mb.toFixed(2) + ' MB' : (file.size / 1024).toFixed(2) + ' KB'}`;
             preview.appendChild(info);
         }
     </script>

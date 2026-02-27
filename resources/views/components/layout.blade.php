@@ -10,6 +10,7 @@
     @endisset
 
     @vite('resources/css/app.css')
+    @stack('scripts')
 </head>
 <body>
     <x-header />

@@ -1,3 +1,7 @@
+@push('scripts')
+    @vite('resources/js/profile.js')
+@endpush
+
 <x-layout>
     <x-slot:title>Profile</x-slot:title>
 
@@ -25,32 +29,61 @@
                 @csrf
                 @method('PUT')
 
-                <label class="form-label">
-                    Username
+                <div class="form-field">
+                    <label class="form-label" for="username">Username</label>
                     <input type="text" name="username" value="{{ old('username', $user->username) }}" class="form-input" required>
-                </label>
+                </div>
 
-                <label class="form-label">
-                    Email
+                <div class="form-field">
+                    <label class="form-label" for="email">Email</label>
                     <input type="email" name="email" value="{{ old('email', $user->email) }}" class="form-input" required>
-                </label>
+                </div>
 
-                <label class="form-label">
-                    New Password
+                <div class="form-field">
+                    <label class="form-label" for="password">New Password</label>
                     <input type="password" name="password" class="form-input">
-                </label>
+                </div>
 
-                <label class="form-label">
-                    Avatar
-                    <input type="file" name="avatar" accept="image/*" class="form-input">
-                </label>
-
-                @if ($user->avatar_path)
-                    <div class="current-avatar">
-                        <p>Current Avatar:</p>
-                        <img src="{{ asset('uploads/' . $user->avatar_path) }}" alt="Avatar" width="100" height="100">
+                <div class="form-field">
+                    <label class="form-label" for="avatar">Avatar</label>
+                    <div id="dropzone" class="dropzone">
+                        <input type="file" name="avatar" accept="image/*" class="form-input" id="avatar-input">
+                        <input type="hidden" name="crop_x" id="crop_x">
+                        <input type="hidden" name="crop_y" id="crop_y">
+                        <input type="hidden" name="crop_size" id="crop_size">
+                        <div id="dropzone-prompt" class="dropzone-prompt">
+                            <p>Drop file here or <span class="browse-link">browse</span></p>
+                        </div>
+                        <div id="crop-container" class="hidden">
+                            <div id="crop-image-container">
+                                <img id="crop-img" src="" alt="Crop Image">
+                                <div id="crop-overlay">
+                                    <div id="crop-selection">
+                                        <div class="crop-handle crop-handle-nw" data-handle="nw"></div>
+                                        <div class="crop-handle crop-handle-ne" data-handle="ne"></div>
+                                        <div class="crop-handle crop-handle-sw" data-handle="sw"></div>
+                                        <div class="crop-handle crop-handle-se" data-handle="se"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="crop-preview" class="hidden">
+                                <img id="crop-preview-img" src="" alt="Preview">
+                            </div>
+                            <div id="crop-actions">
+                                <button type="button" class="btn btn-secondary" id="crop-confirm">Crop & Upload</button>
+                                <button type="button" class="btn hidden" id="crop-reset">Reset</button>
+                                <button type="button" class="btn" id="crop-cancel">Cancel</button>
+                            </div>
+                        </div>
                     </div>
-                @endif
+
+                    @if ($user->avatar_path)
+                        <div class="current-avatar">
+                            <p>Current Avatar:</p>
+                            <img src="{{ asset('uploads/' . $user->avatar_path) }}" alt="Avatar" width="100" height="100">
+                        </div>
+                    @endif
+                </div>
 
                 <button type="submit" class="btn btn-primary">Update Profile</button>
             </form>
