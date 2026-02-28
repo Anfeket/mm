@@ -41,6 +41,21 @@
                 <span class="btn btn-secondary disabled">Previous &raquo;</span>
             @endif
         </nav>
-
+        <script>
+            document.addEventListener('keydown', function(event) {
+                const leftKeys = ['ArrowLeft', 'a', 'A', 'h', 'H'];
+                const rightKeys = ['ArrowRight', 'd', 'D', 'l', 'L'];
+                @if($nextPost)
+                    if (leftKeys.includes(event.key)) {
+                        window.location.href = "{{ route('posts.show', $nextPost) }}";
+                    }
+                @endif
+                @if($previousPost)
+                    if (rightKeys.includes(event.key)) {
+                        window.location.href = "{{ route('posts.show', $previousPost) }}";
+                    }
+                @endif
+            });
+        </script>
     </article>
 </x-layout>
