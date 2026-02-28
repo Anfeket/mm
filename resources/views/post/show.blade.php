@@ -20,7 +20,7 @@
                 <h3>Comments</h3>
                 @forelse($post->comments as $comment)
                     <div class="comment">
-                        <p><strong>{{ $comment->author->username }}:</strong> {{ $comment->content }}</p>
+                        <p><strong>{{ $comment->user->username }}:</strong> {{ $comment->content }}</p>
                     </div>
                 @empty
                     <p>No comments yet.</p>
