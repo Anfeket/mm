@@ -9,6 +9,7 @@ enum TagCategory: string
     case Origin = 'origin';
     case Format = 'format';
     case Template = 'template';
+    case Subject = 'subject';
     case General = 'general';
     case Usage = 'usage';
     case Meta = 'meta';
@@ -21,6 +22,7 @@ enum TagCategory: string
             self::Origin => 'Origin',
             self::Format => 'Format',
             self::Template => 'Template',
+            self::Subject => 'Subject',
             self::General => 'General',
             self::Usage => 'Usage',
             self::Meta => 'Meta',
