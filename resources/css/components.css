@@ -165,6 +165,42 @@
 }
 
 /* =========================
+    Tooltips
+========================= */
+.has-tooltip {
+    position: relative;
+}
+.tooltip {
+    position: absolute;
+    bottom: calc(100% + var(--space-s));
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-bg-box);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-s) var(--space-m);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+.has-tooltip:hover .tooltip {
+    opacity: 1;
+}
+
+kbd {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-s) var(--space-m);
+}
+
+/* =========================
     Pagination
 ========================= */
 .pagination {

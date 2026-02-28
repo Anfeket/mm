@@ -30,13 +30,19 @@
 
         <nav class="post-pagination">
             @if($nextPost)
-                <a href="{{ route('posts.show', $nextPost) }}" class="btn btn-secondary">&laquo; Next</a>
+                <a href="{{ route('posts.show', $nextPost) }}" class="btn btn-secondary has-tooltip">
+                    &laquo; Next
+                    <span class="tooltip"><kbd>→</kbd>, <kbd>D</kbd>, <kbd>L</kbd></span>
+                </a>
             @else
                 <span class="btn btn-secondary disabled">&laquo; Next</span>
             @endif
 
             @if($previousPost)
-                <a href="{{ route('posts.show', $previousPost) }}" class="btn btn-secondary">Previous &raquo;</a>
+                <a href="{{ route('posts.show', $previousPost) }}" class="btn btn-secondary has-tooltip">
+                    Previous &raquo;
+                    <span class="tooltip"><kbd>←</kbd>, <kbd>A</kbd>, <kbd>H</kbd></span>
+                </a>
             @else
                 <span class="btn btn-secondary disabled">Previous &raquo;</span>
             @endif

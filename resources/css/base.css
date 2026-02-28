@@ -55,7 +55,7 @@
     --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
 
     /* Transitions */
-    --transition-fast: 50ms ease-in-out;
+    --transition-fast: 100ms ease-in-out;
     --transition-base: 200ms ease-in-out;
 }
 
