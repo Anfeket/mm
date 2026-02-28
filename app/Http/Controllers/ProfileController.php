@@ -54,7 +54,6 @@ class ProfileController extends Controller
         $data = $request->validate([
             'username' => ['sometimes', 'required', 'string', 'max:100', Rule::unique('users')->ignore($user->id)],
             'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'string', 'min:8'],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
             'crop_x' => ['nullable', 'integer', 'min:0'],
             'crop_y' => ['nullable', 'integer', 'min:0'],
@@ -86,6 +85,20 @@ class ProfileController extends Controller
         $user->save();
 
         return redirect()->route('profile.show')->with('status', 'Profile updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'string', 'current_password'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($request->input('new_password')),
+        ]);
+
+        return redirect()->route('profile.show')->with('status', 'Password updated successfully.');
     }
 
     private function processAvatar(UploadedFile $file, User $user, ?array $crop = null): string

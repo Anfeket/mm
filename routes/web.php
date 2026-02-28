@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\VoteController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -16,17 +18,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload', [PostController::class, 'create'])->name('posts.create');
     Route::post('/upload', [PostController::class, 'store'])->name('posts.store');
 
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
-    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/invites', [App\Http\Controllers\ProfileController::class, 'createInvite'])->name('profile.invites.create');
-    Route::delete('/profile/invites/{invite}', [App\Http\Controllers\ProfileController::class, 'deleteInvite'])->name('profile.invites.delete');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/invites', [ProfileController::class, 'createInvite'])->name('profile.invites.create');
+    Route::delete('/profile/invites/{invite}', [ProfileController::class, 'deleteInvite'])->name('profile.invites.delete');
 });
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
-    Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
 // placeholders

@@ -31,17 +31,12 @@
 
                 <div class="form-field">
                     <label class="form-label" for="username">Username</label>
-                    <input type="text" name="username" value="{{ old('username', $user->username) }}" class="form-input" required>
+                    <input type="text" name="username" value="{{ old('username', $user->username) }}" autocomplete="username" class="form-input">
                 </div>
 
                 <div class="form-field">
                     <label class="form-label" for="email">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" class="form-input" required>
-                </div>
-
-                <div class="form-field">
-                    <label class="form-label" for="password">New Password</label>
-                    <input type="password" name="password" class="form-input">
+                    <input type="email" name="email" value="{{ old('email', $user->email) }}" autocomplete="email" class="form-input">
                 </div>
 
                 <div class="form-field">
@@ -86,6 +81,32 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </section>
+
+        <section class="profile-section">
+            <h2>Change Password</h2>
+
+            <form action="{{ route('profile.password') }}" method="POST" class="profile-form">
+                @csrf
+                @method('PUT')
+
+                <div class="form-field">
+                    <label class="form-label" for="current_password">Current Password</label>
+                    <input type="password" name="current_password" autocomplete="current-password" class="form-input">
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label" for="new_password">New Password</label>
+                    <input type="password" name="new_password" autocomplete="new-password" minlength="8" class="form-input">
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label" for="new_password_confirmation">Confirm New Password</label>
+                    <input type="password" name="new_password_confirmation" autocomplete="new-password" minlength="8" class="form-input">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Change Password</button>
             </form>
         </section>
 
