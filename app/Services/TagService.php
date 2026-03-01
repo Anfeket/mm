@@ -58,6 +58,34 @@ class TagService
         return $tags;
     }
 
+    public function parseSingleTag(string $token, TagCategory $defaultCategory = TagCategory::General): ?array
+    {
+        $input = trim($token);
+        if (empty($input)) {
+            return null;
+        }
+
+        if (preg_match('/^([a-z]+):(.+)$/i', $token, $matches)) {
+            $category = TagCategory::fromPrefix(strtolower($matches[1]));
+
+            if ($category !== null) {
+                $name = $this->normalizeTagName($matches[2]);
+            } else {
+                $category = $defaultCategory;
+                $name = $this->normalizeTagName($token);
+            }
+        } else {
+            $category = $defaultCategory;
+            $name = $this->normalizeTagName($token);
+        }
+
+        if (empty($name)) {
+            return null;
+        }
+
+        return ['name' => $name, 'category' => $category];
+    }
+
     public function resolveAlias(Tag $tag): Tag
     {
         $visited = [];
@@ -142,5 +170,41 @@ class TagService
                 $tag->increment('post_count');
             }
         }
+    }
+
+    public function parseSearchInput(string $input): array
+    {
+        $include = [];
+        $exclude = [];
+
+        foreach (preg_split('/\s+/', trim($input)) as $token) {
+            if (empty($token)) {
+                continue;
+            }
+
+            $negate = str_starts_with($token, '-');
+            $token = $negate ? substr($token, 1) : $token;
+
+            $parsed = $this->parseSingleTag($token);
+            if ($parsed === null) {
+                continue;
+            }
+
+            $key = $parsed['category']->value . ':' . $parsed['name'];
+
+            if ($negate) {
+                $exclude[$key] = $parsed;
+                unset($include[$key]);
+            } else {
+                if (!isset($exclude[$key])) {
+                    $include[$key] = $parsed;
+                }
+            }
+        }
+
+        return [
+            'include' => array_values($include),
+            'exclude' => array_values($exclude),
+        ];
     }
 }

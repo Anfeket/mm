@@ -16,11 +16,29 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, TagService $tagService)
     {
-        $posts = Post::where('is_listed', true)
-            ->latest()
-            ->paginate(20);
+        $query = Post::where('is_listed', true)->latest();
+
+        if ($request->filled('q')) {
+            $tags = $tagService->parseSearchInput($request->input('q'));
+
+            foreach ($tags['include'] as $tag) {
+                $query->whereHas('tags', fn($q) => $q
+                    ->where('name', $tag['name'])
+                    ->where('category', $tag['category'])
+                );
+            }
+
+            foreach ($tags['exclude'] as $tag) {
+                $query->whereDoesntHave('tags', fn($q) => $q
+                    ->where('name', $tag['name'])
+                    ->where('category', $tag['category'])
+                );
+            }
+        }
+
+        $posts = $query->paginate(20)->withQueryString();
         return view('post.index', compact('posts'));
     }
 
