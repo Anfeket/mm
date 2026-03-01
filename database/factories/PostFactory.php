@@ -20,6 +20,10 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
+        if (app()->environment('testing')) {
+            return $this->fakeDefinition();
+        }
+
         $filename = $this->faker->lexify('sample_????');
 
         $width = $this->faker->numberBetween(400, 1200);
@@ -51,22 +55,39 @@ class PostFactory extends Factory
             'width' => $width,
             'height' => $height,
             'file_size' => strlen($imagedata),
-            'file_hash' => hash('sha256', $imagedata),
+            'file_hash' => hash(config('media.hash'), $imagedata),
             'is_listed' => true,
         ];
     }
 
     public function unlisted(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_listed' => false,
         ]);
     }
 
-     public function nsfw(): static
+    public function nsfw(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_nsfw' => true,
         ]);
+    }
+
+    private function fakeDefinition(): array
+    {
+        return [
+            'author_id'         => User::factory(),
+            'file_path'         => 'posts/fake.jpg',
+            'thumb_path'        => 'posts/thumb/fake.webp',
+            'original_filename' => 'fake.jpg',
+            'mime_type'         => 'image/jpeg',
+            'width'             => 800,
+            'height'            => 600,
+            'file_size'         => 1024,
+            'file_hash'         => hash(config('media.hash'), uniqid()),
+            'is_listed'         => true,
+            'processing_status' => \App\PostProcessingStatus::Completed,
+        ];
     }
 }
