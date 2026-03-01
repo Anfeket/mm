@@ -38,6 +38,10 @@
         @auth
             <a href="{{ route('posts.create') }}">Upload</a>
         @endauth
+
+        <div style="flex: 1;"></div>
+
+        <x-search />
     </nav>
 
 </header>
