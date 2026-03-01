@@ -32,11 +32,6 @@
             </div>
 
             <div class="form-field">
-                <label class="form-label" for="copyright">Copyrights:</label>
-                <input type="text" name="copyright" class="form-input" value="{{ old('copyright') }}" placeholder="series_name">
-            </div>
-
-            <div class="form-field">
                 <label class="form-label" for="tags">Tags:</label>
                 <input type="text" name="tags" class="form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3">
             </div>
