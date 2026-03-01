@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\PostProcessingStatus;
+use App\TagCategory;
 use App\Jobs\ProcessPostMedia;
 use App\Services\FileStorageService;
+use App\Services\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,7 +35,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, FileStorageService $storage)
+    public function store(Request $request, FileStorageService $storage, TagService $tagService)
     {
         $request->validate([
             'file' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm', 'max:102400'], // 100MB max
@@ -41,7 +43,6 @@ class PostController extends Controller
             'description' => ['nullable', 'string', 'max:5000'],
             'tags' => ['nullable', 'string'],
             'artist' => ['nullable', 'string'],
-            'copyright' => ['nullable', 'string'],
         ]);
 
         $file = $request->file('file');
@@ -75,6 +76,12 @@ class PostController extends Controller
         ]);
 
         // Handle tags
+        if ($request->filled('artist')) {
+            $tagService->syncPostTags($post, $tagService->parseInput($request->input('artist'), TagCategory::Artist));
+        }
+        if ($request->filled('tags')) {
+            $tagService->syncPostTags($post, $tagService->parseInput($request->input('tags')));
+        }
 
         ProcessPostMedia::dispatch($post);
 

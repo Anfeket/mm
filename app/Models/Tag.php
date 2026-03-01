@@ -12,7 +12,10 @@ class Tag extends Model
 
     protected $fillable = [
         'name',
-        'description'
+        'description',
+        'category',
+        'created_by',
+        'alias_tag_id',
     ];
 
     protected function casts(): array

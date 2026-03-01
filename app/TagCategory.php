@@ -28,4 +28,29 @@ enum TagCategory: string
             self::Meta => 'Meta',
         };
     }
+
+    public function prefixes(): array
+    {
+        return match ($this) {
+            self::Artist => ['a', 'artist'],
+            self::Copyright => ['c', 'copyright'],
+            self::Origin => ['o', 'origin'],
+            self::Format => ['f', 'format'],
+            self::Template => ['t', 'template'],
+            self::Subject => ['s', 'subject'],
+            self::General => ['g', 'general'],
+            self::Usage => ['u', 'usage'],
+            self::Meta => ['m', 'meta'],
+        };
+    }
+
+    public static function fromPrefix(string $prefix): ?self
+    {
+        foreach (self::cases() as $category) {
+            if (in_array($prefix, $category->prefixes(), true)) {
+                return $category;
+            }
+        }
+        return null;
+    }
 }
