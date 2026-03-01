@@ -77,6 +77,11 @@ class TagService
 
     public function validateNoCircularAlias(Tag $tag, Tag $target): void
     {
+        if ($tag->category !== $target->category) {
+            throw new \RuntimeException(
+                "Cannot alias tag #{$tag->id} ({$tag->name}) to tag #{$target->id} ({$target->name}) because they belong to different categories."
+            );
+        }
         if ($target->id === $tag->id) {
             throw new \RuntimeException(
                 "Cannot alias tag #{$tag->id} ({$tag->name}) to itself."
@@ -95,6 +100,11 @@ class TagService
             $visited[] = $current->id;
             $current = $current->aliasTag;
 
+            if ($current->category !== $tag->category) {
+                throw new \RuntimeException(
+                    "Cannot alias tag #{$tag->id} ({$tag->name}) to tag #{$target->id} ({$target->name}) because it would create a chain that includes tags from different categories."
+                );
+            }
             if ($current->id === $tag->id) {
                 throw new \RuntimeException(
                     "Cannot alias tag #{$tag->id} ({$tag->name}) to tag #{$target->id} ({$target->name}) because it would create a circular chain."
@@ -108,8 +118,8 @@ class TagService
         $name = $this->normalizeTagName($name);
 
         $tag = Tag::firstOrCreate(
-            ['name' => $name],
-            ['category' => $category, 'created_by' => Auth::id()]
+            ['name' => $name, 'category' => $category],
+            ['created_by' => Auth::id()]
         );
 
         return $this->resolveAlias($tag);

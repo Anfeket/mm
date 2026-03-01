@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name', 100)->unique();
+            $table->string('name', 100);
             $table->foreignId('alias_tag_id')->nullable()->constrained('tags')->nullOnDelete();
             $table->string('category', 20)->default(TagCategory::General->value);
             $table->text('description')->nullable();
@@ -24,6 +24,8 @@ return new class extends Migration
             $table->unsignedInteger('post_count')->default(0);
 
             $table->timestamps();
+
+            $table->unique(['name', 'category']);
         });
     }
 

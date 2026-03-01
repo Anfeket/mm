@@ -29,23 +29,23 @@ describe('resolveAlias', function () {
     });
 
     it('follows a single alias to the canonical tag', function () {
-        $canonical = Tag::factory()->create();
-        $alias     = Tag::factory()->create(['alias_tag_id' => $canonical->id]);
+        $canonical = Tag::factory()->general()->create();
+        $alias     = Tag::factory()->general()->create(['alias_tag_id' => $canonical->id]);
 
         expect($this->service->resolveAlias($alias)->id)->toBe($canonical->id);
     });
 
     it('follows a chain of aliases to the canonical tag', function () {
-        $canonical = Tag::factory()->create();
-        $middle    = Tag::factory()->create(['alias_tag_id' => $canonical->id]);
-        $alias     = Tag::factory()->create(['alias_tag_id' => $middle->id]);
+        $canonical = Tag::factory()->general()->create();
+        $middle    = Tag::factory()->general()->create(['alias_tag_id' => $canonical->id]);
+        $alias     = Tag::factory()->general()->create(['alias_tag_id' => $middle->id]);
 
         expect($this->service->resolveAlias($alias)->id)->toBe($canonical->id);
     });
 
     it('throws on a circular alias chain', function () {
-        $tagA = Tag::factory()->create();
-        $tagB = Tag::factory()->create(['alias_tag_id' => $tagA->id]);
+        $tagA = Tag::factory()->general()->create();
+        $tagB = Tag::factory()->general()->create(['alias_tag_id' => $tagA->id]);
 
         // Force circular reference directly in DB, bypassing validateNoCircularAlias
         $tagA->alias_tag_id = $tagB->id;
@@ -65,16 +65,16 @@ describe('resolveAlias', function () {
 describe('validateNoCircularAlias', function () {
 
     it('passes when there is no circular chain', function () {
-        $canonical = Tag::factory()->create();
-        $tag       = Tag::factory()->create();
+        $canonical = Tag::factory()->general()->create();
+        $tag       = Tag::factory()->general()->create();
 
         expect(fn () => $this->service->validateNoCircularAlias($tag, $canonical))
             ->not->toThrow(\RuntimeException::class);
     });
 
     it('throws when aliasing a tag to itself indirectly', function () {
-        $tagA = Tag::factory()->create();
-        $tagB = Tag::factory()->create(['alias_tag_id' => $tagA->id]);
+        $tagA = Tag::factory()->general()->create();
+        $tagB = Tag::factory()->general()->create(['alias_tag_id' => $tagA->id]);
 
         // Trying to alias A → B would make A → B → A
         expect(fn () => $this->service->validateNoCircularAlias($tagA, $tagB))
@@ -82,18 +82,42 @@ describe('validateNoCircularAlias', function () {
     });
 
     it('throws when an existing circular chain is detected in target chain', function () {
-        $tagA = Tag::factory()->create();
-        $tagB = Tag::factory()->create(['alias_tag_id' => $tagA->id]);
+        $tagA = Tag::factory()->general()->create();
+        $tagB = Tag::factory()->general()->create(['alias_tag_id' => $tagA->id]);
 
         // Force A → B directly to create existing circular data
         $tagA->alias_tag_id = $tagB->id;
         $tagA->saveQuietly();
         $tagA->refresh();
 
-        $tagC = Tag::factory()->create();
+        $tagC = Tag::factory()->general()->create();
 
         expect(fn () => $this->service->validateNoCircularAlias($tagC, $tagA))
             ->toThrow(\RuntimeException::class, 'Circular alias detected');
+    });
+
+    it('throws when tags belong to different categories', function () {
+        $tagA = Tag::factory()->category(TagCategory::General)->create();
+        $tagB = Tag::factory()->category(TagCategory::Subject)->create();
+
+        expect(fn () => $this->service->validateNoCircularAlias($tagA, $tagB))
+            ->toThrow(\RuntimeException::class, 'different categories');
+    });
+
+    it('throws when categories mismatch in existing chain', function () {
+        $tagA = Tag::factory()->category(TagCategory::General)->create();
+        $tagB = Tag::factory()->category(TagCategory::Subject)->create();
+        $tagC = Tag::factory()->category(TagCategory::General)->create(['alias_tag_id' => $tagB->id]);
+
+        expect(fn () => $this->service->validateNoCircularAlias($tagA, $tagC))
+            ->toThrow(\RuntimeException::class, 'different categories');
+    });
+
+    it('throws when trying to alias a tag to itself directly', function () {
+        $tag = Tag::factory()->create();
+
+        expect(fn () => $this->service->validateNoCircularAlias($tag, $tag))
+            ->toThrow(\RuntimeException::class, 'Cannot alias tag');
     });
 
 });
@@ -114,7 +138,7 @@ describe('findOrCreate', function () {
     });
 
     it('returns an existing tag without creating a duplicate', function () {
-        $existing = Tag::factory()->create(['name' => 'existing_tag']);
+        $existing = Tag::factory()->general()->create(['name' => 'existing_tag']);
 
         $tag = $this->service->findOrCreate('existing_tag', TagCategory::General);
 
@@ -130,8 +154,8 @@ describe('findOrCreate', function () {
     });
 
     it('resolves alias and returns canonical tag', function () {
-        $canonical = Tag::factory()->create(['name' => 'canonical']);
-        Tag::factory()->create(['name' => 'alias_tag', 'alias_tag_id' => $canonical->id]);
+        $canonical = Tag::factory()->general()->create(['name' => 'canonical']);
+        Tag::factory()->general()->create(['name' => 'alias_tag', 'alias_tag_id' => $canonical->id]);
 
         $tag = $this->service->findOrCreate('alias_tag', TagCategory::General);
 
@@ -145,6 +169,18 @@ describe('findOrCreate', function () {
             'name'       => 'authored_tag',
             'created_by' => $this->user->id,
         ]);
+    });
+
+    it('allows same name in different categories', function () {
+        $this->service->findOrCreate('tag', TagCategory::General);
+        $this->service->findOrCreate('tag', TagCategory::Subject);
+
+        $generalTag = $this->service->findOrCreate('tag', TagCategory::General);
+        $subjectTag = $this->service->findOrCreate('tag', TagCategory::Subject);
+
+        expect(Tag::where('name', 'tag')->count())->toBe(2);
+        expect($generalTag->category)->toBe(TagCategory::General);
+        expect($subjectTag->category)->toBe(TagCategory::Subject);
     });
 
 });
@@ -226,8 +262,8 @@ describe('syncPostTags', function () {
     });
 
     it('resolves alias before attaching', function () {
-        $canonical = Tag::factory()->create(['name' => 'canonical_tag']);
-        Tag::factory()->create(['name' => 'alias_tag', 'alias_tag_id' => $canonical->id]);
+        $canonical = Tag::factory()->general()->create(['name' => 'canonical_tag']);
+        Tag::factory()->general()->create(['name' => 'alias_tag', 'alias_tag_id' => $canonical->id]);
 
         $this->service->syncPostTags($this->post, [
             ['name' => 'alias_tag', 'category' => TagCategory::General],
@@ -235,6 +271,19 @@ describe('syncPostTags', function () {
 
         // Should be attached under the canonical tag, not the alias
         expect($this->post->tags()->where('tag_id', $canonical->id)->exists())->toBeTrue();
+    });
+
+    it('attaches tags with same name but different categories', function () {
+        $this->service->syncPostTags($this->post, [
+            ['name' => 'multi_category_tag', 'category' => TagCategory::General],
+            ['name' => 'multi_category_tag', 'category' => TagCategory::Subject],
+        ]);
+
+        $generalTag = Tag::where('name', 'multi_category_tag')->where('category', TagCategory::General)->first();
+        $subjectTag = Tag::where('name', 'multi_category_tag')->where('category', TagCategory::Subject)->first();
+
+        expect($this->post->tags()->where('tag_id', $generalTag->id)->exists())->toBeTrue();
+        expect($this->post->tags()->where('tag_id', $subjectTag->id)->exists())->toBeTrue();
     });
 
 });

@@ -23,4 +23,14 @@ class TagFactory extends Factory
             'description' => $this->faker->sentence(),
         ];
     }
+
+    public function general(): static
+    {
+        return $this->state(['category' => TagCategory::General]);
+    }
+
+    public function category(TagCategory $category): static
+    {
+        return $this->state(['category' => $category]);
+    }
 }
