@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Tag;
 use App\Models\Post;
 use App\TagCategory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class TagService
@@ -84,6 +85,29 @@ class TagService
         }
 
         return ['name' => $name, 'category' => $category];
+    }
+
+    public function searchTags(string $query, int $limit = 10): Collection
+    {
+        $normalized = $this->normalizeTagName($query);
+        if (empty($normalized)) {
+            return collect();
+        }
+
+        $category = null;
+        if (preg_match('/^([a-z]+):(.+)$/i', $normalized, $matches)) {
+            $category = TagCategory::fromPrefix(strtolower($matches[1]));
+            if ($category !== null) {
+                $normalized = $matches[2];
+            }
+        }
+
+        return Tag::where('name', 'like', $normalized . '%')
+            ->when($category !== null, fn($q) => $q->where('category', $category))
+            ->orderByDesc('post_count')
+            ->limit($limit)
+            ->with('aliasTag:id,name')
+            ->get(['name', 'category', 'post_count', 'alias_tag_id']);
     }
 
     public function resolveAlias(Tag $tag): Tag

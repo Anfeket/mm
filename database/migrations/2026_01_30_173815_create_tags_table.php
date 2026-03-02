@@ -25,6 +25,7 @@ return new class extends Migration
 
             $table->timestamps();
 
+            $table->index('name');
             $table->unique(['name', 'category']);
         });
     }
