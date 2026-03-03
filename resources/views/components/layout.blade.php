@@ -9,7 +9,7 @@
         <title>{{ config('app.name') }}</title>
     @endisset
 
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/search.js'])
+    @vite(['resources/css/app.css', 'resources/js/search.js'])
     @stack('scripts')
 </head>
 <body>
