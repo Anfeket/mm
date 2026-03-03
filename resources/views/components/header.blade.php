@@ -8,17 +8,21 @@
 
         @auth
             <div id="user-menu">
-                <a href="{{ route('profile.show') }}">
-                @if (Auth::user()->avatar_path)
-                    <img src="{{ asset('uploads/' . Auth::user()->avatar_path) }}" alt="Avatar" width="24" height="24" class="avatar">
-                @endif
-                {{ Auth::user()->username }}
-                </a>
-                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="btn">Logout</button>
-                </form>
-
+                <button class="user-menu-trigger" aria-haspopup="true" aria-expanded="false">
+                    @if (Auth::user()->avatar_path)
+                        <img src="{{ asset('uploads/' . Auth::user()->avatar_path) }}" alt="Avatar" width="32" height="32" class="avatar">
+                    @endif
+                    <span>{{ Auth::user()->username }}</span>
+                    <span class="user-menu-caret">▼</span>
+                </button>
+                <div class="user-menu-dropdown" role="menu">
+                    <a href="{{ route('profile.show') }}" role="menuitem">Profile</a>
+                    <div class="user-menu-divider"></div>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="user-menu-logout" role="menuitem">Logout</button>
+                    </form>
+                </div>
             </div>
         @else
             <div id="auth-links">
@@ -43,5 +47,17 @@
 
         <x-search />
     </nav>
+
+    <script>
+        document.querySelector('.user-menu-trigger')?.addEventListener('click', function() {
+            this.closest('#user-menu').classList.toggle('open');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#user-menu')) {
+                document.querySelector('#user-menu')?.classList.remove('open');
+            }
+        });
+    </script>
 
 </header>

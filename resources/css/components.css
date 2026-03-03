@@ -225,6 +225,15 @@
 }
 
 /* =========================
+    Avatar
+========================= */
+.avatar {
+    border-radius: var(--radius);
+    vertical-align: middle;
+    object-fit: cover;
+}
+
+/* =========================
     Buttons
 ========================= */
 .btn {
