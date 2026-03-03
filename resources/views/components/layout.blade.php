@@ -9,6 +9,8 @@
         <title>{{ config('app.name') }}</title>
     @endisset
 
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
     @vite(['resources/css/app.css', 'resources/js/search.js'])
     @stack('scripts')
 </head>
