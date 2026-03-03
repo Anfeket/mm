@@ -38,6 +38,47 @@
 }
 
 /* =========================
+    Autocomplete
+========================= */
+.autocomplete-dropdown {
+    position: absolute;
+    background: var(--color-bg-box);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    list-style: none;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-s) var(--space-m);
+    cursor: pointer;
+    font-family: var(--font-tag);
+    font-size: 0.85rem;
+    transition: background var(--transition-fast);
+}
+
+.autocomplete-item-selected {
+    background: var(--color-bg-hover);
+}
+
+.autocopmlete-alias {
+    color: var(--color-text-light);
+    font-size: 0.8rem
+}
+
+.autocomplete-count {
+    color: var(--color-text-light);
+    font-size: 0.8rem;
+    margin-left: auto;
+    font-family: var(--font-mono);
+}
+
+/* =========================
     Post sidebar
 ========================= */
 .post-details-section {
@@ -169,6 +210,10 @@
 
 .tag-meta {
     color: var(--color-tag-meta);
+}
+
+.tag-subject {
+    color: var(--color-tag-subject);
 }
 
 /* =========================

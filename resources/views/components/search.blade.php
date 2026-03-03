@@ -13,6 +13,7 @@
         class="search-input"
         autocomplete="off"
         aria-label="Search"
+        data-autocomplete
         @if ($autofocus) autofocus @endif
     >
 </form>

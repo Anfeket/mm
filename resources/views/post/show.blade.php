@@ -49,6 +49,9 @@
         </nav>
         <script>
             document.addEventListener('keydown', function(event) {
+                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.isContentEditable) {
+                    return;
+                }
                 const leftKeys = ['ArrowLeft', 'a', 'A', 'h', 'H'];
                 const rightKeys = ['ArrowRight', 'd', 'D', 'l', 'L'];
                 @if($nextPost)

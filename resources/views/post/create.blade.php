@@ -28,12 +28,12 @@
 
             <div class="form-field">
                 <label class="form-label" for="artist">Artist:</label>
-                <input type="text" name="artist" class="form-input" value="{{ old('artist') }}" placeholder="artist_name">
+                <input type="text" name="artist" class="form-input" value="{{ old('artist') }}" placeholder="artist_name" data-autocomplete data-autocomplete-prefix="a">
             </div>
 
             <div class="form-field">
                 <label class="form-label" for="tags">Tags:</label>
-                <input type="text" name="tags" class="form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3">
+                <input type="text" name="tags" class="form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3" data-autocomplete>
             </div>
 
             <div class="form-field">
