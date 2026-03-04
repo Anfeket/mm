@@ -44,9 +44,13 @@ app/
 │       ├── ProfileController.php   # User profile, avatar upload, invites
 │       ├── VoteController.php      # Upvote/downvote on posts
 │       ├── TagController.php       # Tag CRUD and autocomplete API
-│       └── CommentController.php   # Comments (scaffold)
+│       └── CommentController.php   # Comments (store with rate limiting, destroy)
+├── Console/
+│   └── Commands/
+│       └── FfmpegInstall.php       # Artisan command: download & install ffmpeg binary
 ├── Jobs/             # Queued jobs (ProcessPostMedia, ProcessAvatar)
-├── Listeners/        # Event listeners
+├── Listeners/
+│   └── UpdateFieldsOnLogin.php    # Records last_login_at and last_login_ip on auth
 ├── Models/           # Eloquent models
 │   ├── Post.php      # Media post (file, tags, votes, comments)
 │   ├── User.php      # User account
@@ -55,25 +59,53 @@ app/
 │   ├── Comment.php   # Post comments
 │   └── Invite.php    # Invite codes for registration
 ├── Notifications/
+│   └── AvatarProcessed.php        # Database notification sent after avatar job finishes
 ├── Providers/
 ├── Services/         # Business logic services
 │   ├── TagService.php          # Tag parsing, normalization, search
 │   ├── FileStorageService.php  # Hash-based file storage
 │   └── FfmpegService.php       # FFmpeg binary management & execution
-├── View/             # View components / composers
+├── View/
+│   └── Components/
+│       ├── Layout.php              # <x-layout> wrapper component
+│       └── PostCard.php            # <x-post-card> component
 ├── PostProcessingStatus.php    # Enum: post processing states
 └── TagCategory.php             # Enum: tag categories with prefixes
 
 bootstrap/            # Laravel bootstrap
 config/               # Configuration files
-database/             # Migrations and seeders
+database/
+├── factories/    # Model factories (Post, User, Tag, Comment)
+├── migrations/   # Schema migrations
+└── seeders/      # Database seeders
 public/               # Public assets and entry point
 resources/
+├── css/
+│   ├── app.css       # Entry point (imports others)
+│   ├── base.css      # Reset, typography, variables
+│   ├── layout.css    # Page shell, sidebar, grid
+│   ├── components.css# Buttons, forms, cards, comments
+│   └── pages.css     # Page-specific styles
+├── js/
+│   ├── app.js        # JS entry point
+│   ├── bootstrap.js  # Axios setup (Laravel scaffold — not imported yet)
+│   ├── search.js     # Tag autocomplete logic
+│   └── profile.js    # Profile page interactions
 ├── views/
 │   ├── auth/         # Login & register views
 │   ├── post/         # Post listing, creation, detail views
 │   ├── profile/      # Profile management views
 │   └── components/   # Reusable Blade components
+│       ├── layout.blade.php
+│       ├── header.blade.php
+│       ├── footer.blade.php
+│       ├── search.blade.php
+│       ├── theme.blade.php
+│       ├── post-card.blade.php
+│       └── post/
+│           ├── tags.blade.php
+│           ├── media.blade.php
+│           └── details.blade.php
 routes/
 ├── web.php           # All web routes
 └── console.php       # Console route definitions
@@ -102,6 +134,7 @@ tests/                # Pest tests
 - `User` -> hasMany `Post`, hasMany `Vote`, hasMany `Invite`
 - `Tag` -> belongsToMany `Post`, may alias another `Tag`
 - `Vote` -> belongsTo `Post`, belongsTo `User` (value is +1 or -1)
+- `Comment` -> belongsTo `Post`, belongsTo `User`; fields: `post_id`, `user_id`, `content`
 - `Invite` -> belongsTo `User` (creator), nullable `used_by` user
 
 ## Coding Conventions
@@ -129,6 +162,6 @@ tests/                # Pest tests
 - Tests live in `tests/`.
 - Tests use **Pest** with a file-based SQLite database at `database/testing.sqlite` for speed — no full `RefreshDatabase` wipe between runs.
 - Run with: `php artisan test`
-- Use `Post::factory()->fake()` state in tests to skip downloading images from picsum.photos.
+- In the testing environment `PostFactory` automatically uses fake local data (no `picsum.photos` download) — no special state needed. The `fake()` state does **not** exist; `fakeDefinition()` is triggered automatically via `app()->environment('testing')`.
 - When adding new features, include matching test coverage.
 - Use PHPStan for static analysis before committing.
