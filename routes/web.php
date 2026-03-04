@@ -6,16 +6,23 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('/tags/autocomplete', [TagController::class, 'autocomplete'])->name('tags.autocomplete');
 
+// TODO: implement UserController
+Route::get('/user/{user:username}', [UserController::class, 'show'])->name('users.show');
+
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::post('/posts/{post}/vote', [VoteController::class, 'vote'])->name('posts.vote');
+
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     Route::get('/upload', [PostController::class, 'create'])->name('posts.create');
     Route::post('/upload', [PostController::class, 'store'])->name('posts.store');
@@ -53,6 +60,3 @@ Route::get('/wiki', function () {
 Route::get('/forum', function () {
     return view('forum.index');
 })->name('forum');
-Route::get('/user/{user}', function ($user) {
-    return view('users.show', ['user' => $user]);
-})->name('users.show');

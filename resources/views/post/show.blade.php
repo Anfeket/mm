@@ -18,9 +18,55 @@
             </section>
             <section class="post-comments">
                 <h3>Comments</h3>
+
+                @auth
+                    <form action="{{ route('posts.comments.store', $post) }}" method="POST" class="comment-form">
+                        @csrf
+                        @error('content')
+                            <p class="alert alert-danger">{{ $message }}</p>
+                        @enderror
+                        <textarea name="content" placeholder="Write a comment..." required maxlength="2000" class="form-input">{{ old('content') }}</textarea>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                @else
+                    <p><a href="{{ route('login') }}">Log in</a> to post a comment.</p>
+                @endauth
+
                 @forelse($post->comments as $comment)
                     <div class="comment">
-                        <p><strong>{{ $comment->user->username }}:</strong> {{ $comment->content }}</p>
+                        <div class="comment-body">
+                            <div class="comment-meta">
+                                <a href="{{ route('users.show', $comment->user) }}" class="comment-author">
+                                    @if($comment->user->avatar_path)
+                                        <img src="{{ asset('uploads/' . $comment->user->avatar_path) }}"
+                                             alt="{{ $comment->user->username }}"
+                                             width="24" height="24" class="avatar avatar-inline">
+                                    @else
+                                        <div class="avatar avatar-placeholder avatar-inline" style="width:24px;height:24px;font-size:0.75rem;">
+                                            {{ mb_substr($comment->user->username, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    {{ $comment->user->username }}
+                                </a>
+                                <time class="comment-time"
+                                      datetime="{{ $comment->created_at->toIso8601String() }}"
+                                      title="{{ $comment->created_at->format('Y-m-d H:i') }}">
+                                    {{ $comment->created_at->diffForHumans() }}
+                                </time>
+                                @auth
+                                    @if(auth()->id() === $comment->user_id)
+                                        <div class="comment-actions">
+                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                @endauth
+                            </div>
+                            <p class="comment-content">{{ $comment->content }}</p>
+                        </div>
                     </div>
                 @empty
                     <p>No comments yet.</p>

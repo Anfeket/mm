@@ -233,6 +233,20 @@
     object-fit: cover;
 }
 
+.avatar-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
 /* =========================
     Buttons
 ========================= */

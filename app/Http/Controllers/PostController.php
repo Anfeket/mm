@@ -24,16 +24,20 @@ class PostController extends Controller
             $tags = $tagService->parseSearchInput($request->input('q'));
 
             foreach ($tags['include'] as $tag) {
-                $query->whereHas('tags', fn($q) => $q
-                    ->where('name', $tag['name'])
-                    ->where('category', $tag['category'])
+                $query->whereHas(
+                    'tags',
+                    fn($q) => $q
+                        ->where('name', $tag['name'])
+                        ->where('category', $tag['category'])
                 );
             }
 
             foreach ($tags['exclude'] as $tag) {
-                $query->whereDoesntHave('tags', fn($q) => $q
-                    ->where('name', $tag['name'])
-                    ->where('category', $tag['category'])
+                $query->whereDoesntHave(
+                    'tags',
+                    fn($q) => $q
+                        ->where('name', $tag['name'])
+                        ->where('category', $tag['category'])
                 );
             }
         }
@@ -111,7 +115,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = $post->load('author', 'tags', 'comments');
+        $post = $post->load(['author', 'tags', 'comments.user', 'comments' => fn($q) => $q->latest()]);
 
         $upvotes   = $post->votes()->where('value', 1)->count();
         $downvotes = $post->votes()->where('value', -1)->count();

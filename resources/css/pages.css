@@ -49,6 +49,86 @@
 }
 
 /* =========================
+    Post comments
+========================= */
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    margin-bottom: var(--space-m);
+    padding-bottom: var(--space-m);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comment-form textarea {
+    min-height: 80px;
+    max-height: 300px;
+    height: 80px;
+    width: 100%;
+    resize: vertical;
+}
+
+.comment-form .btn {
+    align-self: flex-end;
+}
+
+.comment {
+    display: flex;
+    gap: var(--space-m);
+    padding: var(--space-m) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comment:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.comment-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+}
+
+.comment-author {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.comment-author:hover {
+    color: var(--color-accent);
+}
+
+.comment-time {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+.comment-actions {
+    margin-left: auto;
+}
+
+.comment-content {
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+}
+
+/* =========================
     Login form
 ========================= */
 .auth-container {
