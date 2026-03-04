@@ -31,12 +31,18 @@ class CommentController extends Controller
     public function store(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'content' => ['required', 'string', 'max:2000'],
+            'content' => ['required', 'string', 'min:1', 'max:2000'],
         ]);
+
+        // Strip surrounding whitespace and reject blank content
+        $content = trim($validated['content']);
+        if ($content === '') {
+            return back()->withErrors(['content' => 'Comment cannot be empty.'])->withInput();
+        }
 
         $post->comments()->create([
             'user_id' => $request->user()->id,
-            'content' => $validated['content'],
+            'content' => $content,
         ]);
 
         return redirect()->route('posts.show', $post)->with('success', 'Comment posted.');

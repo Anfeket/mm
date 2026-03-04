@@ -115,7 +115,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = $post->load(['author', 'tags', 'comments.user', 'comments' => fn($q) => $q->latest()]);
+        $post = $post->load(['author', 'tags', 'comments' => fn($q) => $q->with('user')->latest()->limit(500)]);
 
         $upvotes   = $post->votes()->where('value', 1)->count();
         $downvotes = $post->votes()->where('value', -1)->count();

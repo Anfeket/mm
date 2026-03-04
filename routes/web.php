@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/posts/{post}/vote', [VoteController::class, 'vote'])->name('posts.vote');
 
-    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store');
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store')->middleware('throttle:10,1');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     Route::get('/upload', [PostController::class, 'create'])->name('posts.create');
