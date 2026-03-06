@@ -6,6 +6,25 @@
     const MAX_RESULTS = 10;
     const AUTOCOMPLETE_URL = '/tags/autocomplete';
 
+    // Maps both short (a) and long (artist) prefix strings to their canonical short form
+    const PREFIX_MAP = {
+        a: 'a', artist: 'a',
+        c: 'c', copyright: 'c',
+        o: 'o', origin: 'o',
+        f: 'f', format: 'f',
+        t: 't', template: 't',
+        g: 'g', general: 'g',
+        u: 'u', usage: 'u',
+        m: 'm', meta: 'm',
+        s: 's', subject: 's',
+    };
+
+    // Maps full category name → short prefix
+    const CATEGORY_TO_PREFIX = {
+        artist: 'a', copyright: 'c', origin: 'o', format: 'f',
+        template: 't', general: 'g', usage: 'u', meta: 'm', subject: 's',
+    };
+
     const CATEGORY_CLASSES = {
         artist: 'tag-artist',
         copyright: 'tag-copyright',
@@ -141,18 +160,7 @@
         function extractPrefix(token) {
             const match = token.match(/^([a-z]+):/i);
             if (!match) return null;
-            const prefixMap = {
-                a: 'a', artist: 'artist',
-                c: 'c', copyright: 'copyright',
-                o: 'o', origin: 'origin',
-                f: 'f', format: 'format',
-                t: 't', template: 'template',
-                g: 'g', general: 'general',
-                u: 'u', usage: 'usage',
-                m: 'm', meta: 'meta',
-                s: 's', subject: 'subject',
-            };
-            const resolved = prefixMap[match[1].toLowerCase()];
+            const resolved = PREFIX_MAP[match[1].toLowerCase()];
             return resolved ?? null;
         }
 
@@ -182,7 +190,18 @@
             if (!prefix) {
                 const userPrefix = extractPrefix(token);
                 if (userPrefix) {
+                    // User already typed a category prefix — keep it
                     name = `${userPrefix}:${name}`;
+                } else {
+                    // No prefix typed, no default on the input.
+                    // Prepend the tag's own short prefix unless it's general (g:).
+                    const tagCategory = tag.category ?? 'general';
+                    if (tagCategory !== 'general') {
+                        const shortPrefix = CATEGORY_TO_PREFIX[tagCategory];
+                        if (shortPrefix) {
+                            name = `${shortPrefix}:${name}`;
+                        }
+                    }
                 }
             }
 
