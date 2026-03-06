@@ -1,4 +1,4 @@
-@props(['post', 'userVote'])
+@props(['post', 'userVote', 'userFavorite'])
 @use(Illuminate\Support\Uri)
 @use(Illuminate\Support\Number)
 
@@ -40,7 +40,15 @@
         </dd>
 
         <dt>Favorites:</dt>
-        <dd>{{ $post->favorites_count }}</dd>
+        <dd class="post-favorites">
+            <span class="favorites-count">{{ $post->favorites_count }}</span>
+            @auth
+                <form action="{{ route('posts.favorites.toggle', $post) }}" method="POST" class="favorite-form">
+                    @csrf
+                    <button type="submit" @class(['favorite-btn', 'favorite-active' => $userFavorite])>&#9829;</button>
+                </form>
+            @endauth
+        </dd>
 
     </dl>
 

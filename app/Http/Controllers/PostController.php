@@ -122,6 +122,9 @@ class PostController extends Controller
         $userVote  = Auth::check()
             ? $post->votes()->where('user_id', Auth::id())->value('value')
             : null;
+        $userFavorite = Auth::check()
+            ? $post->favorites()->where('user_id', Auth::id())->exists()
+            : false;
 
         // Find previous and next posts by ID
         $previousPost = Post::where('is_listed', true)
@@ -139,7 +142,8 @@ class PostController extends Controller
             'nextPost',
             'upvotes',
             'downvotes',
-            'userVote'
+            'userVote',
+            'userFavorite'
         ));
     }
 

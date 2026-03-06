@@ -160,6 +160,39 @@
 }
 
 /* =========================
+    Favorite button
+========================= */
+
+.post-favorites {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+}
+
+.favorite-form {
+    display: flex;
+}
+
+.favorite-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-light);
+    padding: 0;
+    line-height: 1;
+    font-size: 1rem;
+}
+
+.favorite-btn:hover {
+    color: var(--color-accent);
+}
+
+.favorite-btn.favorite-active {
+    color: var(--color-error);
+}
+
+/* =========================
     Tag list
 ========================= */
 .tag-category {
