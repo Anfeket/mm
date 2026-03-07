@@ -68,4 +68,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Invite::class, 'used_by');
     }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isModerator()
+    {
+        return $this->role === 'moderator';
+    }
 }
