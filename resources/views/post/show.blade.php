@@ -3,7 +3,7 @@
     <x-slot:title>Post #{{ $post->id }}</x-slot:title>
 
     <x-slot:sidebar>
-        <x-post.tags :tags="$post->tags" />
+        <x-post.tags :tags="$post->tags" :post="$post" />
         <x-post.details :post="$post" :user-vote="$userVote" :user-favorite="$userFavorite" />
     </x-slot:sidebar>
 

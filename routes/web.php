@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PostTagController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/posts/{post}/vote', [VoteController::class, 'vote'])->name('posts.vote');
     Route::post('/posts/{post}/favorites', [FavoriteController::class, 'toggle'])->name('posts.favorites.toggle');
+
+    Route::post('/posts/{post}/tags', [PostTagController::class, 'attach'])->name('posts.tags.attach');
+    Route::delete('/posts/{post}/tags/{tag}', [PostTagController::class, 'detach'])->name('posts.tags.detach');
 
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store')->middleware('throttle:10,1');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
