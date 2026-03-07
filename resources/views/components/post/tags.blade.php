@@ -5,12 +5,14 @@
 
     @foreach (TagCategory::cases() as $category)
         @if ($tags->where('category', $category)->isNotEmpty())
-            <h3 class="tag-category">{{ $category->label() }}</h3>
-            <ul class="tag-list">
-                @foreach ($tags->where('category', $category) as $tag)
-                    <li><a href="{{ route('tags.show', $tag) }}" class="tag tag-{{ $category->value }}">{{ $tag->name }}</a></li>
-                @endforeach
-            </ul>
+            <div class="tag-category-wrapper">
+                <h3 class="tag-category">{{ $category->label() }}</h3>
+                <ul class="tag-list">
+                    @foreach ($tags->where('category', $category) as $tag)
+                        <li><a href="{{ route('tags.show', $tag) }}" class="tag tag-{{ $category->value }}">{{ $tag->name }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
     @endforeach
 
