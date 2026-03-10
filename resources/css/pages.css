@@ -3,7 +3,7 @@
 ========================= */
 .post-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: var(--space-l);
     margin-bottom: var(--space-xl);
     align-items: end;
@@ -46,6 +46,22 @@
     border-radius: var(--radius);
     background: var(--color-bg-box);
     padding: var(--space-m);
+}
+
+@media (max-width: 600px) {
+    .with-sidebar {
+        flex-direction: column;
+    }
+    #main {
+        order: 1;
+    }
+    #sidebar {
+        order: 2;
+    }
+    .post-media {
+        max-width: 100%;
+        height: auto;
+    }
 }
 
 /* =========================

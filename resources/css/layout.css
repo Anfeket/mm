@@ -30,6 +30,15 @@
     position: relative;
 }
 
+@media (max-width: 600px) {
+    #auth-links {
+        flex-direction: column;
+    }
+    #user-menu {
+        flex-shrink: 0;
+    }
+}
+
 .user-menu-trigger {
     display: flex;
     align-items: center;
