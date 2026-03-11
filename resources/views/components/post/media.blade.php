@@ -14,6 +14,7 @@
         <video
             controls
             playsinline
+            preload="metadata"
             @if ($post->thumb_path) poster="{{ asset('uploads/' . $post->thumb_path) }}" @endif
             @if ($post->width) width="{{ $post->width }}" @endif
             @if ($post->height) height="{{ $post->height }}" @endif
