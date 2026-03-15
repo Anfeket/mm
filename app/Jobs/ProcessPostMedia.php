@@ -52,6 +52,9 @@ class ProcessPostMedia implements ShouldQueue
             $this->post->processing_status  = PostProcessingStatus::Completed;
             $this->post->is_listed          = true;
             $this->post->save();
+
+            // Send Discord webhook after processing is complete
+            SendDiscordWebhook::dispatch($this->post);
         } catch (\Throwable $e) {
             $this->post->processing_status = PostProcessingStatus::Failed;
             $this->post->processing_error  = $e->getMessage();
