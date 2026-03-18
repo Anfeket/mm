@@ -47,6 +47,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+// dev components testing route
+Route::get('/dev/components', function () {
+    abort_unless(app()->isLocal(), 404);
+    return view('dev.components');
+})->name('dev.components');
+
 // placeholders
 Route::get('/tags', function () {
     return view('tags.index');
