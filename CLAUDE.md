@@ -127,7 +127,7 @@ tests/                # Pest tests
 - **Queued jobs** (`app/Jobs/`) handle heavy processing (media transcoding, avatar cropping) asynchronously.
 - **Hash-based file storage:** Uploaded files are stored by content hash (`xx/xx/hash.ext`) to deduplicate.
 - **Tag system:** Tags have 9 categories defined in the `TagCategory` enum:
-  - `artist` (prefix `a:`), `copyright` (`c:`), `origin` (`o:`), `format` (`f:`), `template` (`t:`), `general` (`g:`), `usage` (`u:`), `meta` (`m:`), `subject` (`s:`)
+  - `artist` (prefix `a:`), `copyright` (`c:`), `origin` (`o:`), `template` (`t:`), `general` (`g:`), `meta` (`m:`), `language` (`l:`)
   - Both short (`a:`) and long (`artist:`) prefix forms are supported
   - Tag names are normalized: lowercase, spaces→underscores, allowed chars `[a-z0-9_():-]`
   - Always use `TagService` for parsing/normalizing — never manually
