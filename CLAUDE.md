@@ -6,7 +6,7 @@ This is **mm** — a meme-sharing / imageboard-style web application built with 
 
 ## Tech Stack
 
-- **Backend:** PHP / Laravel (latest)
+- **Backend:** PHP / Laravel 13
 - **Frontend:** Blade templates, vanilla JavaScript and CSS (no frontend framework)
 - **CSS:** Custom CSS with variables — no utility framework. Split across `base.css`, `layout.css`, `pages.css`, `components.css`. Tag colors use `--color-tag-{category}` CSS variables.
 - **Build Tool:** Vite (via `laravel-vite-plugin`)
@@ -44,6 +44,8 @@ app/
 │       ├── ProfileController.php   # User profile, avatar upload, invites
 │       ├── VoteController.php      # Upvote/downvote on posts
 │       ├── TagController.php       # Tag CRUD and autocomplete API
+│       ├── FavoriteController.php  # Toggle favorite status on posts for users
+│       └── PostTagController.php   # Attach/detach tags to posts
 │       └── CommentController.php   # Comments (store with rate limiting, destroy)
 ├── Console/
 │   └── Commands/
@@ -64,14 +66,14 @@ app/
 ├── Services/         # Business logic services
 │   ├── TagService.php          # Tag parsing, normalization, search
 │   ├── FileStorageService.php  # Hash-based file storage
+│   ├── DiscordService.php      # Discord webhook notifications
 │   └── FfmpegService.php       # FFmpeg binary management & execution
 ├── View/
 │   └── Components/
-│       ├── Layout.php              # <x-layout> wrapper component
-│       └── PostCard.php            # <x-post-card> component
+│       ├── Layout.php      # <x-layout> wrapper component
+│       └── PostCard.php    # <x-post-card> component
 ├── PostProcessingStatus.php    # Enum: post processing states
 └── TagCategory.php             # Enum: tag categories with prefixes
-
 bootstrap/            # Laravel bootstrap
 config/               # Configuration files
 database/
@@ -93,8 +95,14 @@ resources/
 │   └── profile.js    # Profile page interactions
 ├── views/
 │   ├── auth/         # Login & register views
+│   │   ├── login.blade.php
+│   │   └── register.blade.php
 │   ├── post/         # Post listing, creation, detail views
+│   │   ├── create.blade.php
+│   │   ├── index.blade.php
+│   │   └── show.blade.php
 │   ├── profile/      # Profile management views
+│   │   └── show.blade.php
 │   └── components/   # Reusable Blade components
 │       ├── layout.blade.php
 │       ├── header.blade.php
