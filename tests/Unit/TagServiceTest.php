@@ -4,7 +4,7 @@ use App\Services\TagService;
 use App\TagCategory;
 
 beforeEach(function () {
-    $this->service = new TagService();
+    $this->service = new TagService;
 });
 
 // -------------------------------------------------------------------------
@@ -106,15 +106,13 @@ describe('parseInput', function () {
 
     it('parses all recognised short prefixes', function () {
         $cases = [
-            'a'  => TagCategory::Artist,
-            'c'  => TagCategory::Copyright,
-            'o'  => TagCategory::Origin,
-            'f'  => TagCategory::Format,
-            't'  => TagCategory::Template,
-            'g'  => TagCategory::General,
-            'u'  => TagCategory::Usage,
-            'm'  => TagCategory::Meta,
-            's'  => TagCategory::Subject,
+            'a' => TagCategory::Artist,
+            'c' => TagCategory::Copyright,
+            'o' => TagCategory::Origin,
+            't' => TagCategory::Template,
+            'g' => TagCategory::General,
+            'm' => TagCategory::Meta,
+            'l' => TagCategory::Language,
         ];
 
         foreach ($cases as $prefix => $expected) {
@@ -160,11 +158,11 @@ describe('parseInput', function () {
     });
 
     it('parses mixed prefixed and plain tags', function () {
-        $tags = $this->service->parseInput('a:john_doe reaction_image s:gaming');
+        $tags = $this->service->parseInput('a:john_doe reaction_image l:english');
 
         expect($tags)->toHaveCount(3)
             ->and($tags[0])->toMatchArray(['name' => 'john_doe',       'category' => TagCategory::Artist])
             ->and($tags[1])->toMatchArray(['name' => 'reaction_image', 'category' => TagCategory::General])
-            ->and($tags[2])->toMatchArray(['name' => 'gaming',         'category' => TagCategory::Subject]);
+            ->and($tags[2])->toMatchArray(['name' => 'english',        'category' => TagCategory::Language]);
     });
 });

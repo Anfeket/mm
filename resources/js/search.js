@@ -11,30 +11,26 @@
         a: 'a', artist: 'a',
         c: 'c', copyright: 'c',
         o: 'o', origin: 'o',
-        f: 'f', format: 'f',
         t: 't', template: 't',
         g: 'g', general: 'g',
-        u: 'u', usage: 'u',
         m: 'm', meta: 'm',
-        s: 's', subject: 's',
+        l: 'l', language: 'l',
     };
 
     // Maps full category name → short prefix
     const CATEGORY_TO_PREFIX = {
-        artist: 'a', copyright: 'c', origin: 'o', format: 'f',
-        template: 't', general: 'g', usage: 'u', meta: 'm', subject: 's',
+        artist: 'a', copyright: 'c', origin: 'o', template: 't',
+        general: 'g', meta: 'm', language: 'l',
     };
 
     const CATEGORY_CLASSES = {
         artist: 'tag-artist',
         copyright: 'tag-copyright',
         origin: 'tag-origin',
-        format: 'tag-format',
         template: 'tag-template',
         general: 'tag-general',
-        usage: 'tag-usage',
         meta: 'tag-meta',
-        subject: 'tag-subject',
+        language: 'tag-language',
     };
 
     function lastToken(str) {

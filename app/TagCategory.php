@@ -7,12 +7,10 @@ enum TagCategory: string
     case Artist = 'artist';
     case Copyright = 'copyright';
     case Origin = 'origin';
-    case Format = 'format';
     case Template = 'template';
-    case Subject = 'subject';
     case General = 'general';
-    case Usage = 'usage';
     case Meta = 'meta';
+    case Language = 'language';
 
     public function label(): string
     {
@@ -20,12 +18,10 @@ enum TagCategory: string
             self::Artist => 'Artist',
             self::Copyright => 'Copyright',
             self::Origin => 'Origin',
-            self::Format => 'Format',
             self::Template => 'Template',
-            self::Subject => 'Subject',
             self::General => 'General',
-            self::Usage => 'Usage',
             self::Meta => 'Meta',
+            self::Language => 'Language',
         };
     }
 
@@ -35,12 +31,10 @@ enum TagCategory: string
             self::Artist => ['a', 'artist'],
             self::Copyright => ['c', 'copyright'],
             self::Origin => ['o', 'origin'],
-            self::Format => ['f', 'format'],
             self::Template => ['t', 'template'],
-            self::Subject => ['s', 'subject'],
             self::General => ['g', 'general'],
-            self::Usage => ['u', 'usage'],
             self::Meta => ['m', 'meta'],
+            self::Language => ['l', 'language'],
         };
     }
 
@@ -51,6 +45,7 @@ enum TagCategory: string
                 return $category;
             }
         }
+
         return null;
     }
 }

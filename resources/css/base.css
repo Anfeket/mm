@@ -26,12 +26,10 @@
     --color-tag-artist: #f87171;
     --color-tag-copyright: #34d399;
     --color-tag-origin: #a78bfa;
-    --color-tag-format: #fb923c;
     --color-tag-template: #e879f9;
     --color-tag-general: #60a5fa;
-    --color-tag-usage: #2dd4bf;
     --color-tag-meta: #fbbf24;
-    --color-tag-subject: #f43f5e;
+    --color-tag-language: #fb923c;
 
     /* Status Colors */
     --color-success: #22c55e;

@@ -299,10 +299,6 @@
     color: var(--color-tag-origin);
 }
 
-.tag-format {
-    color: var(--color-tag-format);
-}
-
 .tag-template {
     color: var(--color-tag-template);
 }
@@ -311,16 +307,12 @@
     color: var(--color-tag-general);
 }
 
-.tag-usage {
-    color: var(--color-tag-usage);
-}
-
 .tag-meta {
     color: var(--color-tag-meta);
 }
 
-.tag-subject {
-    color: var(--color-tag-subject);
+.tag-language {
+    color: var(--color-tag-language);
 }
 
 /* =========================

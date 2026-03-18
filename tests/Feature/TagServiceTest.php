@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Tag;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\TagService;
 use App\TagCategory;
@@ -10,8 +10,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->service = new TagService();
-    $this->user    = User::factory()->create();
+    $this->service = new TagService;
+    $this->user = User::factory()->create();
 
     $this->actingAs($this->user);
 });
@@ -30,15 +30,15 @@ describe('resolveAlias', function () {
 
     it('follows a single alias to the canonical tag', function () {
         $canonical = Tag::factory()->general()->create();
-        $alias     = Tag::factory()->general()->create(['alias_tag_id' => $canonical->id]);
+        $alias = Tag::factory()->general()->create(['alias_tag_id' => $canonical->id]);
 
         expect($this->service->resolveAlias($alias)->id)->toBe($canonical->id);
     });
 
     it('follows a chain of aliases to the canonical tag', function () {
         $canonical = Tag::factory()->general()->create();
-        $middle    = Tag::factory()->general()->create(['alias_tag_id' => $canonical->id]);
-        $alias     = Tag::factory()->general()->create(['alias_tag_id' => $middle->id]);
+        $middle = Tag::factory()->general()->create(['alias_tag_id' => $canonical->id]);
+        $alias = Tag::factory()->general()->create(['alias_tag_id' => $middle->id]);
 
         expect($this->service->resolveAlias($alias)->id)->toBe($canonical->id);
     });
@@ -53,7 +53,7 @@ describe('resolveAlias', function () {
         $tagA->refresh();
 
         expect(fn () => $this->service->resolveAlias($tagA))
-            ->toThrow(\RuntimeException::class, 'Circular alias detected');
+            ->toThrow(RuntimeException::class, 'Circular alias detected');
     });
 
 });
@@ -66,10 +66,10 @@ describe('validateNoCircularAlias', function () {
 
     it('passes when there is no circular chain', function () {
         $canonical = Tag::factory()->general()->create();
-        $tag       = Tag::factory()->general()->create();
+        $tag = Tag::factory()->general()->create();
 
         expect(fn () => $this->service->validateNoCircularAlias($tag, $canonical))
-            ->not->toThrow(\RuntimeException::class);
+            ->not->toThrow(RuntimeException::class);
     });
 
     it('throws when aliasing a tag to itself indirectly', function () {
@@ -78,7 +78,7 @@ describe('validateNoCircularAlias', function () {
 
         // Trying to alias A → B would make A → B → A
         expect(fn () => $this->service->validateNoCircularAlias($tagA, $tagB))
-            ->toThrow(\RuntimeException::class, 'circular chain');
+            ->toThrow(RuntimeException::class, 'circular chain');
     });
 
     it('throws when an existing circular chain is detected in target chain', function () {
@@ -93,31 +93,31 @@ describe('validateNoCircularAlias', function () {
         $tagC = Tag::factory()->general()->create();
 
         expect(fn () => $this->service->validateNoCircularAlias($tagC, $tagA))
-            ->toThrow(\RuntimeException::class, 'Circular alias detected');
+            ->toThrow(RuntimeException::class, 'Circular alias detected');
     });
 
     it('throws when tags belong to different categories', function () {
         $tagA = Tag::factory()->category(TagCategory::General)->create();
-        $tagB = Tag::factory()->category(TagCategory::Subject)->create();
+        $tagB = Tag::factory()->category(TagCategory::Language)->create();
 
         expect(fn () => $this->service->validateNoCircularAlias($tagA, $tagB))
-            ->toThrow(\RuntimeException::class, 'different categories');
+            ->toThrow(RuntimeException::class, 'different categories');
     });
 
     it('throws when categories mismatch in existing chain', function () {
         $tagA = Tag::factory()->category(TagCategory::General)->create();
-        $tagB = Tag::factory()->category(TagCategory::Subject)->create();
+        $tagB = Tag::factory()->category(TagCategory::Language)->create();
         $tagC = Tag::factory()->category(TagCategory::General)->create(['alias_tag_id' => $tagB->id]);
 
         expect(fn () => $this->service->validateNoCircularAlias($tagA, $tagC))
-            ->toThrow(\RuntimeException::class, 'different categories');
+            ->toThrow(RuntimeException::class, 'different categories');
     });
 
     it('throws when trying to alias a tag to itself directly', function () {
         $tag = Tag::factory()->create();
 
         expect(fn () => $this->service->validateNoCircularAlias($tag, $tag))
-            ->toThrow(\RuntimeException::class, 'Cannot alias tag');
+            ->toThrow(RuntimeException::class, 'Cannot alias tag');
     });
 
 });
@@ -166,21 +166,21 @@ describe('findOrCreate', function () {
         $this->service->findOrCreate('authored_tag', TagCategory::General);
 
         $this->assertDatabaseHas('tags', [
-            'name'       => 'authored_tag',
+            'name' => 'authored_tag',
             'created_by' => $this->user->id,
         ]);
     });
 
     it('allows same name in different categories', function () {
         $this->service->findOrCreate('tag', TagCategory::General);
-        $this->service->findOrCreate('tag', TagCategory::Subject);
+        $this->service->findOrCreate('tag', TagCategory::Language);
 
         $generalTag = $this->service->findOrCreate('tag', TagCategory::General);
-        $subjectTag = $this->service->findOrCreate('tag', TagCategory::Subject);
+        $languageTag = $this->service->findOrCreate('tag', TagCategory::Language);
 
         expect(Tag::where('name', 'tag')->count())->toBe(2);
         expect($generalTag->category)->toBe(TagCategory::General);
-        expect($subjectTag->category)->toBe(TagCategory::Subject);
+        expect($languageTag->category)->toBe(TagCategory::Language);
     });
 
 });
@@ -241,7 +241,7 @@ describe('syncPostTags', function () {
         $this->service->syncPostTags($this->post, [
             ['name' => 'tag_one', 'category' => TagCategory::General],
             ['name' => 'tag_two', 'category' => TagCategory::General],
-            ['name' => 'tag_three', 'category' => TagCategory::Subject],
+            ['name' => 'tag_three', 'category' => TagCategory::Language],
         ]);
 
         expect($this->post->tags()->count())->toBe(3);
@@ -255,8 +255,8 @@ describe('syncPostTags', function () {
         $tag = Tag::where('name', 'pivot_tag')->first();
 
         $this->assertDatabaseHas('post_tags', [
-            'post_id'         => $this->post->id,
-            'tag_id'          => $tag->id,
+            'post_id' => $this->post->id,
+            'tag_id' => $tag->id,
             'added_by_user_id' => $this->user->id,
         ]);
     });
@@ -276,14 +276,14 @@ describe('syncPostTags', function () {
     it('attaches tags with same name but different categories', function () {
         $this->service->syncPostTags($this->post, [
             ['name' => 'multi_category_tag', 'category' => TagCategory::General],
-            ['name' => 'multi_category_tag', 'category' => TagCategory::Subject],
+            ['name' => 'multi_category_tag', 'category' => TagCategory::Language],
         ]);
 
         $generalTag = Tag::where('name', 'multi_category_tag')->where('category', TagCategory::General)->first();
-        $subjectTag = Tag::where('name', 'multi_category_tag')->where('category', TagCategory::Subject)->first();
+        $languageTag = Tag::where('name', 'multi_category_tag')->where('category', TagCategory::Language)->first();
 
         expect($this->post->tags()->where('tag_id', $generalTag->id)->exists())->toBeTrue();
-        expect($this->post->tags()->where('tag_id', $subjectTag->id)->exists())->toBeTrue();
+        expect($this->post->tags()->where('tag_id', $languageTag->id)->exists())->toBeTrue();
     });
 
 });
