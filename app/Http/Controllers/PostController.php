@@ -10,6 +10,7 @@ use App\Services\FileStorageService;
 use App\Services\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class PostController extends Controller
 {
@@ -116,6 +117,13 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $post = $post->load(['tags', 'comments' => fn($q) => $q->with('user')->latest()->limit(500)]);
+
+        $viewKey = 'view_' . md5(request()->ip() . request()->userAgent() . $post->id);
+        $isBot = preg_match('/bot|crawl|spider|slurp|bingbot|googlebot/i', request()->userAgent());
+        if (!$isBot && !Cache::has($viewKey)) {
+            $post->increment('view_count');
+            Cache::put($viewKey, true, now()->addHours(12));
+        }
 
         $upvotes   = $post->upvotes;
         $downvotes = $post->downvotes;
