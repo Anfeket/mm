@@ -1,11 +1,15 @@
 @use(App\TagCategory)
 <x-layout>
-    <x-slot:title>Post #{{ $post->id }}</x-slot:title>
+    <x-slot:title>Post #{{ $post->id }} uploaded by {{ $post->author->username }}</x-slot:title>
 
     <x-slot:sidebar>
         <x-post.tags :tags="$post->tags" :post="$post" />
         <x-post.details :post="$post" :user-vote="$userVote" :user-favorite="$userFavorite" />
     </x-slot:sidebar>
+
+    <x-slot:description>
+        {{ Str::limit($post->description, 150) }}
+    </x-slot:description>
 
     <article>
         <div id="post-actions">

@@ -12,7 +12,11 @@
         <title>{{ config('app.name') }}</title>
     @endisset
 
+    <meta name="description" content="{{ $description ?? config('app.description') }}">
+
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
+    <link rel="canonical" href="{{ url()->current() }}">
 
     @vite(['resources/css/app.css', 'resources/js/search.js'])
     @stack('scripts')

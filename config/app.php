@@ -18,6 +18,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Description
+    |--------------------------------------------------------------------------
+    |
+    | This value is a short description of your application. You may use a multiline
+    | string here to provide more detail. For multiline, use "\n" or heredoc syntax.
+    |
+    */
+
+    'description' => 'A meme imageboard and archive. Browse, search, share and upload memes with ease. Find artists, search by tags, and discover internet culture the right way.',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
