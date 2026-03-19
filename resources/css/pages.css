@@ -417,6 +417,10 @@
     font-size: 0.8rem;
     color: var(--color-text-light);
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .invite-unused {
