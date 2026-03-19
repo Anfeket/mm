@@ -39,6 +39,9 @@
             @endauth
         </dd>
 
+        <dt>Views:</dt>
+        <dd>{{ $post->view_count }}</dd>
+
         <dt>Favorites:</dt>
         <dd class="post-favorites">
             <span class="favorites-count">{{ $post->favorites_count }}</span>
