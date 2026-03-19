@@ -108,6 +108,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Google Site Verification
+    |--------------------------------------------------------------------------
+    |
+    | This value is used for Google Search Console site verification. If set,
+    | it will be output as a meta tag in your site's HTML head for Googlebot
+    | to verify ownership. Set this in your ".env" file as:
+    |   APP_GOOGLE_SITE_VERIFICATION=your-verification-code
+    |
+    | Example meta tag:
+    |   <meta name="google-site-verification" content="your-verification-code">
+    |
+    */
+
+    'google_site_verification' => env('APP_GOOGLE_SITE_VERIFICATION', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maintenance Mode Driver
     |--------------------------------------------------------------------------
     |

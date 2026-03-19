@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @if (config('app.google_site_verification'))
+        <meta name="google-site-verification" content="{{ config('app.google_site_verification') }}">
+    @endif
     @isset($title)
         <title>{{ $title }} - {{ config('app.short_name') }}</title>
     @else
