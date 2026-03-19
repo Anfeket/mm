@@ -11,6 +11,8 @@
         {{ Str::limit($post->description, 150) }}
     </x-slot:description>
 
+    <x-slot:jsonLd>{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES) !!}</x-slot:jsonLd>
+
     <article>
         <div id="post-actions">
         </div>

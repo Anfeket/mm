@@ -8,6 +8,7 @@ use App\TagCategory;
 use App\Jobs\ProcessPostMedia;
 use App\Services\FileStorageService;
 use App\Services\TagService;
+use App\Support\JsonLd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -43,8 +44,11 @@ class PostController extends Controller
             }
         }
 
+        $jsonLd = JsonLd::forSite();
+
         $posts = $query->paginate(20)->withQueryString();
-        return view('post.index', compact('posts'));
+
+        return view('post.index', compact('posts', 'jsonLd'));
     }
 
     /**
@@ -144,6 +148,8 @@ class PostController extends Controller
             ->orderBy('id', 'asc')
             ->first();
 
+        $jsonLd = JsonLd::forPost($post);
+
         return view('post.show', compact(
             'post',
             'previousPost',
@@ -151,7 +157,8 @@ class PostController extends Controller
             'upvotes',
             'downvotes',
             'userVote',
-            'userFavorite'
+            'userFavorite',
+            'jsonLd'
         ));
     }
 

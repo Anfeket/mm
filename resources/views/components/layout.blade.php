@@ -14,6 +14,10 @@
 
     <meta name="description" content="{{ $description ?? config('app.description') }}">
 
+    @isset($jsonLd)
+        <script type="application/ld+json">{!! $jsonLd !!}</script>
+    @endisset
+
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     <link rel="canonical" href="{{ url()->current() }}">
