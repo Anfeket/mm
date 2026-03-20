@@ -13,6 +13,16 @@
 
     <x-slot:jsonLd>{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES) !!}</x-slot:jsonLd>
 
+    @if ($post->thumb_path)
+        <x-slot:ogImage>{{ $post->thumb_path }}</x-slot:ogImage>
+    @endif
+
+    @if ($post->isVideo())
+        <x-slot:ogType>video.other</x-slot:ogType>
+        <x-slot:ogVideo>{{ $post->file_path }}</x-slot:ogVideo>
+        <x-slot:ogVideoType>{{ $post->mime_type }}</x-slot:ogVideoType>
+    @endif
+
     <article>
         <div id="post-actions">
         </div>
