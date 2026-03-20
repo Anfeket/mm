@@ -22,6 +22,26 @@
 
     <link rel="canonical" href="{{ url()->current() }}">
 
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:type" content="{{ $ogType ?? 'website' }}">
+    <meta property="og:title" content="{{ isset($title) ? $title . ' - ' . config('app.short_name') : config('app.name') }}">
+    <meta property="og:description" content="{{ $description ?? config('app.description') }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @isset($ogImage)
+        <meta property="og:image" content="{{ asset('uploads/' . $ogImage) }}">
+    @endisset
+    @isset($ogVideo)
+        <meta property="og:video" content="{{ asset('uploads/' . $ogVideo) }}">
+        <meta property="og:video:type" content="{{ $ogVideoType ?? 'video/mp4' }}">
+    @endisset
+
+    <meta name="twitter:card" content="{{ isset($ogImage) ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $title ?? config('app.name') }}">
+    <meta name="twitter:description" content="{{ $description ?? config('app.description') }}">
+    @isset($ogImage)
+        <meta name="twitter:image" content="{{ asset('uploads/' . $ogImage) }}">
+    @endisset
+
     @vite(['resources/css/app.css', 'resources/js/search.js'])
     @stack('scripts')
 </head>
