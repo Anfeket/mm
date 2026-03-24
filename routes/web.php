@@ -9,6 +9,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PostTagController;
+use App\Http\Controllers\SitemapController;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -52,6 +53,11 @@ Route::get('/dev/components', function () {
     abort_unless(app()->isLocal(), 404);
     return view('dev.components');
 })->name('dev.components');
+
+// sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemap-static.xml', [SitemapController::class, 'static'])->name('sitemap.static');
+Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
 
 // placeholders
 Route::get('/tags', function () {
