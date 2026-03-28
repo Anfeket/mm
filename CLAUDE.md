@@ -72,6 +72,10 @@ app/
 │   └── Components/
 │       ├── Layout.php      # <x-layout> wrapper component
 │       └── PostCard.php    # <x-post-card> component
+├── Support/
+│   └── JsonLd.php       # Helper for generating JSON-LD structured data
+├── Policies/
+│   └── PostPolicy.php     # Authorization for viewing/editing posts
 ├── PostProcessingStatus.php    # Enum: post processing states
 └── TagCategory.php             # Enum: tag categories with prefixes
 bootstrap/            # Laravel bootstrap
@@ -126,7 +130,7 @@ tests/                # Pest tests
 - **Service classes** (`app/Services/`) encapsulate business logic — prefer adding logic there over controllers.
 - **Queued jobs** (`app/Jobs/`) handle heavy processing (media transcoding, avatar cropping) asynchronously.
 - **Hash-based file storage:** Uploaded files are stored by content hash (`xx/xx/hash.ext`) to deduplicate.
-- **Tag system:** Tags have 9 categories defined in the `TagCategory` enum:
+- **Tag system:** Tags have 7 categories defined in the `TagCategory` enum:
   - `artist` (prefix `a:`), `copyright` (`c:`), `origin` (`o:`), `template` (`t:`), `general` (`g:`), `meta` (`m:`), `language` (`l:`)
   - Both short (`a:`) and long (`artist:`) prefix forms are supported
   - Tag names are normalized: lowercase, spaces→underscores, allowed chars `[a-z0-9_():-]`
@@ -168,7 +172,7 @@ tests/                # Pest tests
 ## Testing
 
 - Tests live in `tests/`.
-- Tests use **Pest** with a file-based SQLite database at `database/testing.sqlite` for speed — no full `RefreshDatabase` wipe between runs.
+- Tests use **Pest** with a memory database for speed — `RefreshDatabase` wipe between runs.
 - Run with: `php artisan test`
 - In the testing environment `PostFactory` automatically uses fake local data (no `picsum.photos` download) — no special state needed. The `fake()` state does **not** exist; `fakeDefinition()` is triggered automatically via `app()->environment('testing')`.
 - When adding new features, include matching test coverage.
