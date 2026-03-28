@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessPostMedia;
 use App\Models\Post;
 use App\PostProcessingStatus;
-use App\TagCategory;
-use App\Jobs\ProcessPostMedia;
 use App\Services\FileStorageService;
 use App\Services\TagService;
 use App\Support\JsonLd;
+use App\TagCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -28,7 +28,7 @@ class PostController extends Controller
             foreach ($tags['include'] as $tag) {
                 $query->whereHas(
                     'tags',
-                    fn($q) => $q
+                    fn ($q) => $q
                         ->where('name', $tag['name'])
                         ->where('category', $tag['category'])
                 );
@@ -37,7 +37,7 @@ class PostController extends Controller
             foreach ($tags['exclude'] as $tag) {
                 $query->whereDoesntHave(
                     'tags',
-                    fn($q) => $q
+                    fn ($q) => $q
                         ->where('name', $tag['name'])
                         ->where('category', $tag['category'])
                 );
@@ -65,15 +65,27 @@ class PostController extends Controller
     public function store(Request $request, FileStorageService $storage, TagService $tagService)
     {
         $request->validate([
-            'file' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm', 'max:102400'], // 100MB max
+            'file' => ['required_without:url', 'prohibits:url', 'file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm', 'max:102400'], // 100MB max
+            'url' => ['required_without:file', 'prohibits:file', 'nullable', 'url', 'max:2048'],
             'source_url' => ['nullable', 'url', 'max:2048'],
             'description' => ['nullable', 'string', 'max:5000'],
             'tags' => ['nullable', 'string'],
             'artist' => ['nullable', 'string'],
         ]);
 
-        $file = $request->file('file');
-        $fileInfo = $storage->store($file);
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileInfo = $storage->store($file);
+            } elseif ($request->filled('url')) {
+                $file = $storage->fileFromUrl($request->input('url'));
+                $fileInfo = $storage->store($file);
+            } else {
+                return back()->withErrors(['file' => 'No file or URL provided'])->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Failed to process the file: '.$e->getMessage()])->withInput();
+        }
 
         $existing = Post::where('file_hash', $fileInfo['file_hash'])->first();
         if ($existing) {
@@ -82,25 +94,32 @@ class PostController extends Controller
                 ->withInput();
         }
 
+        $mimeType = $fileInfo['mime_type'];
+
         $width = $height = null;
-        if (str_starts_with($file->getMimeType(), 'image/')) {
+        if (str_starts_with($mimeType, 'image/')) {
             [$width, $height] = getimagesize($file->getRealPath());
         }
 
         $post = Post::create([
-            'author_id'         => $request->user()->id,
-            'file_path'         => $fileInfo['file_path'],
-            'file_hash'         => $fileInfo['file_hash'],
-            'file_size'         => $file->getSize(),
-            'mime_type'         => $file->getMimeType(),
-            'original_filename' => $file->getClientOriginalName(),
-            'width'             => $width,
-            'height'            => $height,
-            'description'       => $request->input('description'),
-            'source_url'        => $request->input('source_url'),
-            'is_listed'         => false, // New posts are unlisted by default
+            'author_id' => $request->user()->id,
+            'file_path' => $fileInfo['file_path'],
+            'file_hash' => $fileInfo['file_hash'],
+            'file_size' => $fileInfo['file_size'],
+            'mime_type' => $mimeType,
+            'original_filename' => $fileInfo['original_filename'],
+            'width' => $width,
+            'height' => $height,
+            'description' => $request->input('description'),
+            'source_url' => $request->input('source_url'),
+            'is_listed' => false, // New posts are unlisted by default
             'processing_status' => PostProcessingStatus::Processing,
         ]);
+
+        // If uploaded via URL, clean up temp file after all usage
+        if ($request->filled('url') && isset($file) && file_exists($file->getRealPath())) {
+            @unlink($file->getRealPath());
+        }
 
         // Handle tags
         if ($request->filled('artist')) {
@@ -120,18 +139,18 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = $post->load(['tags', 'comments' => fn($q) => $q->with('user')->latest()->limit(500)]);
+        $post = $post->load(['tags', 'comments' => fn ($q) => $q->with('user')->latest()->limit(500)]);
 
-        $viewKey = 'view_' . md5(request()->ip() . request()->userAgent() . $post->id);
+        $viewKey = 'view_'.md5(request()->ip().request()->userAgent().$post->id);
         $isBot = preg_match('/bot|crawl|spider|slurp|bingbot|googlebot/i', request()->userAgent());
-        if (!$isBot && !Cache::has($viewKey)) {
+        if (! $isBot && ! Cache::has($viewKey)) {
             $post->increment('view_count');
             Cache::put($viewKey, true, now()->addHours(12));
         }
 
-        $upvotes   = $post->upvotes;
+        $upvotes = $post->upvotes;
         $downvotes = $post->downvotes;
-        $userVote  = Auth::check()
+        $userVote = Auth::check()
             ? $post->votes()->where('user_id', Auth::id())->value('value')
             : null;
         $userFavorite = Auth::check()
@@ -163,7 +182,7 @@ class PostController extends Controller
     }
 
     /**
-* Show the form for editing the specified resource.
+     * Show the form for editing the specified resource.
      */
     public function edit(Post $post)
     {
