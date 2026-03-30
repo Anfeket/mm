@@ -47,7 +47,7 @@
 
             <div class="form-field">
                 <label class="form-label" for="tags">Tags:</label>
-                <input type="text" name="tags" class="form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3" data-autocomplete>
+                <input type="text" name="tags" class="tag form-input" value="{{ old('tags') }}" placeholder="tag1 tag2 tag3" data-autocomplete>
             </div>
 
             <div class="form-field">
