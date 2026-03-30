@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\VoteController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CommentController;
@@ -34,11 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload', [PostController::class, 'create'])->name('posts.create');
     Route::post('/upload', [PostController::class, 'store'])->name('posts.store');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-    Route::post('/profile/invites', [ProfileController::class, 'createInvite'])->name('profile.invites.create');
-    Route::delete('/profile/invites/{invite}', [ProfileController::class, 'deleteInvite'])->name('profile.invites.delete');
+    Route::get('/account', [AccountController::class, 'show'])->name('account.show');
+    Route::put('/account', [AccountController::class, 'update'])->name('account.update');
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.password');
+    Route::post('/account/invites', [AccountController::class, 'createInvite'])->name('account.invites.create');
+    Route::delete('/account/invites/{invite}', [AccountController::class, 'deleteInvite'])->name('account.invites.delete');
 });
 
 Route::middleware('guest')->group(function () {

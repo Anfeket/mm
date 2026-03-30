@@ -299,9 +299,9 @@
 }
 
 /* =========================
-    Profile
+    Account settings
 ========================= */
-.profile-container {
+.account-container {
     max-width: 600px;
     margin: var(--space-xl) auto;
     display: flex;
@@ -309,7 +309,7 @@
     gap: var(--space-l);
 }
 
-.profile-section {
+.account-section {
     background: var(--color-bg-box);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
@@ -319,7 +319,7 @@
     gap: var(--space-m);
 }
 
-.profile-section h2 {
+.account-section h2 {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text-light);
@@ -327,7 +327,7 @@
     letter-spacing: 0.05em;
 }
 
-.profile-form {
+.account-form {
     display: flex;
     flex-direction: column;
     gap: var(--space-m);

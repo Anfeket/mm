@@ -1,6 +1,6 @@
 User-agent: *
 Disallow: /upload
-Disallow: /profile
+Disallow: /account
 Disallow: /login
 Disallow: /register
 Disallow: /tags/autocomplete

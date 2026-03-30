@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
-class ProfileController extends Controller
+class AccountController extends Controller
 {
     public function show(Request $request)
     {
         $user = $request->user()->load('invites');
-        return view('profile.show', compact('user'));
+        return view('account.show', compact('user'));
     }
 
     public function createInvite(Request $request)
@@ -29,7 +29,7 @@ class ProfileController extends Controller
         $invite->created_by = $user->id;
         $invite->save();
 
-        return redirect()->route('profile.show')->with('success', 'Invite created: ' . $invite->code);
+        return redirect()->route('account.show')->with('success', 'Invite created: ' . $invite->code);
     }
 
     public function deleteInvite(Request $request, Invite $invite)
@@ -41,12 +41,12 @@ class ProfileController extends Controller
         }
 
         if ($invite->used_at) {
-            return redirect()->route('profile.show')->with('error', 'Cannot delete an invite that has already been used.');
+            return redirect()->route('account.show')->with('error', 'Cannot delete an invite that has already been used.');
         }
 
         $invite->delete();
 
-        return redirect()->route('profile.show')->with('success', 'Invite deleted.');
+        return redirect()->route('account.show')->with('success', 'Invite deleted.');
     }
 
     public function update(Request $request)
@@ -87,7 +87,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return redirect()->route('profile.show')->with('status', 'Profile updated successfully.');
+        return redirect()->route('account.show')->with('status', 'Account updated successfully.');
     }
 
     public function updatePassword(Request $request)
@@ -101,6 +101,6 @@ class ProfileController extends Controller
             'password' => Hash::make($request->input('new_password')),
         ]);
 
-        return redirect()->route('profile.show')->with('status', 'Password updated successfully.');
+        return redirect()->route('account.show')->with('status', 'Password updated successfully.');
     }
 }

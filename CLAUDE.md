@@ -41,7 +41,7 @@ app/
 │   └── Controllers/  # Route controllers
 │       ├── AuthController.php      # Login, register (invite-based), logout
 │       ├── PostController.php      # CRUD for media posts, tag-based search
-│       ├── ProfileController.php   # User profile, avatar upload, invites
+│       ├── AccountController.php   # Account settings, avatar upload, invites
 │       ├── VoteController.php      # Upvote/downvote on posts
 │       ├── TagController.php       # Tag CRUD and autocomplete API
 │       ├── FavoriteController.php  # Toggle favorite status on posts for users
@@ -96,7 +96,7 @@ resources/
 │   ├── app.js        # JS entry point
 │   ├── bootstrap.js  # Axios setup (Laravel scaffold — not imported yet)
 │   ├── search.js     # Tag autocomplete logic
-│   └── profile.js    # Profile page interactions
+│   └── account.js    # Account page interactions
 ├── views/
 │   ├── auth/         # Login & register views
 │   │   ├── login.blade.php
@@ -105,7 +105,7 @@ resources/
 │   │   ├── create.blade.php
 │   │   ├── index.blade.php
 │   │   └── show.blade.php
-│   ├── profile/      # Profile management views
+│   ├── account/      # Account management views
 │   │   └── show.blade.php
 │   └── components/   # Reusable Blade components
 │       ├── layout.blade.php

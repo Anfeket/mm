@@ -1,11 +1,11 @@
 @push('scripts')
-    @vite('resources/js/profile.js')
+    @vite('resources/js/account.js')
 @endpush
 
 <x-layout>
-    <x-slot:title>Profile</x-slot:title>
+    <x-slot:title>Account</x-slot:title>
 
-    <div class="profile-container">
+    <div class="account-container">
         @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
@@ -22,10 +22,10 @@
             </div>
         @endif
 
-        <section class="profile-section">
-            <h2>Edit Profile</h2>
+        <section class="account-section">
+            <h2>Edit Account</h2>
 
-            <form action="{{ route('profile.update') }}" method="POST" class="profile-form" enctype="multipart/form-data">
+            <form action="{{ route('account.update') }}" method="POST" class="account-form" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -80,14 +80,14 @@
                     @endif
                 </div>
 
-                <button type="submit" class="btn btn-primary">Update Profile</button>
+                <button type="submit" class="btn btn-primary">Update Account</button>
             </form>
         </section>
 
-        <section class="profile-section">
+        <section class="account-section">
             <h2>Change Password</h2>
 
-            <form action="{{ route('profile.password') }}" method="POST" class="profile-form">
+            <form action="{{ route('account.password') }}" method="POST" class="account-form">
                 @csrf
                 @method('PUT')
 
@@ -110,10 +110,10 @@
             </form>
         </section>
 
-        <section class="profile-section">
+        <section class="account-section">
             <h2>Invites</h2>
 
-            <form action="{{ route('profile.invites.create') }}" method="POST">
+            <form action="{{ route('account.invites.create') }}" method="POST">
                 @csrf
 
                 <button type="submit" class="btn">Create new invite</button>
@@ -131,7 +131,7 @@
                             @else
                                 <span class="invite-unused">Unused</span>
                                 <button type="button" class="btn btn-secondary" onclick="copyInviteLink('{{ $invite->code }}', this)">Copy Link</button>
-                                <form action="{{ route('profile.invites.delete', $invite) }}" method="POST" class="invite-delete-form">
+                                <form action="{{ route('account.invites.delete', $invite) }}" method="POST" class="invite-delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this invite?')">Delete</button>
