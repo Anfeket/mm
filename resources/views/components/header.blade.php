@@ -16,7 +16,7 @@
                     <span class="user-menu-caret">▼</span>
                 </button>
                 <div class="user-menu-dropdown" role="menu">
-                    <a href="{{ route('account.show') }}" role="menuitem">Account</a>
+                    <a href="{{ route('account.show') }}" role="menuitem">Account settings</a>
                     <div class="user-menu-divider"></div>
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf

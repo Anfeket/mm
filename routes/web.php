@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CommentController;
@@ -16,7 +17,6 @@ Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('/tags/autocomplete', [TagController::class, 'autocomplete'])->name('tags.autocomplete');
 
-// TODO: implement UserController
 Route::get('/user/{user:username}', [UserController::class, 'show'])->name('users.show');
 
 Route::middleware('auth')->group(function () {

@@ -484,3 +484,83 @@
 .invite-delete-form {
     display: inline;
 }
+
+/* =========================
+    User Profile
+========================= */
+.user-profile {
+    margin: var(--space-xl) auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+}
+
+.user-card {
+    background: var(--color-bg-box);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+    align-items: center;
+}
+
+.user-header {
+    max-width: 800px;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-m);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+}
+
+.user-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-m);
+}
+
+.user-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: center;
+    flex: 1;
+    min-width: 80px;
+}
+
+.user-stat-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.user-stat-label {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.user-posts {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding: 0 var(--space-m);
+}
+
+.user-posts .post-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+
+.user-posts .btn {
+    align-self: flex-start;
+}
