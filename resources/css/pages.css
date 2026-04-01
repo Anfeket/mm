@@ -347,6 +347,17 @@
 /* =========================
     Avatar upload
 ========================= */
+.avatar-dropzone {
+    width: 100%;
+    border: 2px dashed var(--color-border);
+    justify-content: center;
+}
+
+.avatar-dropzone.dragover {
+    border-color: var(--color-accent);
+    background: var(--color-bg-hover);
+}
+
 #crop-container {
     display: inline-flex;
     flex-direction: column;

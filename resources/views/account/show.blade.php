@@ -41,7 +41,7 @@
 
                 <div class="form-field">
                     <label class="form-label" for="avatar">Avatar</label>
-                    <div id="dropzone" class="dropzone">
+                    <div id="dropzone" class="dropzone avatar-dropzone">
                         <input type="file" name="avatar" accept="image/*" class="form-input" id="avatar-input">
                         <input type="hidden" name="crop_x" id="crop_x">
                         <input type="hidden" name="crop_y" id="crop_y">
