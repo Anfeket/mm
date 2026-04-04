@@ -2,14 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\Tag;
 use App\Models\Post;
+use App\Models\Tag;
 use App\TagCategory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class TagService
 {
+    private const METATAG_KEYS = ['score', 'views', 'uploader', 'artist', 'date', 'order'];
+
     /**
      * Create a new class instance.
      */
@@ -25,6 +27,7 @@ class TagService
         $name = preg_replace('/[^a-z0-9_():-]/', '', $name); // Remove special characters except _, :, () and -
         $name = preg_replace('/_+/', '_', $name); // Replace multiple underscores with a single one
         $name = trim($name, '_'); // Remove leading and trailing underscores
+
         return $name;
     }
 
@@ -51,7 +54,7 @@ class TagService
                 $name = $this->normalizeTagName($token);
             }
 
-            if (!empty($name)) {
+            if (! empty($name)) {
                 $tags[] = ['name' => $name, 'category' => $category];
             }
         }
@@ -102,8 +105,8 @@ class TagService
             }
         }
 
-        return Tag::where('name', 'like', $normalized . '%')
-            ->when($category !== null, fn($q) => $q->where('category', $category))
+        return Tag::where('name', 'like', $normalized.'%')
+            ->when($category !== null, fn ($q) => $q->where('category', $category))
             ->orderByDesc('post_count')
             ->limit($limit)
             ->with('aliasTag:id,name')
@@ -186,7 +189,7 @@ class TagService
 
             $tag = $this->findOrCreate($name, $category);
 
-            if (!$post->tags()->where('tag_id', $tag->id)->exists()) {
+            if (! $post->tags()->where('tag_id', $tag->id)->exists()) {
                 $post->tags()->attach($tag->id, [
                     'added_by_user_id' => Auth::id(),
                 ]);
@@ -200,6 +203,7 @@ class TagService
     {
         $include = [];
         $exclude = [];
+        $filters = [];
 
         foreach (preg_split('/\s+/', trim($input)) as $token) {
             if (empty($token)) {
@@ -209,18 +213,29 @@ class TagService
             $negate = str_starts_with($token, '-');
             $token = $negate ? substr($token, 1) : $token;
 
+            if (preg_match('/^(\w+):(.+)$/', $token, $matches)) {
+                $key = strtolower($matches[1]);
+                $value = $matches[2];
+
+                if (in_array($key, self::METATAG_KEYS, true)) {
+                    $filters[] = ['key' => $key, 'value' => $value, 'negate' => $negate];
+
+                    continue;
+                }
+            }
+
             $parsed = $this->parseSingleTag($token);
             if ($parsed === null) {
                 continue;
             }
 
-            $key = $parsed['category']->value . ':' . $parsed['name'];
+            $key = $parsed['category']->value.':'.$parsed['name'];
 
             if ($negate) {
                 $exclude[$key] = $parsed;
                 unset($include[$key]);
             } else {
-                if (!isset($exclude[$key])) {
+                if (! isset($exclude[$key])) {
                     $include[$key] = $parsed;
                 }
             }
@@ -229,6 +244,7 @@ class TagService
         return [
             'include' => array_values($include),
             'exclude' => array_values($exclude),
+            'filters' => $filters,
         ];
     }
 }

@@ -9,6 +9,7 @@ use App\Services\FileStorageService;
 use App\Services\TagService;
 use App\Support\JsonLd;
 use App\TagCategory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -41,6 +42,16 @@ class PostController extends Controller
                         ->where('name', $tag['name'])
                         ->where('category', $tag['category'])
                 );
+            }
+
+            foreach ($tags['filters'] as $filter) {
+                $this->applyFilter($query, $filter);
+            }
+
+            $order = collect($tags['filters'])->where('key', 'order')->last()['value'] ?? null;
+
+            if ($order) {
+                $this->applyOrderFilter($query, $order);
             }
         }
 
@@ -203,5 +214,63 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //
+    }
+
+    private function applyFilter(Builder $query, array $filter): void
+    {
+        match ($filter['key']) {
+            'score' => $this->applyNumericFilter($query, 'like_count', $filter['value']),
+            'views' => $this->applyNumericFilter($query, 'view_count', $filter['value']),
+            // TODO: OR instead of AND for multiple uploaders
+            'uploader' => $filter['negate']
+                ? $query->whereHas('author', fn ($q) => $q->where('username', '!=', $filter['value']))
+                : $query->whereHas('author', fn ($q) => $q->where('username', $filter['value'])),
+            'artist' => $filter['negate']
+                ? $query->whereDoesntHave('tags', fn ($q) => $q->where('name', $filter['value'])->where('category', TagCategory::Artist))
+                : $query->whereHas('tags', fn ($q) => $q->where('name', $filter['value'])->where('category', TagCategory::Artist)),
+            'date' => $this->applyDateFilter($query, $filter['value']),
+            default => null,
+        };
+    }
+
+    private function applyNumericFilter(Builder $query, string $field, string $number): void
+    {
+        if (preg_match('/^(\d+)\.\.(\d+)$/', $number, $matches)) {
+            $query->whereBetween($field, [(int) $matches[1], (int) $matches[2]]);
+        } elseif (preg_match('/^(>=|<=|>|<|=)?((-|\+)?\d+)$/', $number, $matches)) {
+            $operator = $matches[1] ?: '=';
+            $value = (int) $matches[2];
+            $query->where($field, $operator, $value);
+        }
+    }
+
+    private function applyDateFilter(Builder $query, string $date): void
+    {
+        // Year
+        if (preg_match('/^(\d{4})$/', $date, $matches)) {
+            $query->whereYear('created_at', $matches[1]);
+            // Year and month
+        } elseif (preg_match('/^(\d{4})(-|\/)(\d{1,2})$/', $date, $matches)) {
+            $query->whereYear('created_at', $matches[1])->whereMonth('created_at', $matches[3]);
+            // Full date with optional operator
+        } elseif (preg_match('/^(>=|<=|>|<|=)?(\d{4})(?:-|\/)(\d{1,2})(?:-|\/)(\d{1,2})$/', $date, $matches)) {
+            $operator = $matches[1] ?: '=';
+            $dateValue = sprintf('%04d-%02d-%02d', $matches[2], $matches[3], $matches[4]);
+            $query->whereDate('created_at', $operator, $dateValue);
+        }
+    }
+
+    private function applyOrderFilter(Builder $query, string $order): void
+    {
+        $parts = explode('_', $order ?? '');
+        $orderKey = $parts[0];
+        $orderDirection = in_array($parts[1] ?? '', ['asc', 'desc']) ? $parts[1] : 'desc';
+
+        match ($orderKey) {
+            'score' => $query->reorder()->orderBy('like_count', $orderDirection),
+            'views' => $query->reorder()->orderBy('view_count', $orderDirection),
+            'date' => $query->reorder()->orderBy('created_at', $orderDirection),
+            default => null,
+        };
     }
 }

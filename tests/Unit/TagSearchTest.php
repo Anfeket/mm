@@ -3,10 +3,11 @@
 use App\Services\TagService;
 use App\TagCategory;
 
+beforeEach(function () {
+    $this->service = new TagService;
+});
+
 describe('parseSearchInput', function () {
-    beforeEach(function () {
-        $this->service = new TagService();
-    });
 
     it('returns empty arrays for empty input', function () {
         $result = $this->service->parseSearchInput('');
@@ -95,5 +96,61 @@ describe('parseSearchInput', function () {
     it('keeps same name with different categories as separate entries', function () {
         $result = $this->service->parseSearchInput('g:cat s:cat');
         expect($result['include'])->toHaveCount(2);
+    });
+});
+
+describe('metatag parsing', function () {
+    it('parses score metatag', function () {
+        $result = $this->service->parseSearchInput('score:>5');
+        expect($result['filters'])->toHaveCount(1)
+            ->and($result['filters'][0])->toMatchArray(['key' => 'score', 'value' => '>5', 'negate' => false]);
+    });
+
+    it('parses negated score metatag', function () {
+        $result = $this->service->parseSearchInput('-score:>5');
+        expect($result['filters'][0])->toMatchArray(['key' => 'score', 'negate' => true]);
+    });
+
+    it('parses views metatag', function () {
+        $result = $this->service->parseSearchInput('views:>100');
+        expect($result['filters'][0])->toMatchArray(['key' => 'views', 'value' => '>100']);
+    });
+
+    it('parses uploader metatag', function () {
+        $result = $this->service->parseSearchInput('uploader:Admin');
+        expect($result['filters'][0])->toMatchArray(['key' => 'uploader', 'value' => 'Admin']);
+    });
+
+    it('parses artist metatag', function () {
+        $result = $this->service->parseSearchInput('artist:john_doe');
+        expect($result['filters'][0])->toMatchArray(['key' => 'artist', 'value' => 'john_doe']);
+    });
+
+    it('parses date metatag', function () {
+        $result = $this->service->parseSearchInput('date:2024');
+        expect($result['filters'][0])->toMatchArray(['key' => 'date', 'value' => '2024']);
+    });
+
+    it('parses order metatag', function () {
+        $result = $this->service->parseSearchInput('order:score_desc');
+        expect($result['filters'][0])->toMatchArray(['key' => 'order', 'value' => 'score_desc']);
+    });
+
+    it('does not treat regular tags as metatags', function () {
+        $result = $this->service->parseSearchInput('re:zero a:artist');
+        expect($result['filters'])->toBeEmpty()
+            ->and($result['include'])->toHaveCount(2);
+    });
+
+    it('mixes metatags and regular tags', function () {
+        $result = $this->service->parseSearchInput('funny score:>10 uploader:Admin');
+        expect($result['include'])->toHaveCount(1)
+            ->and($result['filters'])->toHaveCount(2);
+    });
+
+    it('puts metatags in filters not include', function () {
+        $result = $this->service->parseSearchInput('score:>5');
+        expect($result['include'])->toBeEmpty()
+            ->and($result['exclude'])->toBeEmpty();
     });
 });
