@@ -437,6 +437,16 @@ kbd {
 }
 
 /* =========================
+    Post actions
+========================= */
+.post-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    margin-top: var(--space-s);
+}
+
+/* =========================
     Alerts
 ========================= */
 .alert {

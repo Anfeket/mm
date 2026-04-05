@@ -3,6 +3,7 @@
     <x-slot:title>Post #{{ $post->id }} uploaded by {{ $post->author->username }}</x-slot:title>
 
     <x-slot:sidebar>
+        <x-post.actions :post="$post" />
         <x-post.tags :tags="$post->tags" :post="$post" />
         <x-post.details :post="$post" :user-vote="$userVote" :user-favorite="$userFavorite" />
     </x-slot:sidebar>

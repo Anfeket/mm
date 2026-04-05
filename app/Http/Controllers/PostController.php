@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
 {
@@ -213,7 +214,20 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        Gate::authorize('delete', $post);
+
+        $post->delete();
+
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
+    }
+
+    public function toggleVisibility(Post $post)
+    {
+        Gate::authorize('toggleVisibility', $post);
+
+        $post->update(['is_listed' => ! $post->is_listed]);
+
+        return back()->with('success', $post->is_listed ? 'Post unhidden.' : 'Post hidden.');
     }
 
     private function applyFilter(Builder $query, array $filter): void

@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\VoteController;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TagController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostTagController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoteController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -21,6 +21,9 @@ Route::get('/user/{user}', [UserController::class, 'show'])->name('users.show');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::patch('/posts/{post}/visibility', [PostController::class, 'toggleVisibility'])->name('posts.toggleVisibility');
 
     Route::post('/posts/{post}/vote', [VoteController::class, 'vote'])->name('posts.vote');
     Route::post('/posts/{post}/favorites', [FavoriteController::class, 'toggle'])->name('posts.favorites.toggle');
@@ -51,6 +54,7 @@ Route::middleware('guest')->group(function () {
 // dev components testing route
 Route::get('/dev/components', function () {
     abort_unless(app()->isLocal(), 404);
+
     return view('dev.components');
 })->name('dev.components');
 

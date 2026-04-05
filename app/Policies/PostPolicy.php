@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class PostPolicy
 {
@@ -45,7 +44,9 @@ class PostPolicy
      */
     public function delete(User $user, Post $post): bool
     {
-        return false;
+        return $user->id === $post->author_id
+            || $user->isAdmin()
+            || $user->isModerator();
     }
 
     /**
@@ -69,5 +70,10 @@ class PostPolicy
         return $user->id === $post->author_id
             || $user->isAdmin()
             || $user->isModerator();
+    }
+
+    public function toggleVisibility(User $user, Post $post): bool
+    {
+        return $user->isAdmin() || $user->isModerator();
     }
 }
