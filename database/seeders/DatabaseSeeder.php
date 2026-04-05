@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
         ]);
+        $user->role = 'admin';
+        $user->save();
 
         Invite::create([
             'code' => 'INVITE123',
