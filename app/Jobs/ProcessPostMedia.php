@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Services\FfmpegService;
 use App\Models\Post;
 use App\PostProcessingStatus;
+use App\Services\FfmpegService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -26,38 +26,50 @@ class ProcessPostMedia implements ShouldQueue
     public function handle(FfmpegService $ffmpeg): void
     {
         try {
-            $fullPath   = storage_path('app/uploads/' . $this->post->file_path);
+            $fullPath = storage_path('app/uploads/'.$this->post->file_path);
             $relThumbPath = $this->thumbPath();
-            $absThumbPath  = storage_path('app/uploads/' . $this->thumbPath());
+            $absThumbPath = storage_path('app/uploads/'.$this->thumbPath());
 
-            if (!is_dir(dirname($absThumbPath))) {
+            if (! is_dir(dirname($absThumbPath))) {
                 mkdir(dirname($absThumbPath), 0755, true);
             }
 
             if ($this->post->isImage()) {
-                $this->generateImageThumb($fullPath, $absThumbPath);
-                [$width, $height] = getimagesize($fullPath);
-                $this->post->width  = $width;
+                if ($this->isAnimatedWebp($fullPath)) {
+                    $this->generateVideoThumb($fullPath, $absThumbPath, $ffmpeg);
+                    [$width, $height] = $this->getVideoDimensions($fullPath, $ffmpeg);
+                } else {
+                    $this->generateImageThumb($fullPath, $absThumbPath);
+                    $dimensions = getimagesize($fullPath);
+
+                    if ($dimensions === false) {
+                        throw new \RuntimeException("Could not read image dimensions for {$fullPath}");
+                    }
+
+                    [$width, $height] = $dimensions;
+                }
+
+                $this->post->width = $width;
                 $this->post->height = $height;
             } elseif ($this->post->isVideo()) {
                 $this->generateVideoThumb($fullPath, $absThumbPath, $ffmpeg);
                 [$width, $height] = $this->getVideoDimensions($fullPath, $ffmpeg);
                 $duration = $this->getVideoDuration($fullPath, $ffmpeg);
-                $this->post->width          = $width;
-                $this->post->height         = $height;
-                $this->post->duration_ms    = $duration;
+                $this->post->width = $width;
+                $this->post->height = $height;
+                $this->post->duration_ms = $duration;
             }
 
-            $this->post->thumb_path         = $relThumbPath;
-            $this->post->processing_status  = PostProcessingStatus::Completed;
-            $this->post->is_listed          = true;
+            $this->post->thumb_path = $relThumbPath;
+            $this->post->processing_status = PostProcessingStatus::Completed;
+            $this->post->is_listed = true;
             $this->post->save();
 
             // Send Discord webhook after processing is complete
             SendDiscordWebhook::dispatch($this->post);
         } catch (\Throwable $e) {
             $this->post->processing_status = PostProcessingStatus::Failed;
-            $this->post->processing_error  = $e->getMessage();
+            $this->post->processing_error = $e->getMessage();
             $this->post->save();
 
             throw $e;
@@ -67,24 +79,25 @@ class ProcessPostMedia implements ShouldQueue
     private function thumbPath(): string
     {
         $hash = $this->post->file_hash;
+
         return sprintf('thumb/%s/%s/%s.webp', substr($hash, 0, 2), substr($hash, 2, 2), $hash);
     }
 
     private function generateImageThumb(string $src, string $dest): void
     {
-        $data   = file_get_contents($src);
+        $data = file_get_contents($src);
         $source = imagecreatefromstring($data);
 
-        if (!$source) {
+        if (! $source) {
             throw new \RuntimeException("Could not read image {$src}");
         }
 
-        $width  = imagesx($source);
+        $width = imagesx($source);
         $height = imagesy($source);
         [$thumbWidth, $thumbHeight] = [config('media.thumb.width'), config('media.thumb.height')];
         $scale = min($thumbWidth / $width, $thumbHeight / $height);
-        $fitWidth = (int)($width * $scale);
-        $fitHeight = (int)($height * $scale);
+        $fitWidth = (int) ($width * $scale);
+        $fitHeight = (int) ($height * $scale);
 
         $thumb = imagecreatetruecolor($fitWidth, $fitHeight);
 
@@ -107,8 +120,34 @@ class ProcessPostMedia implements ShouldQueue
         ));
 
         if ($result['returnCode'] !== 0) {
-            throw new \RuntimeException('ffmpeg failed to generate video thumbnail: ' . implode("\n", $result['output']));
+            throw new \RuntimeException('ffmpeg failed to generate video thumbnail: '.implode("\n", $result['output']));
         }
+    }
+
+    private function isAnimatedWebp(string $src): bool
+    {
+        if ($this->post->mime_type !== 'image/webp') {
+            return false;
+        }
+
+        $handle = fopen($src, 'rb');
+
+        if ($handle === false) {
+            return false;
+        }
+
+        $header = fread($handle, 21);
+        fclose($handle);
+
+        if ($header === false || strlen($header) < 21) {
+            return false;
+        }
+
+        if (substr($header, 0, 4) !== 'RIFF' || substr($header, 8, 4) !== 'WEBP' || substr($header, 12, 4) !== 'VP8X') {
+            return false;
+        }
+
+        return (ord($header[20]) & 0b00000010) !== 0;
     }
 
     private function getVideoDimensions(string $src, FfmpegService $ffmpeg): array
@@ -119,11 +158,12 @@ class ProcessPostMedia implements ShouldQueue
         ));
 
         if ($result['returnCode'] !== 0 || empty($result['output'])) {
-            throw new \RuntimeException('ffprobe failed to read dimensoins: ' . implode("\n", $result['output']));
+            throw new \RuntimeException('ffprobe failed to read dimensoins: '.implode("\n", $result['output']));
         }
 
         [$width, $height] = explode(',', $result['output'][0]);
-        return [(int)$width, (int)$height];
+
+        return [(int) $width, (int) $height];
     }
 
     private function getVideoDuration(string $src, FfmpegService $ffmpeg): int
@@ -134,9 +174,9 @@ class ProcessPostMedia implements ShouldQueue
         ));
 
         if ($result['returnCode'] !== 0 || empty($result['output'])) {
-            throw new \RuntimeException('ffprobe failed to read duration: ' . implode("\n", $result['output']));
+            throw new \RuntimeException('ffprobe failed to read duration: '.implode("\n", $result['output']));
         }
 
-        return (int)($result['output'][0] * 1000); // Convert to milliseconds
+        return (int) ($result['output'][0] * 1000); // Convert to milliseconds
     }
 }
