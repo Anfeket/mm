@@ -58,5 +58,11 @@ class DatabaseSeeder extends Seeder
         foreach ($posts as $post) {
             $post->tags()->attach($tags->random(rand(2, 8))->pluck('id'), ['added_by_user_id' => $user->id]);
         }
+
+        // Recalculate post_count for all tags after seeding
+        Tag::query()->each(function (Tag $tag) {
+            $tag->post_count = $tag->posts()->count();
+            $tag->save();
+        });
     }
 }
