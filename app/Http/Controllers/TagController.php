@@ -11,9 +11,19 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = $request->query('tag_q');
+
+        $tags = Tag::when($query, fn($q) => $q->where('name', 'like', "%{$query}%"))
+            ->where('post_count', '>', 0)
+            ->orderByDesc('post_count')
+            ->get();
+
+        $topTags = $tags->take(20);
+        $byCategory = $tags->groupBy('category')->map(fn($group) => $group->take(20));
+
+        return view('tags.index', compact('topTags', 'byCategory', 'query'));
     }
 
     /**

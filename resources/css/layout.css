@@ -159,6 +159,16 @@
     padding: var(--space-m);
 }
 
+.page-content {
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+}
+
+.page-content-narrow {
+    max-width: var(--content-max-width-narrow);
+}
+
 /* ===================
     Sidebar
 =================== */

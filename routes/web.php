@@ -16,8 +16,10 @@ Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('/tags/autocomplete', [TagController::class, 'autocomplete'])->name('tags.autocomplete');
+Route::get('/tags', [TagController::class, 'index'])->name('tags');
 
 Route::get('/user/{user}', [UserController::class, 'show'])->name('users.show');
+
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -64,9 +66,6 @@ Route::get('/sitemap-static.xml', [SitemapController::class, 'static'])->name('s
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
 
 // placeholders
-Route::get('/tags', function () {
-    return view('tags.index');
-})->name('tags');
 Route::get('/tag/{tag}', function ($tag) {
     return view('tags.show', ['tag' => $tag]);
 })->name('tags.show');
