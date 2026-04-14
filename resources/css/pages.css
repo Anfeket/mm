@@ -12,6 +12,14 @@
 /* =========================
     Tags index
 ========================= */
+.tag-item .tag {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: inline-block;
+}
+
 .tag-index-header {
     display: flex;
     align-items: center;
@@ -45,7 +53,7 @@
 
 .tag-index-categories {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--space-s);
 }
 
