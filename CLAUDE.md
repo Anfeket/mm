@@ -131,7 +131,7 @@ tests/                # Pest tests
 ## Key Architectural Patterns
 
 - **Service classes** (`app/Services/`) encapsulate business logic — prefer adding logic there over controllers.
-- **Queued jobs** (`app/Jobs/`) handle heavy processing (media transcoding, avatar cropping) asynchronously.
+- **Queued jobs** (`app/Jobs/`) handle heavy processing (media transcoding, avatar cropping) asynchronously. All jobs should implement a `failed()` method for robust error handling and observability.
 - **Hash-based file storage:** Uploaded files are stored by content hash (`xx/xx/hash.ext`) to deduplicate.
 - **Tag system:** Tags have 7 categories defined in the `TagCategory` enum:
   - `artist` (prefix `a:`), `copyright` (`c:`), `origin` (`o:`), `template` (`t:`), `general` (`g:`), `meta` (`m:`), `language` (`l:`)
