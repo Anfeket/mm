@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Post;
-
 use Illuminate\Support\Facades\Http;
 
 class DiscordService
@@ -17,7 +16,7 @@ class DiscordService
 
     public function sendNewPost(Post $post): void
     {
-        if (!$this->webhook_url) {
+        if (! $this->webhook_url) {
             return;
         }
 
@@ -42,16 +41,17 @@ class DiscordService
 
         if ($post->thumb_path) {
             $embed['image'] = [
-                'url' => asset('uploads/' . $post->thumb_path),
+                'url' => asset('uploads/'.$post->thumb_path),
             ];
         }
 
-        $tags = $post->tags->groupBy(fn($t) => $t->category->label())
+        $tags = $post->tags->groupBy(fn ($t) => $t->category->label())
             ->map(function ($tags, $category) {
                 $value = $tags->pluck('name')->implode(', ');
                 if (strlen($value) > 1024) {
-                    $value = substr($value, 0, 1021) . '...';
+                    $value = substr($value, 0, 1021).'...';
                 }
+
                 return [
                     'name' => $category,
                     'value' => $value,

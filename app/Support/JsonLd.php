@@ -16,13 +16,13 @@ class JsonLd
             'name' => "Post #{$post->id}",
             'url' => route('posts.show', $post),
             'uploadDate' => $post->created_at->toISO8601String(),
-            'contentUrl' => asset('uploads/' . $post->file_path),
+            'contentUrl' => asset('uploads/'.$post->file_path),
             'contentSize' => $post->file_size,
             'encodingFormat' => $post->mime_type,
         ];
 
         if ($post->thumb_path) {
-            $data['thumbnailUrl'] = asset('uploads/' . $post->thumb_path);
+            $data['thumbnailUrl'] = asset('uploads/'.$post->thumb_path);
         }
 
         if ($post->description) {

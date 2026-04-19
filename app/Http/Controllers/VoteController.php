@@ -14,8 +14,8 @@ class VoteController extends Controller
             'value' => ['required', 'integer', 'in:-1,1'],
         ]);
 
-        $value      = (int)$request->input('value');
-        $existing   = $post->votes()->where('user_id', $request->user()->id)->first();
+        $value = (int) $request->input('value');
+        $existing = $post->votes()->where('user_id', $request->user()->id)->first();
 
         if ($existing) {
             if ($existing->value === $value) {

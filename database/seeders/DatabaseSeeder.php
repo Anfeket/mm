@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Invite;
-use App\Models\Tag;
 use App\Models\Post;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -38,8 +38,12 @@ class DatabaseSeeder extends Seeder
 
         $postDir = storage_path('app/uploads/posts');
         $thumbDir = storage_path('app/uploads/posts/thumb');
-        if (!is_dir($postDir)) mkdir($postDir, 0775, true);
-        if (!is_dir($thumbDir)) mkdir($thumbDir, 0775, true);
+        if (! is_dir($postDir)) {
+            mkdir($postDir, 0775, true);
+        }
+        if (! is_dir($thumbDir)) {
+            mkdir($thumbDir, 0775, true);
+        }
 
         $bar = $this->command?->getOutput()->createProgressBar(20);
         $bar?->setFormat('%message% [%bar%] %current%/%max%');
@@ -49,6 +53,7 @@ class DatabaseSeeder extends Seeder
         $posts = collect(range(1, 20))->map(function () use ($user, $bar) {
             $post = Post::factory()->createOne(['author_id' => $user->id]);
             $bar?->advance();
+
             return $post;
         });
 

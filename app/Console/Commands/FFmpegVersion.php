@@ -15,10 +15,12 @@ class FFmpegVersion extends Command
     {
         $version = $ffmpeg->version();
         if ($version) {
-            $this->info('Installed ffmpeg version: ' . $version);
+            $this->info('Installed ffmpeg version: '.$version);
+
             return self::SUCCESS;
         } else {
             $this->error('ffmpeg is not installed');
+
             return self::FAILURE;
         }
     }

@@ -15,13 +15,13 @@ class TagController extends Controller
     {
         $query = $request->query('tag_q');
 
-        $tags = Tag::when($query, fn($q) => $q->where('name', 'like', "%{$query}%"))
+        $tags = Tag::when($query, fn ($q) => $q->where('name', 'like', "%{$query}%"))
             ->where('post_count', '>', 0)
             ->orderByDesc('post_count')
             ->get();
 
         $topTags = $tags->take(20);
-        $byCategory = $tags->groupBy('category')->map(fn($group) => $group->take(20));
+        $byCategory = $tags->groupBy('category')->map(fn ($group) => $group->take(20));
 
         return view('tags.index', compact('topTags', 'byCategory', 'query'));
     }
@@ -82,8 +82,9 @@ class TagController extends Controller
         }
 
         $tags = $tagService->searchTags($query);
+
         return response()->json(
-            $tags->map(fn(Tag $tag) => [
+            $tags->map(fn (Tag $tag) => [
                 'name' => $tag->name,
                 'category' => $tag->category->value,
                 'post_count' => $tag->post_count,

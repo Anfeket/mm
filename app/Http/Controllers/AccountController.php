@@ -2,34 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invite;
-use App\Models\User;
-
 use App\Jobs\ProcessAvatar;
-
-use Illuminate\Http\UploadedFile;
+use App\Models\Invite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AccountController extends Controller
 {
     public function show(Request $request)
     {
         $user = $request->user()->load('invites');
+
         return view('account.show', compact('user'));
     }
 
     public function createInvite(Request $request)
     {
         $user = $request->user();
-        $invite = new Invite();
+        $invite = new Invite;
         $invite->code = Str::random(32);
         $invite->created_by = $user->id;
         $invite->save();
 
-        return redirect()->route('account.show')->with('success', 'Invite created: ' . $invite->code);
+        return redirect()->route('account.show')->with('success', 'Invite created: '.$invite->code);
     }
 
     public function deleteInvite(Request $request, Invite $invite)
@@ -70,16 +67,16 @@ class AccountController extends Controller
             $user->email = $data['email'];
         }
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $user->password = Hash::make($data['password']);
         }
 
         if ($request->hasFile('avatar')) {
             $tempPath = $request->file('avatar')->store('temp/avatars');
             $crop = $request->filled('crop_size') ? [
-                'x'     => (int) $request->input('crop_x', 0),
-                'y'     => (int) $request->input('crop_y', 0),
-                'size'  => (int) $request->input('crop_size'),
+                'x' => (int) $request->input('crop_x', 0),
+                'y' => (int) $request->input('crop_y', 0),
+                'size' => (int) $request->input('crop_size'),
             ] : null;
 
             ProcessAvatar::dispatch($user, $tempPath, $crop);

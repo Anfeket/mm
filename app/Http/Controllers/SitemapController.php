@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
-
 use App\Models\Post;
+use Illuminate\Http\Response;
 
 class SitemapController extends Controller
 {
@@ -24,6 +23,7 @@ class SitemapController extends Controller
                 'lastmod' => $latestPost ? $latestPost->toAtomString() : null,
             ],
         ];
+
         return response()
             ->view('sitemap.index', ['sitemaps' => $sitemaps])
             ->header('Content-Type', 'application/xml');
@@ -35,6 +35,7 @@ class SitemapController extends Controller
             route('home'),
             route('posts.index'),
         ];
+
         return response()
             ->view('sitemap.static', ['urls' => $urls])
             ->header('Content-Type', 'application/xml');
@@ -52,6 +53,7 @@ class SitemapController extends Controller
                 ];
             })
             ->all();
+
         return response()
             ->view('sitemap.posts', ['posts' => $posts])
             ->header('Content-Type', 'application/xml');

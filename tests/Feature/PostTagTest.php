@@ -10,8 +10,8 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->author = User::factory()->create();
-    $this->other  = User::factory()->create();
-    $this->post   = Post::factory()->create(['author_id' => $this->author->id]);
+    $this->other = User::factory()->create();
+    $this->post = Post::factory()->create(['author_id' => $this->author->id]);
 });
 
 // ---------------------------------------------------------------------------

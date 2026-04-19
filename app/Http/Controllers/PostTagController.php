@@ -25,20 +25,21 @@ class PostTagController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Invalid tag.'], 422);
             }
+
             return back()->withErrors(['tag' => 'Invalid tag.']);
         }
 
         $tag = $tagService->findOrCreate($parsed['name'], $parsed['category']);
 
-        if (!$post->tags()->where('tag_id', $tag->id)->exists()) {
+        if (! $post->tags()->where('tag_id', $tag->id)->exists()) {
             $post->tags()->attach($tag->id, ['added_by_user_id' => $request->user()->id]);
             $tag->increment('post_count');
         }
 
         if ($request->expectsJson()) {
             return response()->json([
-                'id'       => $tag->id,
-                'name'     => $tag->name,
+                'id' => $tag->id,
+                'name' => $tag->name,
                 'category' => $tag->category->value,
             ], 201);
         }

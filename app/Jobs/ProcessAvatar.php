@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\AvatarProcessed;
-
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
@@ -33,12 +32,12 @@ class ProcessAvatar implements ShouldQueue
 
         try {
             $dir = storage_path('app/uploads/avatars/');
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 mkdir($dir, 0755, true);
             }
 
             $path = "avatars/{$this->user->id}.webp";
-            $dest = storage_path('app/uploads/' . $path);
+            $dest = storage_path('app/uploads/'.$path);
 
             if ($this->isAnimated($realPath)) {
                 $this->processAvatarAnimated($realPath, $dest, $this->crop);
@@ -62,12 +61,12 @@ class ProcessAvatar implements ShouldQueue
     {
         $source = imagecreatefromstring(file_get_contents($realPath));
 
-        if (!$source) {
-            throw new \RuntimeException("Could not read avatar image");
+        if (! $source) {
+            throw new \RuntimeException('Could not read avatar image');
         }
 
-        $origW     = imagesx($source);
-        $origH     = imagesy($source);
+        $origW = imagesx($source);
+        $origH = imagesy($source);
         $thumbSize = config('media.avatar.size', 128);
 
         $thumb = imagecreatetruecolor($thumbSize, $thumbSize);
@@ -75,8 +74,8 @@ class ProcessAvatar implements ShouldQueue
         imagesavealpha($thumb, true);
 
         if ($crop) {
-            $cropX    = max(0, min($crop['x'], $origW - 1));
-            $cropY    = max(0, min($crop['y'], $origH - 1));
+            $cropX = max(0, min($crop['x'], $origW - 1));
+            $cropY = max(0, min($crop['y'], $origH - 1));
             $cropSize = max(1, min($crop['size'], $origW - $cropX, $origH - $cropY));
 
             imagecopyresampled(
@@ -92,11 +91,11 @@ class ProcessAvatar implements ShouldQueue
                 $cropSize
             );
         } else {
-            $scale   = max($thumbSize / $origW, $thumbSize / $origH);
-            $thumbW  = (int)($origW * $scale);
-            $thumbH  = (int)($origH * $scale);
-            $offsetX = (int)(($thumbW - $thumbSize) / 2);
-            $offsetY = (int)(($thumbH - $thumbSize) / 2);
+            $scale = max($thumbSize / $origW, $thumbSize / $origH);
+            $thumbW = (int) ($origW * $scale);
+            $thumbH = (int) ($origH * $scale);
+            $offsetX = (int) (($thumbW - $thumbSize) / 2);
+            $offsetY = (int) (($thumbH - $thumbSize) / 2);
 
             $scaled = imagecreatetruecolor($thumbW, $thumbH);
             imagealphablending($scaled, false);
@@ -111,9 +110,9 @@ class ProcessAvatar implements ShouldQueue
     private function processAvatarAnimated(string $realPath, string $dest, ?array $crop = null): void
     {
         $thumbSize = config('media.avatar.size', 128);
-        $quality   = config('media.avatar.quality', 80);
+        $quality = config('media.avatar.quality', 80);
 
-        $imagick = new \Imagick();
+        $imagick = new \Imagick;
         $imagick->readImage($realPath);
         $imagick = $imagick->coalesceImages();
 
@@ -122,13 +121,13 @@ class ProcessAvatar implements ShouldQueue
 
         // Calculate crop/scale params once, same for all frames
         if ($crop) {
-            $cropX    = max(0, min($crop['x'], $origW - 1));
-            $cropY    = max(0, min($crop['y'], $origH - 1));
+            $cropX = max(0, min($crop['x'], $origW - 1));
+            $cropY = max(0, min($crop['y'], $origH - 1));
             $cropSize = max(1, min($crop['size'], $origW - $cropX, $origH - $cropY));
         } else {
-            $cropSize = (int)(min($origW, $origH));
-            $cropX    = (int)(($origW - $cropSize) / 2);
-            $cropY    = (int)(($origH - $cropSize) / 2);
+            $cropSize = (int) (min($origW, $origH));
+            $cropX = (int) (($origW - $cropSize) / 2);
+            $cropY = (int) (($origH - $cropSize) / 2);
         }
 
         foreach ($imagick as $frame) {
@@ -150,11 +149,11 @@ class ProcessAvatar implements ShouldQueue
     {
         $mime = mime_content_type($realPath);
 
-        if (!in_array($mime, ['image/gif', 'image/webp'])) {
+        if (! in_array($mime, ['image/gif', 'image/webp'])) {
             return false;
         }
 
-        $imagick = new \Imagick();
+        $imagick = new \Imagick;
         $imagick->pingImage($realPath);
         $frames = $imagick->getNumberImages();
         $imagick->clear();

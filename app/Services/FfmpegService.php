@@ -17,13 +17,15 @@ class FfmpegService
     public function binaryPath(): string
     {
         $ext = PHP_OS_FAMILY === 'Windows' ? '.exe' : '';
-        return storage_path('bin/ffmpeg' . $ext);
+
+        return storage_path('bin/ffmpeg'.$ext);
     }
 
     public function probeBinaryPath(): string
     {
         $ext = PHP_OS_FAMILY === 'Windows' ? '.exe' : '';
-        return storage_path('bin/ffprobe' . $ext);
+
+        return storage_path('bin/ffprobe'.$ext);
     }
 
     public function isInstalled(): bool
@@ -33,11 +35,11 @@ class FfmpegService
 
     public function version(): ?string
     {
-        if (!$this->isInstalled()) {
+        if (! $this->isInstalled()) {
             return null;
         }
 
-        $cmd = escapeshellarg($this->binaryPath()) . ' -version 2>&1';
+        $cmd = escapeshellarg($this->binaryPath()).' -version 2>&1';
         exec($cmd, $output, $returnCode);
 
         return $output[0] ?? null;
@@ -48,17 +50,17 @@ class FfmpegService
         $binDir = storage_path('bin');
         $binPath = $this->binaryPath();
 
-        if (file_exists($binPath) && !$force) {
+        if (file_exists($binPath) && ! $force) {
             throw new \RuntimeException('ffmpeg already installed');
         }
 
-        if (!is_dir($binDir)) {
+        if (! is_dir($binDir)) {
             mkdir($binDir, 0755, true);
         }
 
         $progress?->setMessage('Downloading ffmpeg...');
 
-        $archive = $binDir . '/ffmpeg.tar.xz';
+        $archive = $binDir.'/ffmpeg.tar.xz';
         Http::withOptions([
             'progress' => function ($total, $downloaded) use ($progress) {
                 if ($total > 0 && $progress) {
@@ -75,7 +77,7 @@ class FfmpegService
         $progress->setMessage('Cleaning up...');
         unlink($archive);
 
-        if ($returnCode !== 0 || !file_exists($binPath)) {
+        if ($returnCode !== 0 || ! file_exists($binPath)) {
             throw new \RuntimeException('Failed to install ffmpeg');
         }
 
@@ -85,11 +87,11 @@ class FfmpegService
 
     public function exec(string $args): array
     {
-        if (!$this->isInstalled()) {
+        if (! $this->isInstalled()) {
             throw new \RuntimeException('ffmpeg not installed');
         }
 
-        $cmd = escapeshellarg($this->binaryPath()) . ' ' . $this->default_args . ' ' . $args . ' 2>&1';
+        $cmd = escapeshellarg($this->binaryPath()).' '.$this->default_args.' '.$args.' 2>&1';
         exec($cmd, $output, $returnCode);
 
         return [
@@ -100,11 +102,11 @@ class FfmpegService
 
     public function probe(string $args): array
     {
-        if (!$this->isInstalled()) {
+        if (! $this->isInstalled()) {
             throw new \RuntimeException('ffmpeg not installed');
         }
 
-        $cmd = escapeshellarg($this->probeBinaryPath()) . ' ' . $this->default_args . ' ' . $args . ' 2>&1';
+        $cmd = escapeshellarg($this->probeBinaryPath()).' '.$this->default_args.' '.$args.' 2>&1';
         exec($cmd, $output, $returnCode);
 
         return [

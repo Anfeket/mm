@@ -64,7 +64,7 @@ it('searches all categories without prefix', function () {
 it('includes alias information', function () {
     $canonical = Tag::factory()->general()->create(['name' => 'reaction_image']);
     Tag::factory()->general()->create([
-        'name'        => 'reaction_pic',
+        'name' => 'reaction_pic',
         'alias_tag_id' => $canonical->id,
     ]);
 
@@ -85,7 +85,7 @@ it('returns null alias_of for non aliased tags', function () {
 
 it('respects the limit', function () {
     Tag::factory()->general()->createMany(
-        collect(range(1, 15))->map(fn($i) => ['name' => "tag_{$i}"])->all()
+        collect(range(1, 15))->map(fn ($i) => ['name' => "tag_{$i}"])->all()
     );
 
     $this->getJson(route('tags.autocomplete', ['q' => 'tag']))
