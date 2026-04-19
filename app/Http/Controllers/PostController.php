@@ -71,6 +71,24 @@ class PostController extends Controller
         return view('post.create');
     }
 
+    public function checkHash(Request $request)
+    {
+        $request->validate([
+            'hash' => ['required', 'string', 'size:32', 'regex:/^[a-f0-9]+$/i'],
+        ]);
+
+        $post = Post::where('file_hash', $request->input('hash'))->first();
+
+        if ($post) {
+            return response()->json([
+                'exists' => true,
+                'url' => route('posts.show', $post),
+            ]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

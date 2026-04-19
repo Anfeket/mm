@@ -1,6 +1,10 @@
 <x-layout>
     <x-slot:title>Upload</x-slot:title>
 
+    @pushOnce('scripts')
+        @vite('resources/js/upload.js')
+    @endPushOnce
+
     <div class="upload-container">
 
         <h2>Upload a post</h2>
@@ -17,6 +21,10 @@
 
         <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off" class="upload-form">
             @csrf
+
+            <div id="hash-warning" class="alert alert-error hidden" style="margin-bottom: 1rem;">
+                <span id="hash-warning-text">This exact file has already been uploaded! </span><a href="#" id="hash-warning-link" target="_blank">View existing post</a>
+            </div>
 
             <div class="upload-source">
                 <div id="dropzone" class="dropzone">
@@ -61,93 +69,6 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Upload</button>
-            <script>
-                document.querySelector('.upload-form').addEventListener('submit', function(e) {
-                    const fileInput = document.getElementById('file-input');
-                    const urlInput = document.getElementById('url-source-input');
-                    if (!fileInput.files.length && !urlInput.value.trim()) {
-                        e.preventDefault();
-                        alert('Please provide either a file or a URL.');
-                    }
-                });
-            </script>
         </form>
     </div>
-
-    <script>
-        const dropzone = document.getElementById('dropzone');
-        const input = document.getElementById('file-input');
-        const prompt = document.getElementById('dropzone-prompt');
-        const preview = document.getElementById('preview');
-        const urlSource = document.getElementById('url-source');
-        const urlInput = document.getElementById('url-source-input');
-        const divider = document.getElementById('upload-source-divider');
-
-        dropzone.addEventListener('click', () => input.click());
-
-        dropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropzone.classList.add('dragover');
-        });
-        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                input.files = e.dataTransfer.files;
-                showPreview(input.files[0]);
-            }
-        });
-
-        input.addEventListener('change', () => {
-            if (input.files[0]) {
-                showPreview(input.files[0]);
-                urlSource.classList.add('hidden');
-                divider.classList.add('hidden');
-            } else {
-                prompt.classList.remove('hidden');
-                preview.classList.add('hidden');
-                urlSource.classList.remove('hidden');
-                divider.classList.remove('hidden');
-            }
-        });
-
-        urlInput.addEventListener('input', () => {
-            if (urlInput.value.trim()) {
-                dropzone.classList.add('hidden');
-                input.required = false;
-                urlInput.required = true;
-            } else {
-                dropzone.classList.remove('hidden');
-                input.required = true;
-                urlInput.required = false;
-            }
-        });
-
-        function showPreview(file) {
-            preview.innerHTML = '';
-            prompt.classList.add('hidden');
-            preview.classList.remove('hidden');
-
-            const url = URL.createObjectURL(file);
-
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = url;
-                preview.appendChild(img);
-            } else if (file.type.startsWith('video/')) {
-                const video = document.createElement('video');
-                video.src = url;
-                video.controls = true;
-                preview.appendChild(video);
-            }
-
-            const info = document.createElement('p');
-            info.className = 'dropzone-hint';
-            const mb = file.size / 1024 / 1024;
-            info.textContent = `${file.name} · ${mb >= 1 ? mb.toFixed(2) + ' MB' : (file.size / 1024).toFixed(2) + ' KB'}`;
-            preview.appendChild(info);
-        }
-    </script>
-
 </x-layout>

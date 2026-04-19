@@ -20,7 +20,6 @@ Route::get('/tags', [TagController::class, 'index'])->name('tags');
 
 Route::get('/user/{user}', [UserController::class, 'show'])->name('users.show');
 
-
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -38,6 +37,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/upload', [PostController::class, 'create'])->name('posts.create');
     Route::post('/upload', [PostController::class, 'store'])->name('posts.store');
+    Route::get('/upload/check-hash', [PostController::class, 'checkHash'])->name('posts.checkHash');
 
     Route::get('/account', [AccountController::class, 'show'])->name('account.show');
     Route::put('/account', [AccountController::class, 'update'])->name('account.update');
