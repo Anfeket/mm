@@ -81,3 +81,8 @@ Route::get('/wiki', function () {
 Route::get('/forum', function () {
     return view('forum.index');
 })->name('forum');
+
+// temporary 410 for old iteration
+Route::get('/post/{id}', function ($id) {
+    abort(410);
+});
