@@ -676,3 +676,82 @@
 .user-posts .btn {
     align-self: flex-start;
 }
+
+/* =========================
+    Tags show
+========================= */
+.tag-profile {
+    margin: var(--space-xl) auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+}
+
+.tag-card {
+    background: var(--color-bg-box);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+    align-items: center;
+}
+
+.tag-show-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+}
+
+.tag-title {
+    font-size: inherit;
+    font-size: 1.4rem;
+}
+
+.tag-category-label {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+.tag-stats {
+    display: flex;
+    gap: var(--space-m);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-m);
+}
+
+.tag-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: center;
+    flex: 1;
+    min-width: 80px;
+}
+
+.tag-stat-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.tag-stat-label {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.tag-show-posts {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding: 0 var(--space-m);
+}
+
+.tag-show-posts .post-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}

@@ -31,7 +31,7 @@
                                 @method('DELETE')
                                 <button type="submit" class="tag-remove-btn" aria-label="Remove tag">×</button>
                             </form>
-                            <a href="{{ route('tags.show', $tag) }}" class="tag tag-{{ $category->value }}">{{ $tag->name }}</a>
+                            <a href="{{ $tag->url() }}" class="tag tag-{{ $category->value }}">{{ $tag->name }}</a>
                         </li>
                     @endforeach
                 </ul>

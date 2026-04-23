@@ -28,7 +28,7 @@
                 <ul class="tag-list tag-index-list tag-index-list-inline">
                     @foreach($topTags as $tag)
                         <li class="tag-item tag-index-item">
-                            <a href="{{ route('tags.show', $tag) }}" class="tag tag-{{ $tag->category->value }}">{{ $tag->name }}</a>
+                            <a href="{{ $tag->url() }}" class="tag tag-{{ $tag->category->value }}">{{ $tag->name }}</a>
                             <span class="tag-count">{{ $tag->post_count }}</span>
                         </li>
                     @endforeach
@@ -56,7 +56,7 @@
                         <ul class="tag-list tag-index-list">
                             @foreach($categoryTags as $tag)
                                 <li class="tag-item tag-index-item">
-                                    <a href="{{ route('tags.show', $tag) }}" class="tag tag-{{ $category->value }}">{{ $tag->name }}</a>
+                                    <a href="{{ $tag->url() }}" class="tag tag-{{ $category->value }}">{{ $tag->name }}</a>
                                     <span class="tag-count">{{ $tag->post_count }}</span>
                                 </li>
                             @endforeach

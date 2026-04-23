@@ -45,9 +45,15 @@ class TagController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Tag $tag)
+    public function show(string $category, string $name)
     {
-        //
+        $tag = Tag::where('name', $name)
+            ->where('category', $category)
+            ->firstOrFail();
+
+        $posts = $tag->posts()->latest()->paginate(20);
+
+        return view('tags.show', compact('tag', 'posts'));
     }
 
     /**

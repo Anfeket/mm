@@ -25,6 +25,11 @@ class Tag extends Model
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'name';
+    }
+
     public function posts()
     {
         return $this->belongsToMany(Post::class, 'post_tags')
@@ -40,5 +45,10 @@ class Tag extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function url()
+    {
+        return route('tags.show', ['category' => $this->category, 'tag' => $this]);
     }
 }

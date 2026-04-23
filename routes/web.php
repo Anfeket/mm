@@ -17,6 +17,7 @@ Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('/tags/autocomplete', [TagController::class, 'autocomplete'])->name('tags.autocomplete');
 Route::get('/tags', [TagController::class, 'index'])->name('tags');
+Route::get('/tags/{category}/{tag}', [TagController::class, 'show'])->name('tags.show');
 
 Route::get('/user/{user}', [UserController::class, 'show'])->name('users.show');
 
@@ -66,9 +67,6 @@ Route::get('/sitemap-static.xml', [SitemapController::class, 'static'])->name('s
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
 
 // placeholders
-Route::get('/tag/{tag}', function ($tag) {
-    return view('tags.show', ['tag' => $tag]);
-})->name('tags.show');
 Route::get('/artists', function () {
     return view('artists.index');
 })->name('artists');

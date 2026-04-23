@@ -316,6 +316,19 @@
 }
 
 /* =========================
+    Tags show
+========================= */
+.tag-title {
+    font-size: inherit;
+    font-size: 1.4rem;
+}
+
+.tag-category-label {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+/* =========================
     Post Media
 ========================= */
 .post-media {
@@ -381,6 +394,7 @@
 .has-tooltip {
     position: relative;
 }
+
 .tooltip {
     position: absolute;
     bottom: calc(100% + var(--space-s));
