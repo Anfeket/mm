@@ -25,7 +25,7 @@
         </div>
 
         <section class="tag-show-posts">
-            <h3>Posts tagged with "{{ $tag->name }}"</h3>
+            <h3>Latest Posts tagged with "{{ $tag->name }}"</h3>
 
             @if($posts->isNotEmpty())
                 <div class="post-grid">

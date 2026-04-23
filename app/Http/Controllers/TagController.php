@@ -51,7 +51,11 @@ class TagController extends Controller
             ->where('category', $category)
             ->firstOrFail();
 
-        $posts = $tag->posts()->latest()->paginate(20);
+        $posts = $tag->posts()
+            ->where('is_listed', true)
+            ->latest()
+            ->limit(10)
+            ->get();
 
         return view('tags.show', compact('tag', 'posts'));
     }
