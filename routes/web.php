@@ -65,6 +65,8 @@ Route::get('/dev/components', function () {
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/sitemap-static.xml', [SitemapController::class, 'static'])->name('sitemap.static');
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
+Route::get('/sitemap-tags.xml', [SitemapController::class, 'tags'])->name('sitemap.tags');
+Route::get('/sitemap-users.xml', [SitemapController::class, 'users'])->name('sitemap.users');
 
 // placeholders
 Route::get('/artists', function () {

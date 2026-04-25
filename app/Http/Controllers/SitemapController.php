@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
@@ -22,6 +24,14 @@ class SitemapController extends Controller
                 'loc' => route('sitemap.posts'),
                 'lastmod' => $latestPost ? $latestPost->toAtomString() : null,
             ],
+            [
+                'loc' => route('sitemap.tags'),
+                'lastmod' => Tag::latest('updated_at')->value('updated_at')?->toAtomString(),
+            ],
+            [
+                'loc' => route('sitemap.users'),
+                'lastmod' => User::latest('updated_at')->value('updated_at')?->toAtomString(),
+            ],
         ];
 
         return response()
@@ -32,18 +42,19 @@ class SitemapController extends Controller
     public function static(): Response
     {
         $urls = [
-            route('home'),
-            route('posts.index'),
+            ['loc' => route('home')],
+            ['loc' => route('posts.index')],
+            ['loc' => route('tags')],
         ];
 
         return response()
-            ->view('sitemap.static', ['urls' => $urls])
+            ->view('sitemap.urlset', ['urls' => $urls])
             ->header('Content-Type', 'application/xml');
     }
 
     public function posts(): Response
     {
-        $posts = Post::where('is_listed', true)
+        $urls = Post::where('is_listed', true)
             ->latest('updated_at')
             ->get(['id', 'updated_at'])
             ->map(function (Post $post): array {
@@ -55,7 +66,41 @@ class SitemapController extends Controller
             ->all();
 
         return response()
-            ->view('sitemap.posts', ['posts' => $posts])
+            ->view('sitemap.urlset', ['urls' => $urls])
+            ->header('Content-Type', 'application/xml');
+    }
+
+    public function tags(): Response
+    {
+        $urls = Tag::latest('updated_at')
+            ->get(['id', 'name', 'category', 'updated_at'])
+            ->map(function (Tag $tag): array {
+                return [
+                    'loc' => route('tags.show', ['category' => $tag->category, 'tag' => $tag]),
+                    'lastmod' => $tag->updated_at->toAtomString(),
+                ];
+            })
+            ->all();
+
+        return response()
+            ->view('sitemap.urlset', ['urls' => $urls])
+            ->header('Content-Type', 'application/xml');
+    }
+
+    public function users(): Response
+    {
+        $urls = User::latest('updated_at')
+            ->get(['id', 'username', 'updated_at'])
+            ->map(function (User $user): array {
+                return [
+                    'loc' => route('users.show', $user),
+                    'lastmod' => $user->updated_at->toAtomString(),
+                ];
+            })
+            ->all();
+
+        return response()
+            ->view('sitemap.urlset', ['urls' => $urls])
             ->header('Content-Type', 'application/xml');
     }
 }
