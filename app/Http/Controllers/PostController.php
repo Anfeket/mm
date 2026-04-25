@@ -174,7 +174,10 @@ class PostController extends Controller
         $viewKey = 'view_'.md5(request()->ip().request()->userAgent().$post->id);
         $isBot = preg_match('/bot|crawl|spider|slurp|bingbot|googlebot/i', request()->userAgent());
         if (! $isBot && ! Cache::has($viewKey)) {
-            $post->increment('view_count');
+            Post::withoutTimestamps(function () use ($post): void {
+                $post->increment('view_count');
+            });
+
             Cache::put($viewKey, true, now()->addHours(12));
         }
 

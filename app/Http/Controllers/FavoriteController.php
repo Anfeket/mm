@@ -18,8 +18,10 @@ class FavoriteController extends Controller
             $post->favorites()->attach($user->id);
         }
 
-        $post->favorites_count = $post->favorites()->count();
-        $post->save();
+        Post::withoutTimestamps(function () use ($post): void {
+            $post->favorites_count = $post->favorites()->count();
+            $post->save();
+        });
 
         return back();
     }

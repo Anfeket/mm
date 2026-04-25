@@ -30,8 +30,10 @@ class VoteController extends Controller
             ]);
         }
 
-        $post->like_count = $post->votes()->sum('value');
-        $post->save();
+        Post::withoutTimestamps(function () use ($post): void {
+            $post->like_count = $post->votes()->sum('value');
+            $post->save();
+        });
 
         return back();
     }
