@@ -5,6 +5,8 @@ namespace App\Models;
 use App\TagCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tag extends Model
 {
@@ -30,24 +32,24 @@ class Tag extends Model
         return 'name';
     }
 
-    public function posts()
+    public function posts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'post_tags')
             ->withPivot('added_by_user_id')
             ->withTimestamps();
     }
 
-    public function aliasTag()
+    public function aliasTag(): BelongsTo
     {
         return $this->belongsTo(Tag::class, 'alias_tag_id');
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function url()
+    public function url(): string
     {
         return route('tags.show', ['category' => $this->category, 'tag' => $this]);
     }

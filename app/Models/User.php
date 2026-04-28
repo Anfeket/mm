@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -39,47 +42,47 @@ class User extends Authenticatable
         return 'username';
     }
 
-    public function posts()
+    public function posts(): HasMany
     {
         return $this->hasMany(Post::class, 'author_id');
     }
 
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function votes()
+    public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
     }
 
-    public function favorites()
+    public function favorites(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'favorites')->withTimestamps();
     }
 
-    public function avatar()
+    public function avatar(): ?string
     {
         return $this->avatar_path;
     }
 
-    public function invites()
+    public function invites(): HasMany
     {
         return $this->hasMany(Invite::class, 'created_by');
     }
 
-    public function usedInvite()
+    public function usedInvite(): HasOne
     {
         return $this->hasOne(Invite::class, 'used_by');
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    public function isModerator()
+    public function isModerator(): bool
     {
         return $this->role === 'moderator';
     }
