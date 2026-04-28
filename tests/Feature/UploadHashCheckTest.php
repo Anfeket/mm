@@ -19,7 +19,7 @@ it('returns true and url when hash exists', function () {
         ->assertOk()
         ->assertJson([
             'exists' => true,
-            'url' => route('posts.show', $post)
+            'url' => route('posts.show', $post),
         ]);
 });
 
@@ -31,7 +31,7 @@ it('returns false when hash does not exist', function () {
         ->getJson("/upload/check-hash?hash={$hash}")
         ->assertOk()
         ->assertJson([
-            'exists' => false
+            'exists' => false,
         ]);
 });
 
@@ -63,6 +63,6 @@ it('returns validation error when hash contains non-hex characters', function ()
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->getJson('/upload/check-hash?hash=' . str_repeat('z', 32))
+        ->getJson('/upload/check-hash?hash='.str_repeat('z', 32))
         ->assertInvalid(['hash']);
 });
