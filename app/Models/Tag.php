@@ -3,22 +3,16 @@
 namespace App\Models;
 
 use App\TagCategory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+#[Fillable(['name', 'description', 'category', 'created_by', 'alias_tag_id'])]
 class Tag extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'description',
-        'category',
-        'created_by',
-        'alias_tag_id',
-    ];
 
     protected function casts(): array
     {

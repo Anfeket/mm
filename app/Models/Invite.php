@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Invite extends Model
 {
-    protected $fillable = [];
-
     protected $casts = [
         'used_at' => 'datetime',
     ];

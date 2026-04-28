@@ -3,35 +3,23 @@
 namespace App\Models;
 
 use App\PostProcessingStatus;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property PostProcessingStatus $processing_status
  */
+#[Fillable(['author_id', 'file_path', 'file_hash', 'file_size', 'mime_type', 'original_filename', 'width', 'height', 'duration_ms', 'description', 'source_url', 'is_listed', 'processing_status'])]
 class Post extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
-    protected $fillable = [
-        'author_id',
-        'file_path',
-        'file_hash',
-        'file_size',
-        'mime_type',
-        'original_filename',
-        'width',
-        'height',
-        'duration_ms',
-        'description',
-        'source_url',
-        'is_listed',
-        'processing_status',
-    ];
 
     protected function casts(): array
     {
