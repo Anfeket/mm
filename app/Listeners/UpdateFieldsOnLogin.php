@@ -22,9 +22,11 @@ class UpdateFieldsOnLogin
         $user = $event->user;
         $request = request();
 
-        $user->update([
-            'last_login_at' => now(),
-            'last_login_ip' => $request->ip(),
-        ]);
+        $user::withoutTimestamps(function () use ($user, $request) {
+            $user->update([
+                'last_login_at' => now(),
+                'last_login_ip' => $request->ip(),
+            ]);
+        });
     }
 }
