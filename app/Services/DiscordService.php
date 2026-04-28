@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class DiscordService
 {
@@ -43,6 +44,13 @@ class DiscordService
             $embed['image'] = [
                 'url' => asset('uploads/'.$post->thumb_path),
             ];
+        } else {
+            Log::warning('Discord embed sent without image', [
+                'post_id' => $post->id,
+                'has_file' => (bool) $post->file_path,
+                'processing_status' => $post->processing_status,
+                'created_at' => $post->created_at?->toIso8601String(),
+            ]);
         }
 
         $tags = $post->tags->groupBy(fn ($t) => $t->category->label())
