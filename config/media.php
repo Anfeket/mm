@@ -36,7 +36,7 @@ return [
             '-hide_banner',
             '-loglevel error',
         ],
-        'url' => env('FFMPEG_URL', 'https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-linux64-gpl.tar.xz'),
+        'url' => env('FFMPEG_URL'),
     ],
 
     /*

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 class FfmpegService
@@ -45,6 +46,45 @@ class FfmpegService
         return $output[0] ?? null;
     }
 
+    /**
+     * Get the download URL for ffmpeg, using config if set, otherwise auto-detect based on OS/arch.
+     */
+    public function getFfmpegUrl(): string
+    {
+        $customUrl = config('media.ffmpeg.url');
+        if ($customUrl) {
+            return $customUrl;
+        }
+
+        $os = PHP_OS_FAMILY;
+        $arch = strtolower(php_uname('m'));
+
+        // Normalize architecture (case-insensitive)
+        if (in_array($arch, ['x86_64', 'amd64'])) {
+            $arch = '64';
+        } elseif (in_array($arch, ['aarch64', 'arm64'])) {
+            $arch = 'arm64';
+        } else {
+            throw new \RuntimeException("Unsupported architecture: $arch");
+        }
+
+        // Map OS to BtbN naming
+        if ($os === 'Windows') {
+            $osPart = 'win'.$arch;
+            $ext = 'zip';
+        } elseif ($os === 'Linux') {
+            $osPart = 'linux'.$arch;
+            $ext = 'tar.xz';
+        } elseif ($os === 'Darwin') {
+            $osPart = 'macos'.$arch;
+            $ext = 'zip';
+        } else {
+            throw new \RuntimeException("Unsupported OS: $os");
+        }
+
+        return "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-{$osPart}-gpl.{$ext}";
+    }
+
     public function install(bool $force = false, ?ProgressBar $progress = null): void
     {
         $binDir = storage_path('bin');
@@ -61,6 +101,7 @@ class FfmpegService
         $progress?->setMessage('Downloading ffmpeg...');
 
         $archive = $binDir.'/ffmpeg.tar.xz';
+        $url = $this->getFfmpegUrl();
         Http::withOptions([
             'progress' => function ($total, $downloaded) use ($progress) {
                 if ($total > 0 && $progress) {
@@ -69,7 +110,7 @@ class FfmpegService
                 }
             },
             'sink' => $archive,
-        ])->get(config('media.ffmpeg.url'));
+        ])->get($url);
 
         $progress->setMessage('Extracting ffmpeg...');
         exec("tar -xf {$archive} -C {$binDir} --strip-components=2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'", $output, $returnCode);
@@ -83,6 +124,12 @@ class FfmpegService
 
         chmod($binPath, 0755);
         $progress->setMessage('ffmpeg installed successfully');
+
+        // Log the installed version and URL used
+        Log::info('FFmpeg installed', [
+            'version' => $this->version(),
+            'url' => $url,
+        ]);
     }
 
     public function exec(string $args): array
