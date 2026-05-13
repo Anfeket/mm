@@ -2,7 +2,7 @@
 
 ![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
-![License](https://img.shields.io/badge/License-GPLv3-blue)
+![License](https://img.shields.io/badge/license-AGPL%20v3-blue)
 
 A meme imageboard and archive. Browse, search, and upload images and videos with a categorized tag system, voting, favorites, and comments. Invite-only registration.
 
