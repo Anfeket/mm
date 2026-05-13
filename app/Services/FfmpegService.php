@@ -85,6 +85,18 @@ class FfmpegService
         return "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-{$osPart}-gpl.{$ext}";
     }
 
+    protected function buildExtractCommand(string $archive, string $binDir): string
+    {
+        $archiveArg = escapeshellarg($archive);
+        $binDirArg = escapeshellarg($binDir);
+
+        if (PHP_OS_FAMILY === 'Windows') {
+            return "tar -xf {$archiveArg} -C {$binDirArg} --strip-components=2 \"*/bin/ffmpeg.exe\" \"*/bin/ffprobe.exe\"";
+        }
+
+        return "tar -xf {$archiveArg} -C {$binDirArg} --strip-components=2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'";
+    }
+
     public function install(bool $force = false, ?ProgressBar $progress = null): void
     {
         $binDir = storage_path('bin');
@@ -100,7 +112,8 @@ class FfmpegService
 
         $progress?->setMessage('Downloading ffmpeg...');
 
-        $archive = $binDir.'/ffmpeg.tar.xz';
+        $archiveExt = PHP_OS_FAMILY === 'Linux' ? 'tar.xz' : 'zip';
+        $archive = $binDir.'/ffmpeg.'.$archiveExt;
         $url = $this->getFfmpegUrl();
         Http::withOptions([
             'progress' => function ($total, $downloaded) use ($progress) {
@@ -113,7 +126,9 @@ class FfmpegService
         ])->get($url);
 
         $progress->setMessage('Extracting ffmpeg...');
-        exec("tar -xf {$archive} -C {$binDir} --strip-components=2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'", $output, $returnCode);
+        $tarCmd = $this->buildExtractCommand($archive, $binDir);
+
+        exec($tarCmd, $output, $returnCode);
 
         $progress->setMessage('Cleaning up...');
         unlink($archive);
