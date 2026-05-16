@@ -9,7 +9,7 @@
     </x-slot:sidebar>
 
     <x-slot:description>
-        {{ Str::limit($post->description ? $post->description : "Post #{$post->id} uploaded by {$post->author->username} on {$post->created_at->format('Y-m-d')}" . ($post->tags->isNotEmpty() ? ' \u00b7 ' . $post->tags->pluck('name')->implode(', ') : ''), 160) }}
+        {{ Str::limit($post->description ? $post->description : "Post #{$post->id} uploaded by {$post->author->username} on {$post->created_at->format('Y-m-d')}" . ($post->tags->isNotEmpty() ? ' · ' . $post->tags->pluck('name')->implode(', ') : ''), 160) }}
     </x-slot:description>
 
     <x-slot:jsonLd>{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES) !!}</x-slot:jsonLd>
