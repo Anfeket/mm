@@ -1,5 +1,5 @@
 <x-layout>
-    <x-slot:title>{{ $tag->name }}</x-slot:title>
+    <x-slot:title>Tag {{ $tag->name }} ({{ $tag->category->label() }})</x-slot:title>
 
     <article class="tag-profile">
         <div class="tag-card">
