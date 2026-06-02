@@ -7,6 +7,8 @@ use App\PostProcessingStatus;
 use App\Services\FfmpegService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ProcessPostMedia implements ShouldQueue
 {
@@ -67,13 +69,21 @@ class ProcessPostMedia implements ShouldQueue
 
             // Send Discord webhook after processing is complete
             SendDiscordWebhook::dispatch($this->post);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->post->processing_status = PostProcessingStatus::Failed;
             $this->post->processing_error = $e->getMessage();
             $this->post->save();
 
             throw $e;
         }
+    }
+
+    public function failed(?Throwable $exception): void
+    {
+        Log::error('Failed to process post media', [
+            'post_id' => $this->post->id,
+            'exception_message' => $exception?->getMessage(),
+        ]);
     }
 
     private function thumbPath(): string

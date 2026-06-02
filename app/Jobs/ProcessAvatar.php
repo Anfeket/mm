@@ -6,7 +6,9 @@ use App\Models\User;
 use App\Notifications\AvatarProcessed;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ProcessAvatar implements ShouldQueue
 {
@@ -49,12 +51,23 @@ class ProcessAvatar implements ShouldQueue
             $this->user->save();
 
             $this->user->notify(new AvatarProcessed(success: true));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->user->notify(new AvatarProcessed(success: false));
             throw $e;
         } finally {
             Storage::delete($this->avatarPath);
         }
+    }
+
+    public function failed(?Throwable $exception): void
+    {
+        $this->user->notify(new AvatarProcessed(success: false));
+
+        Log::error('Failed to process avatar', [
+            'user_id' => $this->user->id,
+            'avatar_path' => $this->avatarPath,
+            'exception_message' => $exception?->getMessage(),
+        ]);
     }
 
     private function processAvatarStatic(string $realPath, string $dest, ?array $crop = null): void
