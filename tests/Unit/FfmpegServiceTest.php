@@ -9,7 +9,6 @@ beforeEach(function () {
     $this->service = app(FfmpegService::class);
 });
 
-
 test('builds platform specific tar extraction command', function () {
     $archive = 'C:\\temp dir\\ffmpeg.zip';
     $binDir = 'C:\\bin dir';
