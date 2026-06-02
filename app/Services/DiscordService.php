@@ -82,4 +82,9 @@ class DiscordService
 
         return $embed;
     }
+
+    public function isConfigured(): bool
+    {
+        return (bool) $this->webhook_url;
+    }
 }

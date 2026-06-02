@@ -1,4 +1,4 @@
-@props(['post'])
+@props(['post', 'discordConfigured' => false])
 
 @canany(['delete', 'toggleVisibility'], $post)
 <section class="post-details-section">
@@ -20,6 +20,22 @@
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger">Delete post</button>
+            </form>
+        @endcan
+
+        @can('sendWebhook', $post)
+            <form action="{{ route('posts.sendWebhook', $post) }}" method="POST" class="has-tooltip">
+                @csrf
+                <button
+                    type="submit"
+                    class="btn btn-info {{ !$discordConfigured ? 'disabled' : '' }}"
+                    @disabled(!$discordConfigured)
+                >
+                    Send webhook
+                </button>
+                @unless($discordConfigured)
+                    <div class="tooltip">Discord webhook URL is not configured.</div>
+                @endunless
             </form>
         @endcan
     </div>

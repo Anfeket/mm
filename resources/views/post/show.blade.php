@@ -3,7 +3,7 @@
     <x-slot:title>Post #{{ $post->id }} uploaded by {{ $post->author->username }}</x-slot:title>
 
     <x-slot:sidebar>
-        <x-post.actions :post="$post" />
+        <x-post.actions :post="$post" :discord-configured="$discordConfigured" />
         <x-post.tags :tags="$post->tags" :post="$post" />
         <x-post.details :post="$post" :user-vote="$userVote" :user-favorite="$userFavorite" />
     </x-slot:sidebar>
@@ -25,8 +25,6 @@
     @endif
 
     <article>
-        <div id="post-actions">
-        </div>
         <x-post.media :post="$post" />
         <div id="post-content">
             <section class="post-description">

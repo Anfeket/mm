@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::patch('/posts/{post}/visibility', [PostController::class, 'toggleVisibility'])->name('posts.toggleVisibility');
+    Route::post('/posts/{post}/sendWebhook', [PostController::class, 'sendWebhook'])->name('posts.sendWebhook');
 
     Route::post('/posts/{post}/vote', [VoteController::class, 'vote'])->name('posts.vote');
     Route::post('/posts/{post}/favorites', [FavoriteController::class, 'toggle'])->name('posts.favorites.toggle');

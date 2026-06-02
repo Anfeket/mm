@@ -76,4 +76,9 @@ class PostPolicy
     {
         return $user->isAdmin() || $user->isModerator();
     }
+
+    public function sendWebhook(User $user, Post $post): bool
+    {
+        return $user->isAdmin();
+    }
 }

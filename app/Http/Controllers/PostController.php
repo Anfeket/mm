@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ProcessPostMedia;
+use App\Jobs\SendDiscordWebhook;
 use App\Models\Post;
 use App\PostProcessingStatus;
+use App\Services\DiscordService;
 use App\Services\FileStorageService;
 use App\Services\TagService;
 use App\Support\JsonLd;
@@ -167,7 +169,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show(Post $post, DiscordService $discord)
     {
         $post = $post->load(['tags', 'comments' => fn ($q) => $q->with('user')->latest()->limit(500)]);
 
@@ -202,6 +204,8 @@ class PostController extends Controller
 
         $jsonLd = JsonLd::forPost($post);
 
+        $discordConfigured = $discord->isConfigured();
+
         return view('post.show', compact(
             'post',
             'previousPost',
@@ -210,7 +214,8 @@ class PostController extends Controller
             'downvotes',
             'userVote',
             'userFavorite',
-            'jsonLd'
+            'jsonLd',
+            'discordConfigured'
         ));
     }
 
@@ -249,6 +254,18 @@ class PostController extends Controller
         $post->update(['is_listed' => ! $post->is_listed]);
 
         return back()->with('success', $post->is_listed ? 'Post unhidden.' : 'Post hidden.');
+    }
+
+    public function sendWebhook(Post $post, DiscordService $discord)
+    {
+        Gate::authorize('sendWebhook', $post);
+
+        if (! $discord->isConfigured()) {
+            return back()->withErrors(['webhook' => 'Discord webhook is not configured.']);
+        }
+        SendDiscordWebhook::dispatch($post);
+
+        return back()->with('success', 'Webhook queued successfully.');
     }
 
     private function applyFilter(Builder $query, array $filter): void
