@@ -124,11 +124,11 @@ class FfmpegService
             'sink' => $archive,
         ])->get($url);
 
-        $progress->setMessage('Extracting ffmpeg...');
+        $progress?->setMessage('Extracting ffmpeg...');
         $extract = new Process($this->buildExtractCommand($archive, $binDir));
         $extract->run();
 
-        $progress->setMessage('Cleaning up...');
+        $progress?->setMessage('Cleaning up...');
         unlink($archive);
 
         if (! $extract->isSuccessful() || ! file_exists($binPath)) {

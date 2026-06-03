@@ -178,7 +178,7 @@ class ProcessPostMedia implements ShouldQueue
         ]);
 
         if ($result['returnCode'] !== 0 || empty($result['output'])) {
-            throw new \RuntimeException('ffprobe failed to read dimensoins: '.implode("\n", $result['output']));
+            throw new \RuntimeException('ffprobe failed to read dimensions: '.implode("\n", $result['output']));
         }
 
         [$width, $height] = explode(',', $result['output'][0]);

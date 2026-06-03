@@ -44,4 +44,4 @@ test('rejects shell-escaped execution arguments', function () {
     $method->setAccessible(true);
 
     $method->invoke($this->service, ["'unsafe-input.mp4'"]);
-})->throws(InvalidArgumentException::class, 'Pass raw ffmpeg arguments');
+})->throws(InvalidArgumentException::class, 'Pass raw ffmpeg arguments, not shell-escaped values.');
