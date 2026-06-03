@@ -120,14 +120,17 @@ class ProcessPostMedia implements ShouldQueue
 
     private function generateVideoThumb(string $src, string $dest, FfmpegService $ffmpeg): void
     {
-        $result = $ffmpeg->exec(sprintf(
-            '-ss %d -i %s -frames:v 1 -vf "scale=%d:%d:force_original_aspect_ratio=decrease" %s',
-            config('media.thumb.video_frame_time'),
-            escapeshellarg($src),
-            config('media.thumb.width'),
-            config('media.thumb.height'),
-            escapeshellarg($dest)
-        ));
+        $result = $ffmpeg->exec([
+            '-ss',
+            (string) config('media.thumb.video_frame_time'),
+            '-i',
+            $src,
+            '-frames:v',
+            '1',
+            '-vf',
+            sprintf('scale=%d:%d:force_original_aspect_ratio=decrease', config('media.thumb.width'), config('media.thumb.height')),
+            $dest,
+        ]);
 
         if ($result['returnCode'] !== 0) {
             throw new \RuntimeException('ffmpeg failed to generate video thumbnail: '.implode("\n", $result['output']));
@@ -162,13 +165,20 @@ class ProcessPostMedia implements ShouldQueue
 
     private function getVideoDimensions(string $src, FfmpegService $ffmpeg): array
     {
-        $result = $ffmpeg->probe(sprintf(
-            '-v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 %s',
-            escapeshellarg($src)
-        ));
+        $result = $ffmpeg->probe([
+            '-v',
+            'error',
+            '-select_streams',
+            'v:0',
+            '-show_entries',
+            'stream=width,height',
+            '-of',
+            'csv=p=0',
+            $src,
+        ]);
 
         if ($result['returnCode'] !== 0 || empty($result['output'])) {
-            throw new \RuntimeException('ffprobe failed to read dimensoins: '.implode("\n", $result['output']));
+            throw new \RuntimeException('ffprobe failed to read dimensions: '.implode("\n", $result['output']));
         }
 
         [$width, $height] = explode(',', $result['output'][0]);
@@ -178,10 +188,15 @@ class ProcessPostMedia implements ShouldQueue
 
     private function getVideoDuration(string $src, FfmpegService $ffmpeg): int
     {
-        $result = $ffmpeg->probe(sprintf(
-            '-v error -show_entries format=duration -of csv=p=0 %s',
-            escapeshellarg($src)
-        ));
+        $result = $ffmpeg->probe([
+            '-v',
+            'error',
+            '-show_entries',
+            'format=duration',
+            '-of',
+            'csv=p=0',
+            $src,
+        ]);
 
         if ($result['returnCode'] !== 0 || empty($result['output'])) {
             throw new \RuntimeException('ffprobe failed to read duration: '.implode("\n", $result['output']));

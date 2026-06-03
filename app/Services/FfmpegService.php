@@ -5,15 +5,16 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Process\Process;
 
 class FfmpegService
 {
     public function __construct()
     {
-        $this->default_args = implode(' ', config('media.ffmpeg.default_args', []));
+        $this->defaultArgs = $this->normalizeDefaultArgs(config('media.ffmpeg.default_args', []));
     }
 
-    protected string $default_args;
+    protected array $defaultArgs;
 
     public function binaryPath(): string
     {
@@ -40,10 +41,9 @@ class FfmpegService
             return null;
         }
 
-        $cmd = escapeshellarg($this->binaryPath()).' -version 2>&1';
-        exec($cmd, $output, $returnCode);
+        $result = $this->runProcess($this->binaryPath(), ['-version']);
 
-        return $output[0] ?? null;
+        return $result['output'][0] ?? null;
     }
 
     /**
@@ -85,16 +85,15 @@ class FfmpegService
         return "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-{$osPart}-gpl.{$ext}";
     }
 
-    protected function buildExtractCommand(string $archive, string $binDir): string
+    protected function buildExtractCommand(string $archive, string $binDir): array
     {
-        $archiveArg = escapeshellarg($archive);
-        $binDirArg = escapeshellarg($binDir);
+        $command = ['tar', '-xf', $archive, '-C', $binDir, '--strip-components=2'];
 
         if (PHP_OS_FAMILY === 'Windows') {
-            return "tar -xf {$archiveArg} -C {$binDirArg} --strip-components=2 \"*/bin/ffmpeg.exe\" \"*/bin/ffprobe.exe\"";
+            return [...$command, '*/bin/ffmpeg.exe', '*/bin/ffprobe.exe'];
         }
 
-        return "tar -xf {$archiveArg} -C {$binDirArg} --strip-components=2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'";
+        return [...$command, '--wildcards', '*/bin/ffmpeg', '*/bin/ffprobe'];
     }
 
     public function install(bool $force = false, ?ProgressBar $progress = null): void
@@ -125,15 +124,14 @@ class FfmpegService
             'sink' => $archive,
         ])->get($url);
 
-        $progress->setMessage('Extracting ffmpeg...');
-        $tarCmd = $this->buildExtractCommand($archive, $binDir);
+        $progress?->setMessage('Extracting ffmpeg...');
+        $extract = new Process($this->buildExtractCommand($archive, $binDir));
+        $extract->run();
 
-        exec($tarCmd, $output, $returnCode);
-
-        $progress->setMessage('Cleaning up...');
+        $progress?->setMessage('Cleaning up...');
         unlink($archive);
 
-        if ($returnCode !== 0 || ! file_exists($binPath)) {
+        if (! $extract->isSuccessful() || ! file_exists($binPath)) {
             throw new \RuntimeException('Failed to install ffmpeg');
         }
 
@@ -147,33 +145,82 @@ class FfmpegService
         ]);
     }
 
-    public function exec(string $args): array
+    /**
+     * Execute ffmpeg with raw argument tokens.
+     * Do not pass shell-escaped values (e.g. escapeshellarg output).
+     */
+    public function exec(array $args): array
     {
         if (! $this->isInstalled()) {
             throw new \RuntimeException('ffmpeg not installed');
         }
 
-        $cmd = escapeshellarg($this->binaryPath()).' '.$this->default_args.' '.$args.' 2>&1';
-        exec($cmd, $output, $returnCode);
+        return $this->runProcess($this->binaryPath(), $args);
+    }
+
+    /**
+     * Execute ffprobe with raw argument tokens.
+     * Do not pass shell-escaped values (e.g. escapeshellarg output).
+     */
+    public function probe(array $args): array
+    {
+        if (! $this->isInstalled()) {
+            throw new \RuntimeException('ffmpeg not installed');
+        }
+
+        return $this->runProcess($this->probeBinaryPath(), $args);
+    }
+
+    protected function runProcess(string $binaryPath, array $args): array
+    {
+        $this->assertRawArguments($args);
+
+        $process = new Process([$binaryPath, ...$this->defaultArgs, ...$args]);
+        $process->run();
+
+        $combinedOutput = trim($process->getOutput()."\n".$process->getErrorOutput());
+        $output = $combinedOutput === '' ? [] : preg_split("/\r\n|\r|\n/", $combinedOutput);
 
         return [
-            'output' => $output,
-            'returnCode' => $returnCode,
+            'output' => $output ?: [],
+            'returnCode' => $process->getExitCode() ?? 1,
         ];
     }
 
-    public function probe(string $args): array
+    protected function assertRawArguments(array $args): void
     {
-        if (! $this->isInstalled()) {
-            throw new \RuntimeException('ffmpeg not installed');
+        foreach ($args as $arg) {
+            if (! is_string($arg)) {
+                throw new \InvalidArgumentException('All ffmpeg arguments must be strings.');
+            }
+
+            if ((str_starts_with($arg, "'") && str_ends_with($arg, "'")) || (str_starts_with($arg, '"') && str_ends_with($arg, '"'))) {
+                throw new \InvalidArgumentException('Pass raw ffmpeg arguments, not shell-escaped values.');
+            }
+        }
+    }
+
+    protected function normalizeDefaultArgs(array $args): array
+    {
+        $normalized = [];
+
+        foreach ($args as $arg) {
+            if (! is_string($arg)) {
+                continue;
+            }
+
+            $parts = preg_split('/\s+/', trim($arg));
+            if (! is_array($parts)) {
+                continue;
+            }
+
+            foreach ($parts as $part) {
+                if ($part !== '') {
+                    $normalized[] = $part;
+                }
+            }
         }
 
-        $cmd = escapeshellarg($this->probeBinaryPath()).' '.$this->default_args.' '.$args.' 2>&1';
-        exec($cmd, $output, $returnCode);
-
-        return [
-            'output' => $output,
-            'returnCode' => $returnCode,
-        ];
+        return $normalized;
     }
 }
