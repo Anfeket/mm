@@ -161,7 +161,7 @@ class PostController extends Controller
             $tagService->syncPostTags($post, $tagService->parseInput($request->input('tags')));
         }
 
-        ProcessPostMedia::dispatch($post);
+        ProcessPostMedia::dispatch($post)->delay(now()->addSeconds(10));
 
         return redirect()->route('posts.show', $post)->with('success', 'Post uploaded successfully! It will be listed once processing is complete.');
     }
