@@ -19,14 +19,14 @@ class VerifyDiscordSignature
         $timestamp = $request->header('X-Signature-Timestamp');
         $publicKey = config('services.discord.public_key');
 
-        if (!$signature || !$timestamp) {
+        if (! $signature || ! $timestamp) {
             abort(401, 'Missing signature or timestamp');
         }
 
         try {
             $valid = sodium_crypto_sign_verify_detached(
                 hex2bin($signature),
-                $timestamp . $request->getContent(),
+                $timestamp.$request->getContent(),
                 hex2bin($publicKey)
             );
         } catch (\Exception $e) {

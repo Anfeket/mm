@@ -1,22 +1,23 @@
 <?php
 
-use App\Discord\InteractionType;
+use Illuminate\Testing\TestResponse;
+
 use function Pest\Laravel\postJson;
 
-function discordRequest(array $payload): \Illuminate\Testing\TestResponse
+function discordRequest(array $payload): TestResponse
 {
-    $publicKey  = sodium_crypto_sign_keypair();
+    $publicKey = sodium_crypto_sign_keypair();
     $privateKey = sodium_crypto_sign_secretkey($publicKey);
-    $pubKeyHex  = bin2hex(sodium_crypto_sign_publickey($publicKey));
+    $pubKeyHex = bin2hex(sodium_crypto_sign_publickey($publicKey));
 
     config(['services.discord.public_key' => $pubKeyHex]);
 
-    $body      = json_encode($payload);
+    $body = json_encode($payload);
     $timestamp = (string) time();
-    $signature = bin2hex(sodium_crypto_sign_detached($timestamp . $body, $privateKey));
+    $signature = bin2hex(sodium_crypto_sign_detached($timestamp.$body, $privateKey));
 
     return postJson('/discord/interactions', $payload, [
-        'X-Signature-Ed25519'   => $signature,
+        'X-Signature-Ed25519' => $signature,
         'X-Signature-Timestamp' => $timestamp,
     ]);
 }
@@ -34,7 +35,7 @@ test('rejects missing signature headers', function () {
 
 test('rejects invalid signature', function () {
     postJson('/discord/interactions', ['type' => 1], [
-        'X-Signature-Ed25519'   => str_repeat('a', 128),
+        'X-Signature-Ed25519' => str_repeat('a', 128),
         'X-Signature-Timestamp' => (string) time(),
     ])->assertUnauthorized();
 });

@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 class InteractionResponse
 {
     private int $type = 4;
+
     private array $data = [];
 
     // type 1 — pong (PING handshake)
