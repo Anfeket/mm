@@ -7,6 +7,7 @@ use App\Discord\Interaction;
 use App\Discord\InteractionResponse;
 use App\Discord\InteractionType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DiscordInteractionController extends Controller
 {
@@ -32,11 +33,16 @@ class DiscordInteractionController extends Controller
                 ->toResponse();
         }
 
-        \Log::debug('Discord headers', [
+        Log::debug('Discord headers', [
             'signature' => $request->header('X-Signature-Ed25519'),
             'timestamp' => $request->header('X-Signature-Timestamp'),
         ]);
 
         return app($handler)($interaction)->toResponse();
+    }
+
+    public function getCommands(): array
+    {
+        return array_map(fn ($command) => $command::definition(), $this->commands);
     }
 }
