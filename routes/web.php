@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DiscordInteractionController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostTagController;
@@ -10,6 +11,8 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
+use App\Http\Middleware\VerifyDiscordSignature;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PostController::class, 'index'])->name('home');
@@ -68,6 +71,12 @@ Route::get('/sitemap-static.xml', [SitemapController::class, 'static'])->name('s
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
 Route::get('/sitemap-tags.xml', [SitemapController::class, 'tags'])->name('sitemap.tags');
 Route::get('/sitemap-users.xml', [SitemapController::class, 'users'])->name('sitemap.users');
+
+// discord interaction endpoint
+Route::post('/discord/interactions', [DiscordInteractionController::class, 'handle'])
+    ->name('discord.interactions')
+    ->withoutMiddleware(PreventRequestForgery::class) // Disable CSRF protection for this route
+    ->middleware(VerifyDiscordSignature::class); // Add the custom middleware to verify Discord signature
 
 // placeholders
 Route::get('/artists', function () {
