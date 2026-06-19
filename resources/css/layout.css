@@ -143,6 +143,12 @@
     background: var(--color-bg);
 }
 
+#main-nav a.disabled {
+    color: var(--color-text-light);
+    background: none;
+    pointer-events: none;
+}
+
 /* ===================
     Container
 =================== */

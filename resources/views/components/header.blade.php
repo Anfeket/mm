@@ -37,9 +37,9 @@
         <a href="{{ route('posts.index') }}">Posts</a>
         <a href="{{ route('tags') }}">Tags</a>
         <a href="{{ route('artists') }}">Artists</a>
-        <a href="{{ route('pools') }}">Pools</a>
-        <a href="{{ route('wiki') }}">Wiki</a>
-        <a href="{{ route('forum') }}">Forum</a>
+        <a class="disabled" href="{{ route('pools') }}">Pools</a>
+        <a class="disabled" href="{{ route('wiki') }}">Wiki</a>
+        <a class="disabled" href="{{ route('forum') }}">Forum</a>
         @auth
             <a href="{{ route('posts.create') }}">Upload</a>
         @endauth
