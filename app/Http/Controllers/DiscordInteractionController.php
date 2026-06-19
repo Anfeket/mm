@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Discord\Commands\FindCommand;
 use App\Discord\Commands\PingCommand;
 use App\Discord\Interaction;
 use App\Discord\InteractionResponse;
@@ -13,6 +14,7 @@ class DiscordInteractionController extends Controller
 {
     private array $commands = [
         'ping' => PingCommand::class,
+        'find' => FindCommand::class,
     ];
 
     public function handle(Request $request)
@@ -43,6 +45,6 @@ class DiscordInteractionController extends Controller
 
     public function getCommands(): array
     {
-        return array_map(fn ($command) => $command::definition(), $this->commands);
+        return array_values(array_map(fn ($command) => $command::definition(), $this->commands));
     }
 }
