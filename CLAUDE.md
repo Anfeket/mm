@@ -38,16 +38,28 @@ This is **mm** — a meme-sharing / imageboard-style web application built with 
 app/
 ├── Console/          # Artisan commands
 ├── Http/
+│   ├── Middleware/  # Request middleware
+│   │   └── VerifyDiscordSignature.php  # Verify Discord interaction requests
 │   └── Controllers/  # Route controllers
-│       ├── AuthController.php      # Login, register (invite-based), logout
-│       ├── PostController.php      # CRUD for media posts, tag-based search
-│       ├── AccountController.php   # Account settings, avatar upload, invites
-│       ├── UserController.php      # Public user profiles
-│       ├── VoteController.php      # Upvote/downvote on posts
-│       ├── TagController.php       # Tag CRUD and autocomplete API
-│       ├── FavoriteController.php  # Toggle favorite status on posts for users
-│       └── PostTagController.php   # Attach/detach tags to posts
-│       └── CommentController.php   # Comments (store with rate limiting, destroy)
+│       ├── AuthController.php                  # Login, register (invite-based), logout
+│       ├── PostController.php                  # CRUD for media posts, tag-based search
+│       ├── AccountController.php               # Account settings, avatar upload, invites
+│       ├── UserController.php                  # Public user profiles
+│       ├── VoteController.php                  # Upvote/downvote on posts
+│       ├── TagController.php                   # Tag CRUD and autocomplete API
+│       ├── FavoriteController.php              # Toggle favorite status on posts for users
+│       ├── PostTagController.php               # Attach/detach tags to posts
+│       ├── DiscordInteractionController.php    # Handle Discord slash command interactions
+│       └── CommentController.php               # Comments (store with rate limiting, destroy)
+├── Discord/          # Discord Integration
+│   ├── DiscordCommand.php        # Base class for Discord commands
+│   ├── Embed.php                 # Helper for building Discord embeds
+│   ├── Interaction.php           # Helper for handling Discord interactions
+│   ├── InteractionResponse.php   # Helper for sending Discord interaction responses
+│   ├── InteractionType.php       # Enum: Discord interaction types
+│   └── Commands/       # Discord slash commands
+│       ├── PingCommand.php          # /ping command for bot health check
+│       └── FindCommand.php          # /find command to search posts
 ├── Console/
 │   └── Commands/
 │       └── FfmpegInstall.php       # Artisan command: download & install ffmpeg binary
