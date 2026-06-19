@@ -52,6 +52,12 @@ class FindCommand implements DiscordCommand
             return InteractionResponse::message()->content('Post not found.')->ephemeral();
         }
 
+        // Discord video bypass
+        if ($post->isVideo()) {
+            return InteractionResponse::message()
+                ->content(route('posts.show', $post));
+        }
+
         $embed = (new Embed)
             ->title("Post #{$post->id}")
             ->url(route('posts.show', $post))
@@ -64,13 +70,6 @@ class FindCommand implements DiscordCommand
 
         if ($post->description) {
             $embed->description($post->description);
-        }
-
-        // Discord video bypass
-        if ($post->isVideo()) {
-            return InteractionResponse::message()
-                ->content(route('posts.show', $post))
-                ->embed($embed);
         }
 
         return InteractionResponse::message()->embed($embed);
