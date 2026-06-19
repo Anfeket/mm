@@ -58,12 +58,19 @@ class FindCommand implements DiscordCommand
             ->footer("Uploaded by {$post->author->username}")
             ->timestamp($post->created_at);
 
-        if ($post->thumb_path) {
+        if ($post->thumb_path && $post->isImage()) {
             $embed->image(asset('uploads/' . $post->thumb_path));
         }
 
         if ($post->description) {
             $embed->description($post->description);
+        }
+
+        // Discord video bypass
+        if ($post->isVideo()) {
+            return InteractionResponse::message()
+                ->content(route('posts.show', $post))
+                ->embed($embed);
         }
 
         return InteractionResponse::message()->embed($embed);
