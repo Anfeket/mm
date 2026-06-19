@@ -53,7 +53,7 @@ class FindCommand implements DiscordCommand
         }
 
         $embed = (new Embed)
-            ->title($post->title)
+            ->title("Post #{$post->id}")
             ->url(route('posts.show', $post))
             ->footer("Uploaded by {$post->author->username}")
             ->timestamp($post->created_at);
