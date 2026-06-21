@@ -21,6 +21,7 @@ class DiscordRegisterCommands extends Command
 
         if (! $appId || ! $token) {
             $this->error('DISCORD_APP_ID and DISCORD_BOT_TOKEN must be set.');
+
             return self::FAILURE;
         }
 

@@ -42,8 +42,8 @@ class FindCommand implements DiscordCommand
                             'required' => true,
                         ],
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -63,7 +63,7 @@ class FindCommand implements DiscordCommand
             ->with('author')
             ->find($postId);
 
-        if (!$post) {
+        if (! $post) {
             return InteractionResponse::message()->content('Post not found.')->ephemeral();
         }
 
@@ -80,7 +80,7 @@ class FindCommand implements DiscordCommand
             ->timestamp($post->created_at);
 
         if ($post->thumb_path && $post->isImage()) {
-            $embed->image(asset('uploads/' . $post->thumb_path));
+            $embed->image(asset('uploads/'.$post->thumb_path));
         }
 
         if ($post->description) {
@@ -99,7 +99,7 @@ class FindCommand implements DiscordCommand
         foreach ($tags['include'] as $tag) {
             $query->whereHas(
                 'tags',
-                fn($q) => $q
+                fn ($q) => $q
                     ->where('name', $tag['name'])
                     ->where('category', $tag['category'])
             );
@@ -107,7 +107,7 @@ class FindCommand implements DiscordCommand
         foreach ($tags['exclude'] as $tag) {
             $query->whereDoesntHave(
                 'tags',
-                fn($q) => $q
+                fn ($q) => $q
                     ->where('name', $tag['name'])
                     ->where('category', $tag['category'])
             );
@@ -115,7 +115,7 @@ class FindCommand implements DiscordCommand
 
         $post = $query->with('author')->first();
 
-        if (!$post) {
+        if (! $post) {
             return InteractionResponse::message()->content('No posts found with the given tags.')->ephemeral();
         }
 
@@ -131,7 +131,7 @@ class FindCommand implements DiscordCommand
             ->timestamp($post->created_at);
 
         if ($post->thumb_path && $post->isImage()) {
-            $embed->image(asset('uploads/' . $post->thumb_path));
+            $embed->image(asset('uploads/'.$post->thumb_path));
         }
 
         if ($post->description) {
