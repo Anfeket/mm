@@ -70,4 +70,12 @@ class InteractionResponse
     {
         return response()->json($this->toArray());
     }
+
+    public function autocomplete(array $choices): static
+    {
+        $this->type = 8;
+        $this->data['choices'] = $choices;
+
+        return $this;
+    }
 }
