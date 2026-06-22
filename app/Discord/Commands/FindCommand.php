@@ -8,6 +8,7 @@ use App\Discord\HandlesAutocomplete;
 use App\Discord\Interaction;
 use App\Discord\InteractionResponse;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Services\TagService;
 
 class FindCommand implements DiscordCommand, HandlesAutocomplete
@@ -146,11 +147,18 @@ class FindCommand implements DiscordCommand, HandlesAutocomplete
     public function autocomplete(Interaction $interaction): InteractionResponse
     {
         $query = $interaction->focusedOption();
-        $tags = app(TagService::class)->searchTags($query);
+
+        $tags = match (empty($query)) {
+            true => Tag::where('post_count', '>', 0)
+                ->orderByDesc('post_count')
+                ->limit(10)
+                ->get(),
+            false => app(TagService::class)->searchTags($query),
+        };
 
         $choices = $tags->map(fn ($tag) => [
-            'name' => "{$tag->category}: {$tag->name} ({$tag->post_count})",
-            'value' => "{$tag->category}:{$tag->name}",
+            'name' => "{$tag->category->value}: {$tag->name} ({$tag->post_count})",
+            'value' => "{$tag->category->value}:{$tag->name}",
         ])->all();
 
         return InteractionResponse::message()->autocomplete($choices);
