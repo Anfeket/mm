@@ -8,3 +8,8 @@ interface DiscordCommand
 
     public function __invoke(Interaction $interaction): InteractionResponse;
 }
+
+interface HandlesAutocomplete
+{
+    public function autocomplete(Interaction $interaction): InteractionResponse;
+}

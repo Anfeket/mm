@@ -57,4 +57,27 @@ class Interaction
     {
         return $this->payload;
     }
+
+    public function focusedOption(): ?string
+    {
+        $options = $this->payload['data']['options'] ?? [];
+        return $this->findFocused($options);
+    }
+
+    private function findFocused(array $options): ?string
+    {
+        foreach ($options as $opt) {
+            if (($opt['focused'] ?? false) === true) {
+                return $opt['value'] ?? null;
+            }
+            if (isset($opt['options']) && is_array($opt['options'])) {
+                $focused = $this->findFocused($opt['options']);
+                if ($focused !== null) {
+                    return $focused;
+                }
+            }
+        }
+
+        return null;
+    }
 }

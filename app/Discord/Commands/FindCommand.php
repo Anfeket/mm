@@ -4,12 +4,13 @@ namespace App\Discord\Commands;
 
 use App\Discord\DiscordCommand;
 use App\Discord\Embed;
+use App\Discord\HandlesAutocomplete;
 use App\Discord\Interaction;
 use App\Discord\InteractionResponse;
 use App\Models\Post;
 use App\Services\TagService;
 
-class FindCommand implements DiscordCommand
+class FindCommand implements DiscordCommand, HandlesAutocomplete
 {
     public static function definition(): array
     {
@@ -40,6 +41,7 @@ class FindCommand implements DiscordCommand
                             'name' => 'tags',
                             'description' => 'Tags to search for',
                             'required' => true,
+                            'autocomplete' => true,
                         ],
                     ],
                 ],
@@ -139,5 +141,18 @@ class FindCommand implements DiscordCommand
         }
 
         return InteractionResponse::message()->embed($embed);
+    }
+
+    public function autocomplete(Interaction $interaction): InteractionResponse
+    {
+        $query = $interaction->focusedOption();
+        $tags = app(TagService::class)->searchTags($query);
+
+        $choices = $tags->map(fn ($tag) => [
+            'name' => "{$tag->category}: {$tag->name} ({$tag->post_count})",
+            'value' => "{$tag->category}:{$tag->name}",
+        ])->all();
+
+        return InteractionResponse::message()->autocomplete($choices);
     }
 }
